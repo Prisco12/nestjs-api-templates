@@ -35,22 +35,27 @@ async function main() {
         { timestamps: true },
       ),
     );
-  const role = await RoleModel.findOneAndUpdate(
-    { name: Role.ADMIN },
-    { $set: { permissions: RolePermissions[Role.ADMIN] } },
-    { upsert: true, returnDocument: 'after' },
+  const roles = await Promise.all(
+    Object.values(Role).map((name) =>
+      RoleModel.findOneAndUpdate(
+        { name },
+        { $set: { permissions: RolePermissions[name] } },
+        { upsert: true, returnDocument: 'after' },
+      ),
+    ),
   );
+  const adminRole = roles.find((role) => role!.name === Role.ADMIN)!;
   let user = await UserModel.findOne({ email });
   if (!user)
     user = await UserModel.create({
       email,
       passwordHash: await argon2.hash(password),
-      roles: [role!._id],
+      roles: [adminRole._id],
     });
   else if (
-    !user.roles.some((id: mongoose.Types.ObjectId) => id.equals(role!._id))
+    !user.roles.some((id: mongoose.Types.ObjectId) => id.equals(adminRole._id))
   ) {
-    user.roles.push(role!._id);
+    user.roles.push(adminRole._id);
     await user.save();
   }
   await mongoose.disconnect();

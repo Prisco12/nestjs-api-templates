@@ -1,0 +1,34 @@
+# Documentação — template PostgreSQL
+
+## Stack
+
+NestJS, PostgreSQL, Prisma, JWT, Argon2, Pino, Swagger, Docker e Postman.
+
+## Configuração local
+
+1. Copie `.env.example` para `.env` e preencha `DATABASE_URL`, segredos JWT e credenciais de seed.
+2. Instale dependências: `npm install`.
+3. Aplique o schema: `npm run migrate:dev -- --name init`.
+4. Crie roles, permissões e administrador: `npm run seed`.
+5. Inicie: `npm run start:dev`.
+
+Após esta alteração, quem se cadastra em `POST /api/v1/auth/register` recebe automaticamente a role `user`. Isso exige que o seed tenha sido executado.
+
+## Refresh tokens
+
+Cada login cria uma sessão. Tokens expirados do usuário são removidos no login e uma tarefa diária às 03:00 remove tokens expirados globalmente. A migration inclui o índice `userId + expiresAt` para essa consulta.
+
+Após atualizar o template existente, aplique:
+
+```bash
+npm run migrate:dev -- --name add-refresh-token-cleanup-index
+npm run seed
+```
+
+## API e testes manuais
+
+Importe `postman/api-postgres.postman_collection.json` no Postman. A coleção salva access e refresh tokens automaticamente após login/refresh.
+
+## Docker
+
+Use `DATABASE_URL=postgresql://postgres:postgres@postgres:5432/nest_api?schema=public` no `.env` e execute `docker compose up --build`. Depois aplique a migration e o seed dentro do container.

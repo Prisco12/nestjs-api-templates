@@ -1,11 +1,29 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
+import { Role } from '../authorization/access-control';
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
-  create(email: string, passwordHash: string) {
+  async create(email: string, passwordHash: string) {
+    const defaultRole = await this.prisma.role.findUnique({
+      where: { name: Role.USER },
+      select: { id: true },
+    });
+    if (!defaultRole) {
+      throw new ServiceUnavailableException(
+        'Default user role is unavailable. Run the database seed.',
+      );
+    }
     return this.prisma.user.create({
-      data: { email, passwordHash },
+      data: {
+        email,
+        passwordHash,
+        roles: { create: { roleId: defaultRole.id } },
+      },
       select: { id: true, email: true },
     });
   }
