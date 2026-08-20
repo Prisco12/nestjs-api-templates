@@ -1,0 +1,20 @@
+import { z } from 'zod';
+
+const envSchema = z.object({
+  NODE_ENV: z
+    .enum(['development', 'test', 'production'])
+    .default('development'),
+  PORT: z.coerce.number().int().positive().default(3000),
+  CORS_ORIGIN: z.string().default('http://localhost:3000'),
+  LOG_LEVEL: z
+    .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
+    .default('info'),
+  JWT_ACCESS_SECRET: z.string().min(32),
+  JWT_ACCESS_TTL: z.string().default('15m'),
+  JWT_REFRESH_TTL_DAYS: z.coerce.number().int().positive().default(30),
+  DATABASE_URL: z.string().url(),
+});
+
+export function validateEnv(config: Record<string, unknown>) {
+  return envSchema.parse(config);
+}

@@ -1,0 +1,10 @@
+{
+  "name": "nestjs-api-templates",
+  "private": true,
+  "workspaces": ["templates/api-mongo", "templates/api-postgres"],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces"
+  }
+}
