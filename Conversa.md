@@ -2721,3 +2721,48 @@ Para a base ficar bem completa, faltam principalmente:
 6. Opcionais para depois: cache Redis, fila RabbitMQ via Outbox para auditoria, métricas/observabilidade e upload de arquivos.
 
 Minha recomendação é seguir agora com o item 2: garantir que todo usuário registrado já entre com o tipo `USER`.
+
+> ola
+
+Olá! Quer seguir com a atribuição automática da role `USER` no cadastro?
+
+<details><summary>4 previous messages</summary>
+
+> Vou atribuir a role `USER` automaticamente no cadastro dos dois templates e organizar documentação geral mais documentação específica de MongoDB e PostgreSQL. A partir daqui, vou manter essas docs atualizadas em cada alteração relevante.
+>
+> <details><summary>Created 3 files, edited 5 files, ran 3 commands</summary>
+>
+> - Ran `$projectRoot = 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; rg --files "$projectRoot" -g 'README.md' -g 'seed.ts' -g 'users.service.ts' -g 'auth.service.ts' -g 'user.schema.ts' -g 'schema.prisma' -g 'access-control.ts' -g 'package.json' | Sort-Object`
+> - Ran `$projectRoot = 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-postgres\src\users\users.service.ts"; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-postgres\prisma\seed.ts"; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-mongo\src\users\users.service.ts"; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-mongo\src\users\schemas\user.schema.ts"; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-mongo\scripts\seed.ts"; Get-Content -Raw -LiteralPath "$projectRoot\README.md"; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-postgres\README.md"; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-mongo\README.md"`
+> - Ran `$projectRoot = 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-mongo\src\users\schemas\role.schema.ts"; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-mongo\src\users\users.module.ts"; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-postgres\src\users\users.module.ts"; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-mongo\src\authorization\access-control.ts"; Get-Content -Raw -LiteralPath "$projectRoot\templates\api-postgres\src\authorization\access-control.ts"; Get-ChildItem -LiteralPath "$projectRoot\docs" -File | Select-Object -ExpandProperty Name`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/README.md` (+9 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/README.md` (+20 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md` (+26 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/scripts/seed.ts` (+12 -7)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/users/users.service.ts` (+23 -8)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/README.md` (+34 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/prisma/seed.ts` (+27 -16)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/users/users.service.ts` (+21 -3)
+>
+> </details>
+>
+> A atribuição automática e os guias foram adicionados. Vou formatar, gerar o cliente Prisma e compilar os dois projetos agora.
+>
+> <details><summary>Ran 2 commands</summary>
+>
+> - Ran `npm exec prettier -- --write src/users/users.service.ts prisma/seed.ts README.md docs/README.md; npm exec -- prisma format; npm run build`
+> - Ran `npm exec prettier -- --write src/users/users.service.ts scripts/seed.ts README.md docs/README.md; npm run build; npm run seed`
+>
+> </details>
+</details>
+
+Feito. :codex-annotation{index="1"}
+
+- Cadastro público agora atribui automaticamente a role `user` em MongoDB e PostgreSQL.
+- Seed agora cria/atualiza as duas roles: `admin` e `user`.
+- O usuário definido no seed continua recebendo `admin`.
+- Criei a documentação geral em [docs/README.md](~/Documents/Dev/nestjs-api-templates/docs/README.md), e guias específicos para [PostgreSQL](~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/README.md) e [MongoDB](~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md).
+- O build dos dois templates passou.
+- Também executei o seed MongoDB, atualizando as roles no banco configurado.
+
+No PostgreSQL, rode `npm run seed` após aplicar a migration, para criar a role `user`. Não houve mudança de endpoint, então a coleção Postman não precisou ser alterada.
