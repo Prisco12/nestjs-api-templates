@@ -3,11 +3,12 @@ import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import { validateEnv } from './config/env.schema';
-import { HealthModule } from './health/health.module';
-import { AuthModule } from './auth/auth.module';
-import { DatabaseModule } from './database/database.module';
-import { UsersModule } from './users/users.module';
-import { AuditModule } from './audit/audit.module';
+import { HealthModule } from './modules/health/health.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { DatabaseModule } from './infrastructure/database/database.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuditModule } from './modules/audit/audit.module';
+import { RbacModule } from './modules/rbac/rbac.module';
 import { Request } from 'express';
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -18,6 +19,14 @@ const isProduction = process.env.NODE_ENV === 'production';
     LoggerModule.forRoot({
       pinoHttp: {
         level: process.env.LOG_LEVEL ?? 'info',
+        redact: {
+          paths: [
+            'req.headers.authorization',
+            'req.headers.cookie',
+            'res.headers.set-cookie',
+          ],
+          censor: '[Redacted]',
+        },
         customProps: (request) => ({
           requestId: (request as Request).requestId,
         }),
@@ -37,6 +46,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     HealthModule,
     DatabaseModule,
     AuditModule,
+    RbacModule,
     AuthModule,
     UsersModule,
   ],

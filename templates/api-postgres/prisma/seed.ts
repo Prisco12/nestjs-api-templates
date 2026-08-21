@@ -3,10 +3,10 @@ import * as argon2 from 'argon2';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client';
 import {
+  DEFAULT_ADMIN_ROLE,
+  DEFAULT_USER_ROLE,
   Permission,
-  Role,
-  RolePermissions,
-} from '../src/authorization/access-control';
+} from '../src/modules/authorization/permission-catalog';
 
 async function main() {
   const email = process.env.SEED_ADMIN_EMAIL?.trim().toLowerCase();
@@ -29,22 +29,24 @@ async function main() {
     ),
   );
   const roles = await Promise.all(
-    Object.values(Role).map((name) =>
+    [DEFAULT_ADMIN_ROLE, DEFAULT_USER_ROLE].map((name) =>
       prisma.role.upsert({
         where: { name },
         update: {},
         create: {
           name,
           description:
-            name === Role.ADMIN ? 'Template administrator' : 'Default user',
+            name === DEFAULT_ADMIN_ROLE
+              ? 'Template administrator'
+              : 'Default user',
         },
       }),
     ),
   );
   for (const role of roles) {
-    for (const code of RolePermissions[
-      role.name as keyof typeof RolePermissions
-    ]) {
+    for (const code of role.name === DEFAULT_ADMIN_ROLE
+      ? Object.values(Permission)
+      : []) {
       const permission = permissions.find((item) => item.code === code)!;
       await prisma.rolePermission.upsert({
         where: {
@@ -55,7 +57,7 @@ async function main() {
       });
     }
   }
-  const adminRole = roles.find((role) => role.name === Role.ADMIN)!;
+  const adminRole = roles.find((role) => role.name === DEFAULT_ADMIN_ROLE)!;
   let user = await prisma.user.findUnique({ where: { email } });
   if (!user)
     user = await prisma.user.create({
