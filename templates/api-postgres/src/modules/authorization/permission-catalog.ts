@@ -5,6 +5,7 @@ export const Permission = {
   USERS_DELETE: 'users:delete',
   ROLES_MANAGE: 'roles:manage',
   AUDIT_READ: 'audit:read',
+  TESTE_READ: 'teste:read',
 } as const;
 
 export type PermissionCode = (typeof Permission)[keyof typeof Permission];

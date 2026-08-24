@@ -14,6 +14,7 @@ import { RegisterDto } from './dto/register.dto';
 import { UsersService } from '../users/users.service';
 import { AuditService } from '../audit/audit.service';
 import { AuditAction, AuditContext } from '../audit/audit.types';
+import { AuthRateLimitService } from './auth-rate-limit.service';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly users: UsersService,
     private readonly audit: AuditService,
+    private readonly rateLimit: AuthRateLimitService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
   ) {}
@@ -29,8 +31,16 @@ export class AuthService {
     const email = input.email.trim().toLowerCase();
     if (await this.users.findByEmailForAuth(email))
       throw new ConflictException('Email already registered');
-    const passwordHash = await argon2.hash(input.password);
-    const user = await this.users.create(email, passwordHash);
+    const reservation = await this.rateLimit.reserveRegistration(
+      context.ip ?? 'unknown',
+    );
+    let user;
+    try {
+      user = await this.users.create(email, await argon2.hash(input.password));
+    } catch (error) {
+      await this.rateLimit.releaseRegistration(reservation);
+      throw error;
+    }
     await this.audit.record({
       actorId: user.id,
       action: AuditAction.AUTH_REGISTER,
@@ -44,23 +54,26 @@ export class AuthService {
   }
 
   async login(input: LoginDto, context: AuditContext) {
-    const user = await this.users.findByEmailForAuth(
-      input.email.trim().toLowerCase(),
-    );
+    const email = input.email.trim().toLowerCase();
+    const ip = context.ip ?? 'unknown';
+    await this.rateLimit.assertLoginAllowed(email, ip);
+    const user = await this.users.findByEmailForAuth(email);
     if (
       !user ||
       !user.isActive ||
       !(await argon2.verify(user.passwordHash, input.password))
     ) {
+      await this.rateLimit.recordLoginFailure(email, ip);
       await this.audit.record({
         action: AuditAction.AUTH_LOGIN_FAILED,
         resource: 'auth',
         status: 'FAILURE',
-        after: { email: input.email.trim().toLowerCase() },
+        after: { email },
         ...context,
       });
       throw new UnauthorizedException('Invalid credentials');
     }
+    await this.rateLimit.clearLoginFailures(email, ip);
     await this.deleteExpiredTokensForUser(user.id);
     const tokens = await this.issueTokens(this.toAuthenticatedUser(user));
     await this.audit.record({

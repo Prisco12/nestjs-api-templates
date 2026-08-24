@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
 import { validateEnv } from './config/env.schema';
@@ -11,6 +13,8 @@ import { UsersModule } from './modules/users/users.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { RbacModule } from './modules/rbac/rbac.module';
 import { Request } from 'express';
+import { RedisModule } from './infrastructure/redis/redis.module';
+import { RateLimitModule } from './modules/rate-limit/rate-limit.module';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -18,7 +22,22 @@ const isProduction = process.env.NODE_ENV === 'production';
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     ScheduleModule.forRoot(),
-    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        errorMessage: 'Too many requests. Please try again later.',
+        storage: new ThrottlerStorageRedisService(
+          config.getOrThrow<string>('REDIS_URL'),
+        ),
+        throttlers: [
+          {
+            name: 'default',
+            ttl: config.getOrThrow<number>('RATE_LIMIT_TTL_MS'),
+            limit: config.getOrThrow<number>('RATE_LIMIT_MAX'),
+          },
+        ],
+      }),
+    }),
     LoggerModule.forRoot({
       pinoHttp: {
         level: process.env.LOG_LEVEL ?? 'info',
@@ -49,9 +68,12 @@ const isProduction = process.env.NODE_ENV === 'production';
     HealthModule,
     AuthModule,
     DatabaseModule,
+    RedisModule,
+    RateLimitModule,
     AuditModule,
     RbacModule,
     UsersModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

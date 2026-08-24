@@ -10,6 +10,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { RefreshTokenCleanupService } from './refresh-token-cleanup.service';
+import { AuthRateLimitService } from './auth-rate-limit.service';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { RefreshTokenCleanupService } from './refresh-token-cleanup.service';
   controllers: [AuthController],
   providers: [
     AuthService,
+    AuthRateLimitService,
     RefreshTokenCleanupService,
     JwtStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },

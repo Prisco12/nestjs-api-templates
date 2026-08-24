@@ -14,6 +14,7 @@ import {
   RefreshToken,
   RefreshTokenSchema,
 } from './schemas/refresh-token.schema';
+import { AuthRateLimitService } from './auth-rate-limit.service';
 @Module({
   imports: [
     ConfigModule,
@@ -33,6 +34,7 @@ import {
   controllers: [AuthController],
   providers: [
     AuthService,
+    AuthRateLimitService,
     JwtStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: PermissionsGuard },

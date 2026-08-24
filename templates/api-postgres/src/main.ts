@@ -11,20 +11,38 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(), { bufferLogs: true });
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(), {
+    bufferLogs: true,
+  });
   app.use(new RequestIdMiddleware().use);
   app.useLogger(app.get(Logger));
   const config = app.get(ConfigService);
-  const origins = config.getOrThrow<string>('CORS_ORIGIN').split(',').map((origin) => origin.trim());
+  const origins = config
+    .getOrThrow<string>('CORS_ORIGIN')
+    .split(',')
+    .map((origin) => origin.trim());
   app.setGlobalPrefix('api');
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
   app.enableCors({ origin: origins, credentials: true });
   app.use(helmet());
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());
-  const swaggerConfig = new DocumentBuilder().setTitle('NestJS API - PostgreSQL').setVersion('1.0').build();
-  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, swaggerConfig));
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('NestJS API - PostgreSQL')
+    .setVersion('1.0')
+    .build();
+  SwaggerModule.setup(
+    'docs',
+    app,
+    SwaggerModule.createDocument(app, swaggerConfig),
+  );
   app.enableShutdownHooks();
   await app.listen(config.getOrThrow<number>('PORT'));
 }

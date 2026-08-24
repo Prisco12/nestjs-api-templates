@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import * as argon2 from 'argon2';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client';
 import {
@@ -9,16 +8,13 @@ import {
 } from '../src/modules/authorization/permission-catalog';
 
 async function main() {
-  const email = process.env.SEED_ADMIN_EMAIL?.trim().toLowerCase();
-  const password = process.env.SEED_ADMIN_PASSWORD;
   const databaseUrl = process.env.DATABASE_URL;
-  if (!email || !password || !databaseUrl)
-    throw new Error(
-      'DATABASE_URL, SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD are required',
-    );
+  if (!databaseUrl) throw new Error('DATABASE_URL is required');
+
   const prisma = new PrismaClient({
     adapter: new PrismaPg({ connectionString: databaseUrl }),
   });
+
   const permissions = await Promise.all(
     Object.values(Permission).map((code) =>
       prisma.permission.upsert({
@@ -43,6 +39,7 @@ async function main() {
       }),
     ),
   );
+
   for (const role of roles) {
     for (const code of role.name === DEFAULT_ADMIN_ROLE
       ? Object.values(Permission)
@@ -57,19 +54,9 @@ async function main() {
       });
     }
   }
-  const adminRole = roles.find((role) => role.name === DEFAULT_ADMIN_ROLE)!;
-  let user = await prisma.user.findUnique({ where: { email } });
-  if (!user)
-    user = await prisma.user.create({
-      data: { email, passwordHash: await argon2.hash(password) },
-    });
-  await prisma.userRole.upsert({
-    where: { userId_roleId: { userId: user.id, roleId: adminRole.id } },
-    update: {},
-    create: { userId: user.id, roleId: adminRole.id },
-  });
+
   await prisma.$disconnect();
-  console.log(`Seed completed for ${email}`);
+  console.log('RBAC seed completed');
 }
 
 void main().catch((error) => {

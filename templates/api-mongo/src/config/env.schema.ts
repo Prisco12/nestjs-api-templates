@@ -11,6 +11,9 @@ const envSchema = z.object({
   JWT_ACCESS_SECRET: z.string().min(32),
   JWT_ACCESS_TTL: z.string().default('15m'),
   JWT_REFRESH_TTL_DAYS: z.coerce.number().int().positive().default(30),
+  RATE_LIMIT_TTL_MS: z.coerce.number().int().positive().default(60_000),
+  RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
+  REDIS_URL: z.string().url().default('redis://localhost:6379'),
   MONGODB_URI: z.string().url(),
 });
 export function validateEnv(config: Record<string, unknown>) {

@@ -8,9 +8,12 @@
     "start:dev": "nest start --watch",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "jest",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "npm run seed:rbac && npm run seed:admin",
+    "seed:rbac": "tsx scripts/seed-rbac.ts",
+    "seed:admin": "tsx scripts/seed-admin.ts"
   },
   "dependencies": {
+    "@nest-lab/throttler-storage-redis": "^1.2.0",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.0",
@@ -25,6 +28,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "helmet": "^8.3.0",
+    "ioredis": "^6.0.0",
     "mongoose": "^9.9.3",
     "nestjs-pino": "^4.0.0",
     "passport": "^0.7.0",

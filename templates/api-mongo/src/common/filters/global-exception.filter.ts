@@ -37,16 +37,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         ? (exceptionResponse as { code: string }).code
         : (HttpStatus[statusCode] ?? 'INTERNAL_SERVER_ERROR');
     const details = Array.isArray(rawMessage) ? rawMessage : undefined;
-    response
-      .status(statusCode)
-      .json({
-        success: false,
-        error: { code, message, details },
-        meta: {
-          requestId: request.requestId,
-          timestamp: new Date().toISOString(),
-          path: request.originalUrl,
-        },
-      });
+    response.status(statusCode).json({
+      success: false,
+      error: { code, message, details },
+      meta: {
+        requestId: request.requestId,
+        timestamp: new Date().toISOString(),
+        path: request.originalUrl,
+      },
+    });
   }
 }

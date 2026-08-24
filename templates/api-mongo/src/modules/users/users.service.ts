@@ -16,7 +16,9 @@ export class UsersService {
   ) {}
 
   async create(email: string, passwordHash: string) {
-    const defaultRole = await this.roles.findOne({ name: DEFAULT_USER_ROLE }).exec();
+    const defaultRole = await this.roles
+      .findOne({ name: DEFAULT_USER_ROLE })
+      .exec();
     if (!defaultRole) {
       throw new ServiceUnavailableException(
         'Default user role is unavailable. Run the database seed.',

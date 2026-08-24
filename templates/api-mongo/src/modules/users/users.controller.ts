@@ -19,7 +19,9 @@ export class UsersController {
   @Get('me') me(@CurrentUser() user: AuthenticatedUser) {
     return this.users.me(user.id);
   }
-  @Permissions(Permission.USERS_READ) @Get() list(
+  @Permissions(Permission.USERS_READ)
+  @Get()
+  list(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
   ) {
