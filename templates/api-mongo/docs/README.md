@@ -67,6 +67,8 @@ A cobertura atual valida regras de Auth, Rate Limit, Users e RBAC: e-mail duplic
 
 O workflow `.github/workflows/ci.yml` compila, executa lint e testes unitários para os dois templates em cada push e Pull Request. Depois sobe Docker, executa seed e valida health, login, refresh por cookie, RBAC, auditoria, logout e rate limit. Localmente, com a API Docker em execução e seed aplicado, use `docker compose exec api npm run test:integration`.
 
+Ao copiar somente este template para um repositório novo, mantenha a pasta `.github/` que já está dentro dele. A CI standalone funciona sem os demais diretórios deste monorepo.
+
 ## API e testes manuais
 
 Importe `postman/api-mongo.postman_collection.json` no Postman. A coleção salva access e refresh tokens automaticamente após login/refresh.
