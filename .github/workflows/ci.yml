@@ -38,6 +38,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: cp .env.example .env
+      - if: matrix.template == 'api-mongo'
+        run: sed -i 's|^MONGODB_URI=.*|MONGODB_URI=mongodb://mongo:27017/nest_api|' .env
+      - if: matrix.template == 'api-postgres'
+        run: sed -i 's|^DATABASE_URL=.*|DATABASE_URL=postgresql://postgres:postgres@postgres:5432/nest_api?schema=public|' .env
       - run: docker compose up --build -d
       - if: matrix.template == 'api-postgres'
         run: docker compose exec -T api npx prisma migrate deploy
