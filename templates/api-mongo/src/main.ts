@@ -36,6 +36,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('NestJS API - MongoDB')
     .setVersion('1.0')
+    .addCookieAuth('refresh_token')
     .build();
   SwaggerModule.setup(
     'docs',

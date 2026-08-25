@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import { CreateAuditLog } from './audit.types';
+import { ListAuditLogsDto } from './dto/list-audit-logs.dto';
 
 @Injectable()
 export class AuditService {
@@ -23,8 +24,19 @@ export class AuditService {
     });
   }
 
-  list(page: number, limit: number) {
+  list(page: number, limit: number, filters: ListAuditLogsDto) {
+    const where: Record<string, unknown> = {};
+    for (const key of ['actorId', 'action', 'resource', 'resourceId', 'status'] as const) {
+      if (filters[key]) where[key] = filters[key];
+    }
+    if (filters.from || filters.to) {
+      where.createdAt = {
+        ...(filters.from ? { gte: new Date(filters.from) } : {}),
+        ...(filters.to ? { lte: new Date(filters.to) } : {}),
+      };
+    }
     return this.prisma.auditLog.findMany({
+      where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { createdAt: 'desc' },

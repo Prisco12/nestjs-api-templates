@@ -8,7 +8,7 @@ NestJS, PostgreSQL, Prisma, JWT, Argon2, Pino, Swagger, Docker e Postman.
 
 1. Copie `.env.example` para `.env` e preencha `DATABASE_URL`, segredos JWT e credenciais de seed.
 2. Instale dependências: `npm install`.
-3. Aplique o schema: `npm run migrate:dev -- --name init`.
+3. Aplique as migrations: `npm run migrate:dev`.
 4. Crie ou sincronize roles e permissões: `npm run seed:rbac`.
 5. Crie o administrador inicial: `npm run seed:admin`.
 6. Inicie: `npm run start:dev`.
@@ -33,13 +33,11 @@ As permissões continuam declaradas em `src/modules/authorization/permission-cat
 
 Cada login cria uma sessão. Tokens expirados do usuário são removidos no login e uma tarefa diária às 03:00 remove tokens expirados globalmente. A migration inclui o índice `userId + expiresAt` para essa consulta.
 
-Após atualizar o template existente, aplique:
+## Refresh token em cookie HttpOnly
 
-```bash
-npm run migrate:dev -- --name add-refresh-token-cleanup-index
-npm run seed:rbac
-npm run seed:admin
-```
+`POST /auth/login` e `POST /auth/refresh` retornam somente `accessToken` e `user` no JSON. O refresh token é enviado no cookie `refresh_token`, com `HttpOnly`, `SameSite=Lax`, `Path=/api/v1/auth` e `Secure` em produção. `POST /auth/refresh` e `POST /auth/logout` não recebem body: o navegador ou cookie jar do Postman envia o cookie automaticamente.
+
+No frontend, use `credentials: 'include'` em login, refresh e logout. Mantenha o access token apenas em memória e envie-o no header `Authorization`. Se frontend e API estiverem em sites diferentes, use `SameSite=None; Secure` e proteção CSRF para operações que alteram dados.
 
 ## Rate limiting
 
@@ -51,10 +49,29 @@ Todas as rotas são limitadas por IP a `RATE_LIMIT_MAX` requisições a cada `RA
 
 Após 5 credenciais inválidas para a combinação e-mail + IP, login aplica espera gradual: 5 minutos, 15 minutos e 1 hora. Um login válido zera o contador. Ao exceder um limite, a API responde `429 Too Many Requests` no formato padrão de erro. Configure `REDIS_URL` para execução local; no Docker ela é definida automaticamente.
 
+## Testes automatizados
+
+Execute a suíte unitária sem depender de PostgreSQL, Redis ou Docker:
+
+```bash
+npm test
+npm run test:cov
+```
+
+A cobertura atual valida regras de Auth, Rate Limit, Users e RBAC: e-mail duplicado, login inválido, bloqueio após cinco falhas, quota de cadastro, role padrão `user` e erros de role inexistente/duplicada. Use `npm run test:watch` durante o desenvolvimento.
+
+## Auditoria
+
+`GET /api/v1/audit-logs` exige `audit:read` e aceita `page`, `limit`, `actorId`, `action`, `resource`, `resourceId`, `status`, `from` e `to`. Datas devem estar em ISO 8601. Alterações de RBAC e eventos de autenticação são registrados com contexto da requisição.
+
+## CI e integração
+
+O workflow `.github/workflows/ci.yml` compila, executa lint e testes unitários para os dois templates em cada push e Pull Request. Depois sobe Docker, aplica migrations, executa seed e valida health, login, refresh por cookie, RBAC, auditoria, logout e rate limit. Localmente, com a API Docker em execução, migration aplicada e seed executado, use `docker compose exec api npm run test:integration`.
+
 ## API e testes manuais
 
 Importe `postman/api-postgres.postman_collection.json` no Postman. A coleção salva access e refresh tokens automaticamente após login/refresh.
 
 ## Docker
 
-Use `DATABASE_URL=postgresql://postgres:postgres@postgres:5432/nest_api?schema=public` no `.env` e execute `docker compose up --build`. Redis também sobe automaticamente. Depois aplique a migration e execute `docker compose exec api npm run seed:rbac` e `docker compose exec api npm run seed:admin`.
+Use `DATABASE_URL=postgresql://postgres:postgres@postgres:5432/nest_api?schema=public` no `.env` e execute `docker compose up --build`. Redis também sobe automaticamente. Depois aplique as migrations com `docker compose exec api npx prisma migrate deploy` e execute `docker compose exec api npm run seed`.

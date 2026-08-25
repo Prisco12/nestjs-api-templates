@@ -8,7 +8,6 @@
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:3000/api/v1" },
     { "key": "accessToken", "value": "" },
-    { "key": "refreshToken", "value": "" },
     { "key": "userId", "value": "" }
   ],
   "item": [
@@ -49,7 +48,7 @@
                 "exec": [
                   "const body = pm.response.json();",
                   "if (body.data?.accessToken) pm.collectionVariables.set('accessToken', body.data.accessToken);",
-                  "if (body.data?.refreshToken) pm.collectionVariables.set('refreshToken', body.data.refreshToken);"
+                  "if (body.data?.user?.id) pm.collectionVariables.set('userId', body.data.user.id);"
                 ],
                 "type": "text/javascript"
               }
@@ -74,7 +73,7 @@
                 "exec": [
                   "const body = pm.response.json();",
                   "if (body.data?.accessToken) pm.collectionVariables.set('accessToken', body.data.accessToken);",
-                  "if (body.data?.refreshToken) pm.collectionVariables.set('refreshToken', body.data.refreshToken);"
+                  "if (body.data?.user?.id) pm.collectionVariables.set('userId', body.data.user.id);"
                 ],
                 "type": "text/javascript"
               }
@@ -82,11 +81,6 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
-            },
             "url": "{{baseUrl}}/auth/refresh"
           }
         },
@@ -99,7 +93,7 @@
                 "exec": [
                   "if (pm.response.code === 204) {",
                   "  pm.collectionVariables.unset('accessToken');",
-                  "  pm.collectionVariables.unset('refreshToken');",
+                  "  pm.collectionVariables.unset('userId');",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -109,13 +103,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
-            },
             "url": "{{baseUrl}}/auth/logout"
           }
         }

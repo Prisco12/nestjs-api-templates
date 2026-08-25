@@ -32,6 +32,12 @@ As permissões continuam declaradas em `src/modules/authorization/permission-cat
 
 Cada login cria uma sessão. Tokens expirados do usuário são removidos no login. Além disso, há um índice TTL em `expiresAt`, que permite ao MongoDB remover tokens expirados globalmente em segundo plano.
 
+## Refresh token em cookie HttpOnly
+
+`POST /auth/login` e `POST /auth/refresh` retornam somente `accessToken` e `user` no JSON. O refresh token é enviado no cookie `refresh_token`, com `HttpOnly`, `SameSite=Lax`, `Path=/api/v1/auth` e `Secure` em produção. `POST /auth/refresh` e `POST /auth/logout` não recebem body: o navegador ou cookie jar do Postman envia o cookie automaticamente.
+
+No frontend, use `credentials: 'include'` em login, refresh e logout. Mantenha o access token apenas em memória e envie-o no header `Authorization`. Se frontend e API estiverem em sites diferentes, use `SameSite=None; Secure` e proteção CSRF para operações que alteram dados.
+
 ## Rate limiting
 
 Todas as rotas são limitadas por IP a `RATE_LIMIT_MAX` requisições a cada `RATE_LIMIT_TTL_MS` milissegundos; o padrão é 100 requisições por minuto. Redis mantém os contadores compartilhados entre instâncias. As rotas públicas de autenticação possuem limites mais restritivos:
@@ -42,10 +48,29 @@ Todas as rotas são limitadas por IP a `RATE_LIMIT_MAX` requisições a cada `RA
 
 Após 5 credenciais inválidas para a combinação e-mail + IP, login aplica espera gradual: 5 minutos, 15 minutos e 1 hora. Um login válido zera o contador. Ao exceder um limite, a API responde `429 Too Many Requests` no formato padrão de erro. Configure `REDIS_URL` para execução local; no Docker ela é definida automaticamente.
 
+## Testes automatizados
+
+Execute a suíte unitária sem depender de MongoDB, Redis ou Docker:
+
+```bash
+npm test
+npm run test:cov
+```
+
+A cobertura atual valida regras de Auth, Rate Limit, Users e RBAC: e-mail duplicado, login inválido, bloqueio após cinco falhas, quota de cadastro, role padrão `user` e erros de role inexistente/duplicada. Use `npm run test:watch` durante o desenvolvimento.
+
+## Auditoria
+
+`GET /api/v1/audit-logs` exige `audit:read` e aceita `page`, `limit`, `actorId`, `action`, `resource`, `resourceId`, `status`, `from` e `to`. Datas devem estar em ISO 8601. Alterações de RBAC e eventos de autenticação são registrados com contexto da requisição.
+
+## CI e integração
+
+O workflow `.github/workflows/ci.yml` compila, executa lint e testes unitários para os dois templates em cada push e Pull Request. Depois sobe Docker, executa seed e valida health, login, refresh por cookie, RBAC, auditoria, logout e rate limit. Localmente, com a API Docker em execução e seed aplicado, use `docker compose exec api npm run test:integration`.
+
 ## API e testes manuais
 
 Importe `postman/api-mongo.postman_collection.json` no Postman. A coleção salva access e refresh tokens automaticamente após login/refresh.
 
 ## Docker
 
-Use `MONGODB_URI=mongodb://mongo:27017/nest_api` no `.env` e execute `docker compose up --build`. Redis também sobe automaticamente. Em seguida, rode `docker compose exec api npm run seed:rbac` e `docker compose exec api npm run seed:admin`.
+Use `MONGODB_URI=mongodb://mongo:27017/nest_api` no `.env` e execute `docker compose up --build`. Redis também sobe automaticamente. Em seguida, rode `docker compose exec api npm run seed`.

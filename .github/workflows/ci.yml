@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    name: Quality (${{ matrix.template }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        template: [api-mongo, api-postgres]
+    defaults:
+      run:
+        working-directory: templates/${{ matrix.template }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: templates/${{ matrix.template }}/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm run lint
+      - run: npm test -- --runInBand
+
+  integration:
+    name: Integration (${{ matrix.template }})
+    runs-on: ubuntu-latest
+    needs: quality
+    strategy:
+      fail-fast: false
+      matrix:
+        template: [api-mongo, api-postgres]
+    defaults:
+      run:
+        working-directory: templates/${{ matrix.template }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp .env.example .env
+      - run: docker compose up --build -d
+      - if: matrix.template == 'api-postgres'
+        run: docker compose exec -T api npx prisma migrate deploy
+      - run: docker compose exec -T api npm run seed
+      - run: docker compose exec -T api npm run test:integration
+      - if: failure()
+        run: docker compose logs
+      - if: always()
+        run: docker compose down -v --remove-orphans

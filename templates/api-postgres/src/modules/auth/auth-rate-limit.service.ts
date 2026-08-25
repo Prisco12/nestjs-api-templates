@@ -42,7 +42,7 @@ export class AuthRateLimitService {
     const failures = await this.rateLimit.client.incr(baseKey);
     if (failures === 1) await this.rateLimit.client.expire(baseKey, 86_400);
     const lockSeconds =
-      failures >= 16 ? 3_600 : failures >= 11 ? 900 : failures >= 6 ? 300 : 0;
+      failures >= 16 ? 3_600 : failures >= 11 ? 900 : failures >= 5 ? 300 : 0;
     if (lockSeconds)
       await this.rateLimit.client.set(
         this.key(`login:lock:${email}`, ip),
