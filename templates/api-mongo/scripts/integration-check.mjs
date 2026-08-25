@@ -15,8 +15,24 @@ const assertStatus = (response, expected, label) => {
   }
 };
 
-const health = await request('/health');
-assertStatus(health, 200, 'health');
+const waitForHealth = async () => {
+  let lastStatus = 'unreachable';
+  let lastBody = '';
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    try {
+      const response = await request('/health');
+      if (response.status === 200) return;
+      lastStatus = response.status;
+      lastBody = await response.text();
+    } catch (error) {
+      lastStatus = error instanceof Error ? error.message : 'unreachable';
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+  }
+  throw new Error(`health did not become ready: ${lastStatus} ${lastBody}`);
+};
+
+await waitForHealth();
 
 const login = await request('/auth/login', {
   method: 'POST',
