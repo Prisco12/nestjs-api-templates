@@ -3,6 +3,7 @@ const baseUrl = process.env.API_BASE_URL ?? 'http://localhost:3000/api/v1';
 const request = (path, options = {}) =>
   fetch(`${baseUrl}${path}`, {
     ...options,
+    signal: AbortSignal.timeout(5_000),
     headers: {
       'content-type': 'application/json',
       ...(options.headers ?? {}),
