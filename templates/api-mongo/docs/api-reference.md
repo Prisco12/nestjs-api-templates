@@ -7,6 +7,10 @@ Prefixo: `/api/v1`. Respostas de sucesso usam `success`, `data` e `meta`.
 - `GET /health`
 - `GET /health/ready`
 - `POST /auth/register`
+- `POST /auth/verify-email`
+- `POST /auth/resend-verification`
+- `POST /auth/forgot-password`
+- `POST /auth/reset-password`
 - `POST /auth/login`
 - `POST /auth/refresh`
 
@@ -31,11 +35,7 @@ Importe a coleção em `postman/api-mongo.postman_collection.json` para exemplos
 { "email": "admin@example.com", "password": "ChangeMe123!" }
 ```
 
-`POST /auth/refresh`:
-
-```json
-{ "refreshToken": "<tokenId>.<secret>" }
-```
+`POST /auth/refresh` não recebe body; o refresh token é lido do cookie HttpOnly.
 
 `PUT /rbac/roles/manager/permissions`:
 

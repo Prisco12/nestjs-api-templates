@@ -8,7 +8,9 @@
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:3000/api/v1" },
     { "key": "accessToken", "value": "" },
-    { "key": "userId", "value": "" }
+    { "key": "userId", "value": "" },
+    { "key": "verificationToken", "value": "paste-token-from-mailpit" },
+    { "key": "passwordResetToken", "value": "paste-token-from-mailpit" }
   ],
   "item": [
     {
@@ -34,9 +36,45 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"ChangeMe123!\"\n}"
+              "raw": "{\n  \"email\": \"new.user@example.com\",\n  \"password\": \"ChangeMe123!\"\n}"
             },
             "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "Verify email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{verificationToken}}\"\n}" },
+            "url": "{{baseUrl}}/auth/verify-email"
+          }
+        },
+        {
+          "name": "Resend verification",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"new.user@example.com\"\n}" },
+            "url": "{{baseUrl}}/auth/resend-verification"
+          }
+        },
+        {
+          "name": "Forgot password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"new.user@example.com\"\n}" },
+            "url": "{{baseUrl}}/auth/forgot-password"
+          }
+        },
+        {
+          "name": "Reset password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{passwordResetToken}}\",\n  \"password\": \"NovaSenha123!\"\n}" },
+            "url": "{{baseUrl}}/auth/reset-password"
           }
         },
         {
@@ -216,6 +254,16 @@
               { "key": "Authorization", "value": "Bearer {{accessToken}}" }
             ],
             "url": "{{baseUrl}}/audit-logs?page=1&limit=20"
+          }
+        },
+        {
+          "name": "List successful logins",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": "{{baseUrl}}/audit-logs?page=1&limit=20&action=AUTH_LOGIN_SUCCESS&status=SUCCESS"
           }
         }
       ]

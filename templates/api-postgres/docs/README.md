@@ -17,6 +17,19 @@ NestJS, PostgreSQL, Prisma, JWT, Argon2, Pino, Swagger, Docker e Postman.
 
 Após esta alteração, quem se cadastra em `POST /api/v1/auth/register` recebe automaticamente a role `user`. Isso exige que o seed tenha sido executado.
 
+## Verificação de e-mail e recuperação de senha
+
+O cadastro cria o usuário com `emailVerifiedAt = null`, gera um token válido por 24 horas e envia o link por SMTP. O login só é liberado depois de `POST /api/v1/auth/verify-email`. Apenas o hash do token é persistido, e seu uso é único.
+
+- `POST /api/v1/auth/verify-email`: confirma o token recebido por e-mail;
+- `POST /api/v1/auth/resend-verification`: substitui o token anterior e reenvia o e-mail;
+- `POST /api/v1/auth/forgot-password`: sempre responde `204`, evitando enumeração de contas;
+- `POST /api/v1/auth/reset-password`: usa token válido por uma hora, altera a senha e revoga todas as sessões.
+
+Cadastro e reset exigem 12 caracteres, com maiúscula, minúscula, número e símbolo. No Docker, abra o Mailpit em `http://localhost:8025` e copie do link o valor após `token=` para a variável correspondente da coleção Postman.
+
+Em produção, configure `MAIL_HOST`, `MAIL_PORT`, `MAIL_FROM`, `MAIL_SECURE` e, quando o provedor exigir autenticação, `MAIL_USER` e `MAIL_PASSWORD`. `FRONTEND_URL` deve apontar para a URL pública do frontend que receberá os links. O frontend lê o token da URL e chama o endpoint `POST` correspondente da API.
+
 ## Administração de roles e permissões
 
 Todos os endpoints abaixo exigem um access token com `roles:manage`. O administrador criado pelo seed recebe essa permissão após executar o seed e fazer login novamente.
@@ -62,7 +75,9 @@ A cobertura atual valida regras de Auth, Rate Limit, Users e RBAC: e-mail duplic
 
 ## Auditoria
 
-`GET /api/v1/audit-logs` exige `audit:read` e aceita `page`, `limit`, `actorId`, `action`, `resource`, `resourceId`, `status`, `from` e `to`. Datas devem estar em ISO 8601. Alterações de RBAC e eventos de autenticação são registrados com contexto da requisição.
+`GET /api/v1/audit-logs` exige `audit:read` e aceita `page`, `limit`, `actorId`, `action`, `resource`, `resourceId`, `status`, `from` e `to`. Datas devem estar em ISO 8601. A resposta inclui `meta.page`, `meta.limit`, `meta.totalItems`, `meta.totalPages`, `meta.hasNextPage` e `meta.hasPreviousPage`. Alterações de RBAC e eventos de autenticação são registrados com contexto da requisição. Confirmação de e-mail, reenvio da confirmação, solicitação e conclusão da redefinição de senha também geram auditoria. Nos eventos administrativos de RBAC, `before` e `after` guardam um snapshot seguro das roles/permissões antes e depois da alteração; senhas, hashes e tokens nunca são registrados.
+
+`GET /api/v1/users` também usa a mesma paginação. Esta é a convenção para endpoints de listagem novos: o controller recebe `@PaginationParams()`, a service retorna `createPaginatedResult(items, page, limit, totalItems)` e o interceptor coloca os dados de paginação em `meta`.
 
 ## CI e integração
 
@@ -76,4 +91,4 @@ Importe `postman/api-postgres.postman_collection.json` no Postman. A coleção s
 
 ## Docker
 
-Use `DATABASE_URL=postgresql://postgres:postgres@postgres:5432/nest_api?schema=public` no `.env` e execute `docker compose up --build`. Redis também sobe automaticamente. Depois aplique as migrations com `docker compose exec api npx prisma migrate deploy` e execute `docker compose exec api npm run seed`.
+Use `DATABASE_URL=postgresql://postgres:postgres@postgres:5432/nest_api?schema=public` no `.env` e execute `docker compose up --build`. Redis e Mailpit também sobem automaticamente. Depois aplique as migrations com `docker compose exec api npx prisma migrate deploy` e execute `docker compose exec api npm run seed`.

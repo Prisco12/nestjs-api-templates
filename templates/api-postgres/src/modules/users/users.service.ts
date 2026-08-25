@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import { DEFAULT_USER_ROLE } from '../authorization/permission-catalog';
+import { createPaginatedResult } from '../../common/types/pagination';
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
@@ -72,20 +73,92 @@ export class UsersService {
     ]);
     return id;
   }
+  async rolesForAudit(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        roles: { include: { role: { select: { name: true } } } },
+      },
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return {
+      userId: user.id,
+      roles: user.roles.map((item) => item.role.name),
+    };
+  }
+  findAccountTokenUser(id: string) {
+    return this.prisma.user.findUnique({ where: { id } });
+  }
+  setEmailVerificationToken(id: string, tokenHash: string, expiresAt: Date) {
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        emailVerificationTokenHash: tokenHash,
+        emailVerificationTokenExpiresAt: expiresAt,
+      },
+    });
+  }
+  confirmEmail(id: string) {
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        emailVerifiedAt: new Date(),
+        emailVerificationTokenHash: null,
+        emailVerificationTokenExpiresAt: null,
+      },
+    });
+  }
+  setPasswordResetToken(id: string, tokenHash: string, expiresAt: Date) {
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        passwordResetTokenHash: tokenHash,
+        passwordResetTokenExpiresAt: expiresAt,
+      },
+    });
+  }
+  resetPassword(id: string, passwordHash: string) {
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        passwordHash,
+        passwordResetTokenHash: null,
+        passwordResetTokenExpiresAt: null,
+        authorizationVersion: { increment: 1 },
+      },
+    });
+  }
   async me(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      select: { id: true, email: true, isActive: true, createdAt: true },
+      select: {
+        id: true,
+        email: true,
+        emailVerifiedAt: true,
+        isActive: true,
+        createdAt: true,
+      },
     });
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
-  list(page: number, limit: number) {
-    return this.prisma.user.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
-      select: { id: true, email: true, isActive: true, createdAt: true },
-      orderBy: { createdAt: 'desc' },
-    });
+  async list(page: number, limit: number) {
+    const [users, totalItems] = await this.prisma.$transaction([
+      this.prisma.user.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          id: true,
+          email: true,
+          emailVerifiedAt: true,
+          isActive: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.user.count(),
+    ]);
+    return createPaginatedResult(users, page, limit, totalItems);
   }
 }

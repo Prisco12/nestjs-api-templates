@@ -8,6 +8,11 @@ export class User {
   @Prop({ required: true }) passwordHash!: string;
   @Prop({ default: true }) isActive!: boolean;
   @Prop({ default: 1 }) authorizationVersion!: number;
+  @Prop() emailVerifiedAt?: Date;
+  @Prop() emailVerificationTokenHash?: string;
+  @Prop() emailVerificationTokenExpiresAt?: Date;
+  @Prop() passwordResetTokenHash?: string;
+  @Prop() passwordResetTokenExpiresAt?: Date;
   @Prop({ type: [{ type: Types.ObjectId, ref: Role.name }], default: [] })
   roles!: Types.ObjectId[];
   createdAt!: Date;

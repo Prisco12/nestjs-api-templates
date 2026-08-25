@@ -5,8 +5,10 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class SetUserRolesDto {
+  @ApiProperty({ example: ['manager'] })
   @IsArray()
   @ArrayUnique()
   @IsString({ each: true })

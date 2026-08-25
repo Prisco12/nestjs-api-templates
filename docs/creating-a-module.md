@@ -10,6 +10,7 @@ Exemplo: `products`.
 6. Adicione permissões no `modules/authorization/permission-catalog.ts`, por exemplo `products:read`, `products:create`, `products:update` e `products:delete`.
 7. Proteja cada rota com `@Permissions(Permission.PRODUCTS_READ)`. Rode o seed e use RBAC para associar as novas permissões às roles desejadas.
 8. Crie auditoria para criação, edição e exclusão, sem registrar dados sensíveis.
-9. Atualize Swagger, coleção Postman, testes unitários/e2e e `api-reference.md` na mesma alteração.
+9. Para rotas de listagem, receba `@PaginationParams() pagination: PaginationParams` no controller. A service deve consultar os itens e o total, retornando `createPaginatedResult(items, pagination.page, pagination.limit, totalItems)`. O interceptor inclui os dados de paginação em `meta`.
+10. Atualize Swagger, coleção Postman, testes unitários/e2e e `api-reference.md` na mesma alteração.
 
-Checklist: build passa, migration aplicada (PostgreSQL), seed sincronizado, rota protegida, Postman atualizado e documentação revisada.
+Checklist: build passa, migration aplicada (PostgreSQL), seed sincronizado, rota protegida, paginação aplicada às listas, Postman atualizado e documentação revisada.

@@ -28,7 +28,11 @@ async function main() {
   let user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
     user = await prisma.user.create({
-      data: { email, passwordHash: await argon2.hash(password) },
+      data: {
+        email,
+        passwordHash: await argon2.hash(password),
+        emailVerifiedAt: new Date(),
+      },
     });
     await prisma.userRole.create({
       data: { userId: user.id, roleId: adminRole.id },
@@ -54,6 +58,14 @@ async function main() {
         `Administrator already exists for ${email}; password was not changed`,
       );
     }
+  }
+
+  if (!user.emailVerifiedAt) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { emailVerifiedAt: new Date() },
+    });
+    console.log(`Administrator email marked as verified for ${email}`);
   }
 
   await prisma.$disconnect();

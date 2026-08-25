@@ -31,6 +31,7 @@ async function main() {
           email: { type: String, unique: true, lowercase: true },
           passwordHash: String,
           isActive: { type: Boolean, default: true },
+          emailVerifiedAt: Date,
           authorizationVersion: { type: Number, default: 1 },
           roles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Role' }],
         },
@@ -48,6 +49,7 @@ async function main() {
     user = await UserModel.create({
       email,
       passwordHash: await argon2.hash(password),
+      emailVerifiedAt: new Date(),
       roles: [adminRole._id],
     });
     console.log(`Administrator created for ${email}`);
@@ -62,6 +64,12 @@ async function main() {
     console.log(
       `Administrator already exists for ${email}; password was not changed`,
     );
+  }
+
+  if (!user.emailVerifiedAt) {
+    user.emailVerifiedAt = new Date();
+    await user.save();
+    console.log(`Administrator email marked as verified for ${email}`);
   }
 
   await mongoose.disconnect();

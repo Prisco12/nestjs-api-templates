@@ -11,10 +11,12 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { RefreshTokenCleanupService } from './refresh-token-cleanup.service';
 import { AuthRateLimitService } from './auth-rate-limit.service';
+import { EmailModule } from '../../infrastructure/email/email.module';
 
 @Module({
   imports: [
     ConfigModule,
+    EmailModule,
     UsersModule,
     PassportModule,
     JwtModule.registerAsync({

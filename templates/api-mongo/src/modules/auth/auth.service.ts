@@ -1,6 +1,9 @@
 import {
+  BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -17,13 +20,17 @@ import { UsersService } from '../users/users.service';
 import { AuditService } from '../audit/audit.service';
 import { AuditAction, AuditContext } from '../audit/audit.types';
 import { AuthRateLimitService } from './auth-rate-limit.service';
+import { EmailService } from '../../infrastructure/email/email.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly users: UsersService,
     private readonly audit: AuditService,
     private readonly rateLimit: AuthRateLimitService,
+    private readonly email: EmailService,
     @InjectModel(RefreshToken.name)
     private readonly refreshTokens: Model<RefreshToken>,
     private readonly jwt: JwtService,
@@ -52,7 +59,12 @@ export class AuthService {
       after: { email: user.email },
       ...context,
     });
-    return { id: user._id.toString(), email: user.email };
+    await this.sendEmailVerification(user._id.toString(), user.email);
+    return {
+      id: user._id.toString(),
+      email: user.email,
+      emailVerificationRequired: true,
+    };
   }
   async login(input: LoginDto, context: AuditContext) {
     const email = input.email.trim().toLowerCase();
@@ -74,6 +86,8 @@ export class AuthService {
       });
       throw new UnauthorizedException('Invalid credentials');
     }
+    if (!user.emailVerifiedAt)
+      throw new ForbiddenException('Email verification required');
     await this.rateLimit.clearLoginFailures(email, ip);
     await this.refreshTokens.deleteMany({
       userId: user._id,
@@ -104,6 +118,7 @@ export class AuthService {
       stored.revokedAt ||
       stored.expiresAt <= new Date() ||
       !user ||
+      !user.emailVerifiedAt ||
       !(await argon2.verify(stored.tokenHash, secret))
     )
       throw new UnauthorizedException('Invalid refresh token');
@@ -135,6 +150,140 @@ export class AuthService {
       status: 'SUCCESS',
       ...context,
     });
+  }
+
+  async verifyEmail(token: string, context: AuditContext) {
+    const user = await this.validAccountToken(token, 'emailVerification');
+    if (user.emailVerifiedAt) return;
+    const userId = user._id.toString();
+    await this.users.confirmEmail(userId);
+    await this.audit.record({
+      actorId: userId,
+      action: AuditAction.AUTH_EMAIL_VERIFIED,
+      resource: 'users',
+      resourceId: userId,
+      status: 'SUCCESS',
+      ...context,
+    });
+  }
+
+  async resendVerification(emailInput: string, context: AuditContext) {
+    const email = emailInput.trim().toLowerCase();
+    const user = await this.users.findByEmailForAuth(email);
+    if (!user || !user.isActive || user.emailVerifiedAt) return;
+    const userId = user._id.toString();
+    await this.sendEmailVerification(userId, user.email);
+    await this.audit.record({
+      actorId: userId,
+      action: AuditAction.AUTH_VERIFICATION_RESENT,
+      resource: 'users',
+      resourceId: userId,
+      status: 'SUCCESS',
+      ...context,
+    });
+  }
+
+  async forgotPassword(emailInput: string, context: AuditContext) {
+    const email = emailInput.trim().toLowerCase();
+    const user = await this.users.findByEmailForAuth(email);
+    if (!user || !user.isActive || !user.emailVerifiedAt) return;
+    const userId = user._id.toString();
+    const token = await this.createAccountToken(
+      userId,
+      (hash, expiresAt) =>
+        this.users.setPasswordResetToken(userId, hash, expiresAt),
+      60 * 60 * 1000,
+    );
+    await this.deliverEmail(
+      this.email.sendPasswordReset(user.email, token),
+      'password reset',
+    );
+    await this.audit.record({
+      actorId: userId,
+      action: AuditAction.AUTH_PASSWORD_RESET_REQUESTED,
+      resource: 'users',
+      resourceId: userId,
+      status: 'SUCCESS',
+      ...context,
+    });
+  }
+
+  async resetPassword(token: string, password: string, context: AuditContext) {
+    const user = await this.validAccountToken(token, 'passwordReset');
+    const userId = user._id.toString();
+    await this.users.resetPassword(userId, await argon2.hash(password));
+    await this.refreshTokens.deleteMany({ userId });
+    await this.audit.record({
+      actorId: userId,
+      action: AuditAction.AUTH_PASSWORD_RESET_COMPLETED,
+      resource: 'users',
+      resourceId: userId,
+      status: 'SUCCESS',
+      ...context,
+    });
+  }
+
+  private async sendEmailVerification(userId: string, email: string) {
+    const token = await this.createAccountToken(
+      userId,
+      (hash, expiresAt) =>
+        this.users.setEmailVerificationToken(userId, hash, expiresAt),
+      24 * 60 * 60 * 1000,
+    );
+    await this.deliverEmail(
+      this.email.sendVerification(email, token),
+      'email verification',
+    );
+  }
+
+  private async deliverEmail(delivery: Promise<unknown>, purpose: string) {
+    try {
+      await delivery;
+    } catch (error) {
+      this.logger.error(
+        `Unable to send ${purpose} email`,
+        error instanceof Error ? error.stack : undefined,
+      );
+    }
+  }
+
+  private async createAccountToken(
+    userId: string,
+    persist: (hash: string, expiresAt: Date) => Promise<unknown>,
+    ttlMs: number,
+  ) {
+    const secret = randomBytes(32).toString('base64url');
+    await persist(await argon2.hash(secret), new Date(Date.now() + ttlMs));
+    return `${userId}.${secret}`;
+  }
+
+  private async validAccountToken(
+    token: string,
+    type: 'emailVerification' | 'passwordReset',
+  ) {
+    const separator = token.indexOf('.');
+    if (separator < 1)
+      throw new BadRequestException('Invalid or expired token');
+    const userId = token.slice(0, separator);
+    const secret = token.slice(separator + 1);
+    const user = await this.users.findAccountTokenUser(userId);
+    const hash =
+      type === 'emailVerification'
+        ? user?.emailVerificationTokenHash
+        : user?.passwordResetTokenHash;
+    const expiresAt =
+      type === 'emailVerification'
+        ? user?.emailVerificationTokenExpiresAt
+        : user?.passwordResetTokenExpiresAt;
+    if (
+      !user ||
+      !hash ||
+      !expiresAt ||
+      expiresAt <= new Date() ||
+      !(await argon2.verify(hash, secret))
+    )
+      throw new BadRequestException('Invalid or expired token');
+    return user;
   }
   private toAuthenticatedUser(user: any): AuthenticatedUser {
     const permissions = (user.roles ?? []).flatMap(

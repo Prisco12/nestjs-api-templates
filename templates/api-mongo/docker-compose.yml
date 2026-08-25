@@ -9,8 +9,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     environment:
       REDIS_URL: redis://redis:6379
+      MAIL_HOST: mailpit
 
   mongo:
     image: mongo:8
@@ -35,6 +38,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - '1025:1025'
+      - '8025:8025'
 
 volumes:
   mongo_data:

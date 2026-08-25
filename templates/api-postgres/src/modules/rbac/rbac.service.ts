@@ -57,6 +57,7 @@ export class RbacService {
         resource: 'roles',
         resourceId: role.name,
         status: 'SUCCESS',
+        before: { exists: false },
         after: role,
       });
       return role;
@@ -70,8 +71,17 @@ export class RbacService {
   async setRolePermissions(roleName: string, codes: string[], actorId: string) {
     const role = await this.prisma.role.findUnique({
       where: { name: roleName },
+      include: {
+        permissions: {
+          include: { permission: { select: { code: true } } },
+        },
+      },
     });
     if (!role) throw new NotFoundException('Role not found');
+    const before = {
+      name: role.name,
+      permissions: role.permissions.map((item) => item.permission.code),
+    };
     const permissions = await this.prisma.permission.findMany({
       where: { code: { in: codes } },
     });
@@ -94,9 +104,10 @@ export class RbacService {
       actorId,
       action: AuditAction.RBAC_ROLE_PERMISSIONS_UPDATED,
       resource: 'roles',
-      resourceId: role.id,
-      status: 'SUCCESS',
-      after: result,
+        resourceId: role.id,
+        status: 'SUCCESS',
+        before,
+        after: result,
     });
     return result;
   }
@@ -107,6 +118,7 @@ export class RbacService {
     });
     if (roles.length !== roleNames.length)
       throw new NotFoundException('One or more roles were not found');
+    const before = await this.users.rolesForAudit(userId);
     const id = await this.users.replaceRoles(
       userId,
       roles.map((role) => role.id),
@@ -116,9 +128,10 @@ export class RbacService {
       actorId,
       action: AuditAction.RBAC_USER_ROLES_UPDATED,
       resource: 'users',
-      resourceId: id,
-      status: 'SUCCESS',
-      after: result,
+        resourceId: id,
+        status: 'SUCCESS',
+        before,
+        after: result,
     });
     return result;
   }

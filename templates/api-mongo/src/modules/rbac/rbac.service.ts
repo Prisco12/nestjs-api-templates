@@ -50,6 +50,7 @@ export class RbacService {
         resource: 'roles',
         resourceId: role._id.toString(),
         status: 'SUCCESS',
+        before: { exists: false },
         after: result,
       });
       return result;
@@ -65,6 +66,12 @@ export class RbacService {
     permissions: string[],
     actorId: string,
   ) {
+    const currentRole = await this.roles.findOne({ name }).lean();
+    if (!currentRole) throw new NotFoundException('Role not found');
+    const before = {
+      name: currentRole.name,
+      permissions: currentRole.permissions,
+    };
     const role = await this.roles.findOneAndUpdate(
       { name },
       { $set: { permissions } },
@@ -77,9 +84,10 @@ export class RbacService {
       actorId,
       action: AuditAction.RBAC_ROLE_PERMISSIONS_UPDATED,
       resource: 'roles',
-      resourceId: role._id.toString(),
-      status: 'SUCCESS',
-      after: result,
+        resourceId: role._id.toString(),
+        status: 'SUCCESS',
+        before,
+        after: result,
     });
     return result;
   }
@@ -88,6 +96,7 @@ export class RbacService {
     const roles = await this.roles.find({ name: { $in: roleNames } }).exec();
     if (roles.length !== roleNames.length)
       throw new NotFoundException('One or more roles were not found');
+    const before = await this.users.rolesForAudit(userId);
     const id = await this.users.replaceRoles(
       userId,
       roles.map((role) => role._id),
@@ -97,9 +106,10 @@ export class RbacService {
       actorId,
       action: AuditAction.RBAC_USER_ROLES_UPDATED,
       resource: 'users',
-      resourceId: id,
-      status: 'SUCCESS',
-      after: result,
+        resourceId: id,
+        status: 'SUCCESS',
+        before,
+        after: result,
     });
     return result;
   }

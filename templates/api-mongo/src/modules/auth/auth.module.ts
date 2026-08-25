@@ -15,9 +15,11 @@ import {
   RefreshTokenSchema,
 } from './schemas/refresh-token.schema';
 import { AuthRateLimitService } from './auth-rate-limit.service';
+import { EmailModule } from '../../infrastructure/email/email.module';
 @Module({
   imports: [
     ConfigModule,
+    EmailModule,
     PassportModule,
     UsersModule,
     MongooseModule.forFeature([
