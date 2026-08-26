@@ -12,8 +12,9 @@ services:
       mailpit:
         condition: service_started
     environment:
+      MONGODB_URI: mongodb://mongo:27017/nest_api
       REDIS_URL: redis://redis:6379
-      MAIL_HOST: mailpit
+      MAIL_HOST: ${MAIL_HOST:-mailpit}
 
   mongo:
     image: mongo:8

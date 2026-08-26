@@ -12,8 +12,9 @@ services:
       mailpit:
         condition: service_started
     environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/nest_api?schema=public
       REDIS_URL: redis://redis:6379
-      MAIL_HOST: mailpit
+      MAIL_HOST: ${MAIL_HOST:-mailpit}
 
   postgres:
     image: postgres:17

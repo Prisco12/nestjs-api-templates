@@ -178,13 +178,13 @@ export class AuthService {
     const email = emailInput.trim().toLowerCase();
     const user = await this.users.findByEmailForAuth(email);
     if (!user || !user.isActive || user.emailVerifiedAt) return;
-    await this.sendEmailVerification(user.id, user.email);
+    const delivered = await this.sendEmailVerification(user.id, user.email);
     await this.audit.record({
       actorId: user.id,
       action: AuditAction.AUTH_VERIFICATION_RESENT,
       resource: 'users',
       resourceId: user.id,
-      status: 'SUCCESS',
+      status: delivered ? 'SUCCESS' : 'FAILURE',
       ...context,
     });
   }
@@ -199,7 +199,7 @@ export class AuthService {
         this.users.setPasswordResetToken(user.id, hash, expiresAt),
       60 * 60 * 1000,
     );
-    await this.deliverEmail(
+    const delivered = await this.deliverEmail(
       this.email.sendPasswordReset(user.email, token),
       'password reset',
     );
@@ -208,7 +208,7 @@ export class AuthService {
       action: AuditAction.AUTH_PASSWORD_RESET_REQUESTED,
       resource: 'users',
       resourceId: user.id,
-      status: 'SUCCESS',
+      status: delivered ? 'SUCCESS' : 'FAILURE',
       ...context,
     });
   }
@@ -234,7 +234,7 @@ export class AuthService {
         this.users.setEmailVerificationToken(userId, hash, expiresAt),
       24 * 60 * 60 * 1000,
     );
-    await this.deliverEmail(
+    return this.deliverEmail(
       this.email.sendVerification(email, token),
       'email verification',
     );
@@ -242,12 +242,17 @@ export class AuthService {
 
   private async deliverEmail(delivery: Promise<unknown>, purpose: string) {
     try {
-      await delivery;
+      const result = (await delivery) as { messageId?: string };
+      this.logger.log(
+        `${purpose} email accepted by SMTP${result?.messageId ? ` (${result.messageId})` : ''}`,
+      );
+      return true;
     } catch (error) {
       this.logger.error(
         `Unable to send ${purpose} email`,
         error instanceof Error ? error.stack : undefined,
       );
+      return false;
     }
   }
 

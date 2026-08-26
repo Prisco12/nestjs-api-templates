@@ -9,6 +9,10 @@
     { "key": "baseUrl", "value": "http://localhost:3000/api/v1" },
     { "key": "accessToken", "value": "" },
     { "key": "userId", "value": "" },
+    { "key": "userEmail", "value": "new.user@example.com" },
+    { "key": "userPassword", "value": "ChangeMe123!" },
+    { "key": "adminEmail", "value": "admin@example.com" },
+    { "key": "adminPassword", "value": "ChangeMe123!" },
     { "key": "verificationToken", "value": "paste-token-from-mailpit" },
     { "key": "passwordResetToken", "value": "paste-token-from-mailpit" }
   ],
@@ -36,7 +40,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"new.user@example.com\",\n  \"password\": \"ChangeMe123!\"\n}"
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}"
             },
             "url": "{{baseUrl}}/auth/register"
           }
@@ -55,7 +59,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"new.user@example.com\"\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{userEmail}}\"\n}" },
             "url": "{{baseUrl}}/auth/resend-verification"
           }
         },
@@ -64,7 +68,7 @@
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"email\": \"new.user@example.com\"\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{userEmail}}\"\n}" },
             "url": "{{baseUrl}}/auth/forgot-password"
           }
         },
@@ -97,7 +101,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"ChangeMe123!\"\n}"
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
             },
             "url": "{{baseUrl}}/auth/login"
           }

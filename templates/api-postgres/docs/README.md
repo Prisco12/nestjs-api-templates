@@ -30,6 +30,8 @@ Cadastro e reset exigem 12 caracteres, com maiúscula, minúscula, número e sí
 
 Em produção, configure `MAIL_HOST`, `MAIL_PORT`, `MAIL_FROM`, `MAIL_SECURE` e, quando o provedor exigir autenticação, `MAIL_USER` e `MAIL_PASSWORD`. `FRONTEND_URL` deve apontar para a URL pública do frontend que receberá os links. O frontend lê o token da URL e chama o endpoint `POST` correspondente da API.
 
+O arquivo `.env.example` usa Mailpit (`mailpit:1025`, sem TLS) e nunca deve conter credenciais reais. Para SMTP externo, altere somente o `.env`, que não é versionado. O Compose respeita `MAIL_HOST` e usa Mailpit apenas como padrão. `npm run seed` não envia e-mails. Nos logs da API, `email accepted by SMTP` confirma que o servidor SMTP aceitou a mensagem; `Unable to send` contém a causa técnica. `ECONNREFUSED` para um IP público nas portas 465/587 indica bloqueio ou recusa de rede antes da autenticação, exigindo liberação da porta ou um provedor por API HTTPS.
+
 ## Administração de roles e permissões
 
 Todos os endpoints abaixo exigem um access token com `roles:manage`. O administrador criado pelo seed recebe essa permissão após executar o seed e fazer login novamente.
