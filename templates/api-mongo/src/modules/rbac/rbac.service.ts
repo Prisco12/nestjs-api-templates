@@ -54,8 +54,13 @@ export class RbacService {
         after: result,
       });
       return result;
-    } catch (error: any) {
-      if (error?.code === 11000)
+    } catch (error: unknown) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        error.code === 11000
+      )
         throw new ConflictException('Role already exists');
       throw error;
     }
@@ -84,10 +89,10 @@ export class RbacService {
       actorId,
       action: AuditAction.RBAC_ROLE_PERMISSIONS_UPDATED,
       resource: 'roles',
-        resourceId: role._id.toString(),
-        status: 'SUCCESS',
-        before,
-        after: result,
+      resourceId: role._id.toString(),
+      status: 'SUCCESS',
+      before,
+      after: result,
     });
     return result;
   }

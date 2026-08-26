@@ -1,4 +1,5 @@
 import { AuditService } from './audit.service';
+import { mockDependency } from '../../../test/support/mock-dependency';
 
 describe('AuditService', () => {
   const prisma = {
@@ -12,7 +13,9 @@ describe('AuditService', () => {
     prisma.$transaction.mockImplementation((operations: Promise<unknown>[]) =>
       Promise.all(operations),
     );
-    service = new AuditService(prisma as any);
+    service = new AuditService(
+      mockDependency<ConstructorParameters<typeof AuditService>[0]>(prisma),
+    );
   });
 
   it('normaliza beforeData/afterData e retorna paginação com filtros', async () => {

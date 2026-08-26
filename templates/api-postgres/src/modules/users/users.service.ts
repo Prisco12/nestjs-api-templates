@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import { DEFAULT_USER_ROLE } from '../authorization/permission-catalog';
 import { createPaginatedResult } from '../../common/types/pagination';
+import { UserForAuthentication } from './domain/user-for-authentication';
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
@@ -28,7 +29,7 @@ export class UsersService {
       select: { id: true, email: true },
     });
   }
-  findByEmailForAuth(email: string) {
+  findByEmailForAuth(email: string): Promise<UserForAuthentication | null> {
     return this.prisma.user.findUnique({
       where: { email },
       include: {

@@ -17,6 +17,8 @@ src/modules/<modulo>/
 
 Para módulos pequenos, as camadas podem ser mantidas mais compactas. A divisão é obrigatória apenas quando traz separação real entre regra de negócio e infraestrutura.
 
+Tipos que representam conceitos do negócio ficam no módulo responsável. Por exemplo, o contrato de usuário carregado para autenticação está em `modules/users/domain`, porque Users define esse formato e Auth apenas o consome. Tipos de documento Mongoose permanecem junto aos schemas; tipos gerados pelo Prisma permanecem em `generated` e não devem ser editados. Utilitários exclusivos de teste ficam em `test/support`.
+
 ## Convenções HTTP
 
 - Prefixo: `/api`.

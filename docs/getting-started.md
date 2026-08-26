@@ -83,6 +83,8 @@ npm test
 npm run build
 ```
 
+O lint usa `--max-warnings=0`: erros e warnings interrompem a execução local e a CI. Os mocks compartilhados ficam em `test/support`; contratos usados pela regra de negócio pertencem ao diretório `domain` do próprio módulo.
+
 Para validar o fluxo integrado com os containers:
 
 ```bash

@@ -1,5 +1,6 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { RbacService } from './rbac.service';
+import { mockDependency } from '../../../test/support/mock-dependency';
 
 describe('RbacService', () => {
   const roles = {
@@ -19,7 +20,11 @@ describe('RbacService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     audit.record.mockResolvedValue(undefined);
-    service = new RbacService(roles as any, users as any, audit as any);
+    service = new RbacService(
+      mockDependency<ConstructorParameters<typeof RbacService>[0]>(roles),
+      mockDependency<ConstructorParameters<typeof RbacService>[1]>(users),
+      mockDependency<ConstructorParameters<typeof RbacService>[2]>(audit),
+    );
   });
 
   it('converte violação de unicidade em conflito de role', async () => {

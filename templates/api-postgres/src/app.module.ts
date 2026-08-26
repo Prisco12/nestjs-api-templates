@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { randomUUID } from 'node:crypto';
@@ -45,6 +45,7 @@ const prettyLogs = process.env.LOG_PRETTY
       }),
     }),
     LoggerModule.forRoot({
+      forRoutes: [{ path: '/*path', method: RequestMethod.ALL }],
       pinoHttp: {
         level: process.env.LOG_LEVEL ?? 'info',
         quietReqLogger: true,

@@ -1,5 +1,6 @@
 import { ServiceUnavailableException } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { mockDependency } from '../../../test/support/mock-dependency';
 
 describe('UsersService', () => {
   const prisma = {
@@ -10,7 +11,9 @@ describe('UsersService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new UsersService(prisma as any);
+    service = new UsersService(
+      mockDependency<ConstructorParameters<typeof UsersService>[0]>(prisma),
+    );
   });
 
   it('recusa criar usuário quando a role padrão ainda não foi semeada', async () => {

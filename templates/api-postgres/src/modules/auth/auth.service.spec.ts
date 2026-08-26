@@ -2,10 +2,12 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { AuthService } from './auth.service';
+import { mockDependency } from '../../../test/support/mock-dependency';
 
 describe('AuthService', () => {
   const users = {
@@ -42,13 +44,13 @@ describe('AuthService', () => {
     email.sendVerification.mockResolvedValue(undefined);
     email.sendPasswordReset.mockResolvedValue(undefined);
     service = new AuthService(
-      prisma as any,
-      users as any,
-      audit as any,
-      rateLimit as any,
-      email as any,
-      jwt as any,
-      config as any,
+      mockDependency<ConstructorParameters<typeof AuthService>[0]>(prisma),
+      mockDependency<ConstructorParameters<typeof AuthService>[1]>(users),
+      mockDependency<ConstructorParameters<typeof AuthService>[2]>(audit),
+      mockDependency<ConstructorParameters<typeof AuthService>[3]>(rateLimit),
+      mockDependency<ConstructorParameters<typeof AuthService>[4]>(email),
+      mockDependency<ConstructorParameters<typeof AuthService>[5]>(jwt),
+      mockDependency<ConstructorParameters<typeof AuthService>[6]>(config),
     );
   });
 
@@ -193,7 +195,7 @@ describe('AuthService', () => {
       emailVerifiedAt: new Date(),
     });
     email.sendPasswordReset.mockRejectedValue(new Error('SMTP unavailable'));
-    jest.spyOn((service as any).logger, 'error').mockImplementation();
+    jest.spyOn(Logger.prototype, 'error').mockImplementation();
 
     await expect(
       service.forgotPassword('user@example.com', {}),

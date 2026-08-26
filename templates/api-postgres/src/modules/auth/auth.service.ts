@@ -19,6 +19,7 @@ import { AuditService } from '../audit/audit.service';
 import { AuditAction, AuditContext } from '../audit/audit.types';
 import { AuthRateLimitService } from './auth-rate-limit.service';
 import { EmailService } from '../../infrastructure/email/email.service';
+import { UserForAuthentication } from '../users/domain/user-for-authentication';
 
 @Injectable()
 export class AuthService {
@@ -307,12 +308,10 @@ export class AuthService {
     });
   }
 
-  private toAuthenticatedUser(user: any): AuthenticatedUser {
-    const permissions = (user.roles as any[]).flatMap((role: any) =>
-      role.role.permissions.map(
-        (assignment: any) => assignment.permission.code,
-      ),
-    ) as string[];
+  private toAuthenticatedUser(user: UserForAuthentication): AuthenticatedUser {
+    const permissions = user.roles.flatMap(({ role }) =>
+      role.permissions.map(({ permission }) => permission.code),
+    );
     return {
       id: user.id,
       email: user.email,

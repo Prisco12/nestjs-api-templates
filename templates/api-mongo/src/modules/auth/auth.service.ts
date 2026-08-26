@@ -21,6 +21,15 @@ import { AuditService } from '../audit/audit.service';
 import { AuditAction, AuditContext } from '../audit/audit.types';
 import { AuthRateLimitService } from './auth-rate-limit.service';
 import { EmailService } from '../../infrastructure/email/email.service';
+import { UserForAuthentication } from '../users/domain/user-for-authentication';
+
+interface RefreshTokenWithUser {
+  tokenId: string;
+  tokenHash: string;
+  expiresAt: Date;
+  revokedAt?: Date;
+  userId: UserForAuthentication;
+}
 
 @Injectable()
 export class AuthService {
@@ -90,7 +99,7 @@ export class AuthService {
       throw new ForbiddenException('Email verification required');
     await this.rateLimit.clearLoginFailures(email, ip);
     await this.refreshTokens.deleteMany({
-      userId: user._id,
+      userId: user._id.toString(),
       expiresAt: { $lte: new Date() },
     });
     const tokens = await this.issueTokens(this.toAuthenticatedUser(user));
@@ -111,8 +120,9 @@ export class AuthService {
     const stored = await this.refreshTokens
       .findOne({ tokenId })
       .populate({ path: 'userId', populate: { path: 'roles' } })
+      .lean<RefreshTokenWithUser>()
       .exec();
-    const user = (stored as any)?.userId;
+    const user = stored?.userId;
     if (
       !stored ||
       stored.revokedAt ||
@@ -122,8 +132,10 @@ export class AuthService {
       !(await argon2.verify(stored.tokenHash, secret))
     )
       throw new UnauthorizedException('Invalid refresh token');
-    stored.revokedAt = new Date();
-    await stored.save();
+    await this.refreshTokens.updateOne(
+      { tokenId, revokedAt: null },
+      { revokedAt: new Date() },
+    );
     const tokens = await this.issueTokens(this.toAuthenticatedUser(user));
     await this.audit.record({
       actorId: user._id.toString(),
@@ -290,10 +302,8 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired token');
     return user;
   }
-  private toAuthenticatedUser(user: any): AuthenticatedUser {
-    const permissions = (user.roles ?? []).flatMap(
-      (role: any) => role.permissions ?? [],
-    ) as string[];
+  private toAuthenticatedUser(user: UserForAuthentication): AuthenticatedUser {
+    const permissions = user.roles.flatMap((role) => role.permissions);
     return {
       id: user._id.toString(),
       email: user.email,

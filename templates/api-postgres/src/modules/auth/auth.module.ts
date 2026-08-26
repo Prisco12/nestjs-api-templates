@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { PermissionsGuard } from '../authorization/guards/permissions.guard';
@@ -23,7 +23,12 @@ import { EmailModule } from '../../infrastructure/email/email.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.getOrThrow<string>('JWT_ACCESS_SECRET'),
-        signOptions: { expiresIn: config.getOrThrow('JWT_ACCESS_TTL') as any },
+        signOptions: {
+          expiresIn:
+            config.getOrThrow<
+              NonNullable<JwtModuleOptions['signOptions']>['expiresIn']
+            >('JWT_ACCESS_TTL'),
+        },
       }),
     }),
   ],

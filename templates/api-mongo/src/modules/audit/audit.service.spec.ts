@@ -1,4 +1,5 @@
 import { AuditService } from './audit.service';
+import { mockDependency } from '../../../test/support/mock-dependency';
 
 describe('AuditService', () => {
   const auditLogs = {
@@ -9,7 +10,9 @@ describe('AuditService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new AuditService(auditLogs as any);
+    service = new AuditService(
+      mockDependency<ConstructorParameters<typeof AuditService>[0]>(auditLogs),
+    );
   });
 
   it('retorna logs normalizados com paginação e filtros', async () => {

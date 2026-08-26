@@ -9,6 +9,7 @@ import { User } from './schemas/user.schema';
 import { Role as RoleSchema } from '../rbac/schemas/role.schema';
 import { DEFAULT_USER_ROLE } from '../authorization/permission-catalog';
 import { createPaginatedResult } from '../../common/types/pagination';
+import { UserForAuthentication } from './domain/user-for-authentication';
 @Injectable()
 export class UsersService {
   constructor(
@@ -32,8 +33,12 @@ export class UsersService {
     });
   }
 
-  findByEmailForAuth(email: string): Promise<any> {
-    return this.users.findOne({ email }).populate('roles').exec();
+  findByEmailForAuth(email: string): Promise<UserForAuthentication | null> {
+    return this.users
+      .findOne({ email })
+      .populate<{ roles: UserForAuthentication['roles'] }>('roles')
+      .lean<UserForAuthentication>()
+      .exec();
   }
 
   async hasCurrentAuthorizationVersion(id: string, version: number) {

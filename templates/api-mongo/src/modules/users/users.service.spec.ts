@@ -1,5 +1,6 @@
 import { ServiceUnavailableException } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { mockDependency } from '../../../test/support/mock-dependency';
 
 describe('UsersService', () => {
   const roles = { findOne: jest.fn() };
@@ -8,7 +9,10 @@ describe('UsersService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new UsersService(users as any, roles as any);
+    service = new UsersService(
+      mockDependency<ConstructorParameters<typeof UsersService>[0]>(users),
+      mockDependency<ConstructorParameters<typeof UsersService>[1]>(roles),
+    );
   });
 
   it('recusa criar usuário quando a role padrão ainda não foi semeada', async () => {

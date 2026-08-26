@@ -61,8 +61,13 @@ export class RbacService {
         after: role,
       });
       return role;
-    } catch (error: any) {
-      if (error.code === 'P2002')
+    } catch (error: unknown) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        error.code === 'P2002'
+      )
         throw new ConflictException('Role already exists');
       throw error;
     }

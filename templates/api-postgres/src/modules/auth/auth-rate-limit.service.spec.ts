@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { AuthRateLimitService } from './auth-rate-limit.service';
+import { mockDependency } from '../../../test/support/mock-dependency';
 
 describe('AuthRateLimitService', () => {
   const values = new Map<string, number>();
@@ -34,7 +35,11 @@ describe('AuthRateLimitService', () => {
   beforeEach(() => {
     values.clear();
     jest.clearAllMocks();
-    service = new AuthRateLimitService(rateLimit as any);
+    service = new AuthRateLimitService(
+      mockDependency<ConstructorParameters<typeof AuthRateLimitService>[0]>(
+        rateLimit,
+      ),
+    );
   });
 
   it('bloqueia a sexta tentativa após cinco falhas', async () => {
