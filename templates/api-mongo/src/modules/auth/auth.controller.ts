@@ -54,6 +54,32 @@ export class AuthController {
   @ApiConflictResponse({
     description: 'Já existe usuário com o e-mail informado.',
   })
+  @ApiBadRequestResponse({
+    description:
+      'Payload inválido. details informa o campo, um código estável e os requisitos ausentes.',
+    schema: {
+      example: {
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Validation failed',
+          details: [
+            {
+              field: 'password',
+              code: 'PASSWORD_TOO_WEAK',
+              message:
+                'Password must contain at least 12 characters, one lowercase letter, one uppercase letter, one special character.',
+            },
+          ],
+        },
+        meta: {
+          requestId: '017df214-c4e1-494a-9dbf-fb625a2726e7',
+          timestamp: '2026-08-26T17:09:19.447Z',
+          path: '/api/v1/auth/register',
+        },
+      },
+    },
+  })
   @ApiTooManyRequestsResponse({
     description: 'Limite de cadastros ou tentativas atingido.',
   })
@@ -106,7 +132,10 @@ export class AuthController {
   @ApiNoContentResponse({
     description: 'Senha redefinida e sessões revogadas.',
   })
-  @ApiBadRequestResponse({ description: 'Token inválido ou expirado.' })
+  @ApiBadRequestResponse({
+    description:
+      'Token inválido/expirado ou senha fora da política informada no DTO.',
+  })
   @Post('reset-password')
   async resetPassword(@Body() dto: ResetPasswordDto, @Req() request: Request) {
     await this.auth.resetPassword(

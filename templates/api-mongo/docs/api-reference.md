@@ -45,6 +45,34 @@ Importe a coleção em `postman/api-mongo.postman_collection.json` para exemplos
 
 Erros seguem `{ "success": false, "error": { "code", "message" }, "meta": { "requestId", "timestamp", "path" } }`. Os principais códigos são `VALIDATION_ERROR`/`BAD_REQUEST` (payload inválido), `UNAUTHORIZED` (token ausente, expirado ou desatualizado), `FORBIDDEN` (permissão ausente), `NOT_FOUND` e `CONFLICT`.
 
+### Validação de senha
+
+Cadastro e redefinição usam a mesma política centralizada: de 12 a 128 caracteres, pelo menos uma letra minúscula, uma maiúscula, um número e um caractere especial. Para `"123123"`, a resposta informa exatamente o que falta:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": [
+      {
+        "field": "password",
+        "code": "PASSWORD_TOO_WEAK",
+        "message": "Password must contain at least 12 characters, one lowercase letter, one uppercase letter, one special character."
+      }
+    ]
+  },
+  "meta": {
+    "requestId": "uuid",
+    "timestamp": "2026-08-26T17:09:19.447Z",
+    "path": "/api/v1/auth/register"
+  }
+}
+```
+
+O frontend deve usar `field` para destacar o input, `code` para tradução/regra de negócio e `message` como fallback legível.
+
 ## Fluxos
 
 `login → access JWT + refresh token → rota protegida → guard valida assinatura e authorizationVersion`.

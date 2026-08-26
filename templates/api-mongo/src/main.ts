@@ -9,6 +9,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { validationExceptionFactory } from './common/validation/validation-exception.factory';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 async function bootstrap() {
@@ -37,6 +38,7 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      exceptionFactory: validationExceptionFactory,
     }),
   );
   app.useGlobalFilters(new GlobalExceptionFilter());

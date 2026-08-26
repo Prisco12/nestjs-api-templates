@@ -22,11 +22,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const exceptionResponse = isHttpException
       ? exception.getResponse()
       : undefined;
+    const exceptionBody =
+      typeof exceptionResponse === 'object' && exceptionResponse
+        ? (exceptionResponse as Record<string, unknown>)
+        : undefined;
     const rawMessage =
-      typeof exceptionResponse === 'object' &&
-      exceptionResponse &&
-      'message' in exceptionResponse
-        ? (exceptionResponse as { message: unknown }).message
+      exceptionBody && 'message' in exceptionBody
+        ? exceptionBody.message
         : isHttpException
           ? exception.message
           : 'Internal server error';
@@ -34,12 +36,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       ? 'Validation failed'
       : rawMessage;
     const code =
-      typeof exceptionResponse === 'object' &&
-      exceptionResponse &&
-      'code' in exceptionResponse
-        ? (exceptionResponse as { code: string }).code
+      exceptionBody && typeof exceptionBody.code === 'string'
+        ? exceptionBody.code
         : (HttpStatus[statusCode] ?? 'INTERNAL_SERVER_ERROR');
-    const details = Array.isArray(rawMessage) ? rawMessage : undefined;
+    const details =
+      exceptionBody && 'details' in exceptionBody
+        ? exceptionBody.details
+        : Array.isArray(rawMessage)
+          ? rawMessage
+          : undefined;
     if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(
         `Unhandled exception on ${request.method} ${request.originalUrl}`,

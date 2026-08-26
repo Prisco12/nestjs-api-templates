@@ -44,6 +44,7 @@
         {
           "name": "Register",
           "request": {
+            "description": "A senha deve ter de 12 a 128 caracteres e conter minúscula, maiúscula, número e símbolo. Em caso de erro, error.details retorna field, code e message.",
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
@@ -83,6 +84,7 @@
         {
           "name": "Reset password",
           "request": {
+            "description": "A nova senha usa a mesma política do cadastro: 12 a 128 caracteres, minúscula, maiúscula, número e símbolo.",
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{passwordResetToken}}\",\n  \"password\": \"NovaSenha123!\"\n}" },

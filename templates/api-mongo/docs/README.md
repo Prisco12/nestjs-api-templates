@@ -27,7 +27,7 @@ O cadastro cria o usuário com `emailVerifiedAt = null`, gera um token válido p
 - `POST /api/v1/auth/forgot-password`: sempre responde `204`, evitando enumeração de contas;
 - `POST /api/v1/auth/reset-password`: usa token válido por uma hora, altera a senha e revoga todas as sessões.
 
-Cadastro e reset exigem 12 caracteres, com maiúscula, minúscula, número e símbolo. No Docker, abra o Mailpit em `http://localhost:8025` e copie do link o valor após `token=` para a variável correspondente da coleção Postman.
+Cadastro e reset exigem de 12 a 128 caracteres, com maiúscula, minúscula, número e símbolo. A política fica centralizada em `src/modules/auth/validation/password-policy.ts`; erros retornam `field`, `code` e uma mensagem com os requisitos ausentes. No Docker, abra o Mailpit em `http://localhost:8025` e copie do link o valor após `token=` para a variável correspondente da coleção Postman.
 
 Em produção, configure `MAIL_HOST`, `MAIL_PORT`, `MAIL_FROM`, `MAIL_SECURE` e, quando o provedor exigir autenticação, `MAIL_USER` e `MAIL_PASSWORD`. `FRONTEND_URL` deve apontar para a URL pública do frontend que receberá os links. O frontend lê o token da URL e chama o endpoint `POST` correspondente da API.
 
