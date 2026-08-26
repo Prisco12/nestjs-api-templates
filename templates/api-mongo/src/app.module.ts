@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { randomUUID } from 'node:crypto';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { LoggerModule } from 'nestjs-pino';
@@ -14,8 +15,13 @@ import { RbacModule } from './modules/rbac/rbac.module';
 import { Request } from 'express';
 import { RedisModule } from './infrastructure/redis/redis.module';
 import { RateLimitModule } from './modules/rate-limit/rate-limit.module';
+import { ObservabilityModule } from './infrastructure/observability/observability.module';
+import { traceLogContext } from './infrastructure/observability/trace-context';
 
 const isProduction = process.env.NODE_ENV === 'production';
+const prettyLogs = process.env.LOG_PRETTY
+  ? process.env.LOG_PRETTY === 'true'
+  : !isProduction;
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
@@ -38,6 +44,18 @@ const isProduction = process.env.NODE_ENV === 'production';
     LoggerModule.forRoot({
       pinoHttp: {
         level: process.env.LOG_LEVEL ?? 'info',
+        quietReqLogger: true,
+        genReqId: (request, response) => {
+          const incomingId = request.headers['x-request-id'];
+          const requestId =
+            typeof incomingId === 'string' && incomingId.length > 0
+              ? incomingId
+              : randomUUID();
+
+          (request as Request).requestId = requestId;
+          response.setHeader('x-request-id', requestId);
+          return requestId;
+        },
         redact: {
           paths: [
             'req.headers.authorization',
@@ -46,12 +64,13 @@ const isProduction = process.env.NODE_ENV === 'production';
           ],
           censor: '[Redacted]',
         },
-        customProps: (request) => ({
-          requestId: (request as Request).requestId,
+        mixin: () => ({
+          service: process.env.OTEL_SERVICE_NAME ?? 'api-mongo',
+          environment: process.env.NODE_ENV ?? 'development',
+          ...traceLogContext(),
         }),
-        transport: isProduction
-          ? undefined
-          : {
+        transport: prettyLogs
+          ? {
               target: 'pino-pretty',
               options: {
                 colorize: true,
@@ -59,13 +78,15 @@ const isProduction = process.env.NODE_ENV === 'production';
                 translateTime: 'SYS:standard',
                 ignore: 'pid,hostname',
               },
-            },
+            }
+          : undefined,
       },
     }),
     HealthModule,
     DatabaseModule,
     RedisModule,
     RateLimitModule,
+    ObservabilityModule,
     AuditModule,
     RbacModule,
     AuthModule,

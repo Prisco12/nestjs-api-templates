@@ -4,6 +4,8 @@
 
 NestJS, MongoDB, Mongoose, JWT, Argon2, Pino, Swagger, Docker e Postman.
 
+Para logs centralizados, métricas, traces e Grafana, consulte o [guia de observabilidade](observability.md). Para publicar com HTTPS e serviços internos protegidos, consulte o [guia de produção](production.md).
+
 ## Configuração local
 
 1. Copie `.env.example` para `.env` e preencha `MONGODB_URI`, segredos JWT e credenciais de seed.
@@ -93,3 +95,9 @@ Importe `postman/api-mongo.postman_collection.json` no Postman. A coleção salv
 ## Docker
 
 Use `MONGODB_URI=mongodb://mongo:27017/nest_api` no `.env` e execute `docker compose up --build`. Redis e Mailpit também sobem automaticamente. Em seguida, rode `docker compose exec api npm run seed`.
+
+Modos disponíveis:
+
+- desenvolvimento: `docker compose up --build -d`;
+- desenvolvimento com observabilidade: `docker compose -f docker-compose.yml -f docker-compose.observability.yml up --build -d`;
+- produção: `docker compose --env-file .env.production -f docker-compose.production.yml up --build -d`.

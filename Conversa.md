@@ -10788,15 +10788,9 @@ Para concluir o fluxo de e-mail:
 
 > Pode fazer
 
-<details><summary>29 previous messages</summary>
+<details><summary>19 previous messages</summary>
 
 > Vou concluir o fluxo de e-mail de ponta a ponta agora. Primeiro vou auditar o estado parcial para evitar duplicações; depois implemento Auth/endpoints, Postman/docs e valido os dois templates.
->
-> <details><summary>Ran a command</summary>
->
-> - Ran `$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; git status --short; rg -n "EmailService|emailVerifiedAt|VerificationToken|PasswordReset|verify-email|forgot-password|reset-password" "$repo\templates\api-mongo\src" "$repo\templates\api-postgres\src" "$repo\templates\api-postgres\prisma" -g '*.ts' -g '*.prisma' -g '*.sql'; Get-Content -LiteralPath "$repo\templates\api-mongo\src\modules\auth\auth.service.spec.ts"; Get-Content -LiteralPath "$repo\templates\api-postgres\src\modules\auth\auth.service.spec.ts"`
->
-> </details>
 >
 > O estado parcial está consistente. Vou preservar `isActive` como bloqueio administrativo e usar `emailVerifiedAt` exclusivamente para confirmação; tokens terão formato `userId.secret`, mas somente o hash do segredo ficará no banco.
 >
@@ -10811,9 +10805,8 @@ Para concluir o fluxo de e-mail:
 >
 > Os quatro endpoints já foram conectados. Agora vou fechar compatibilidade: senha forte também no cadastro, admins semeados como verificados, migration preservando usuários existentes e testes ajustados à nova dependência de e-mail.
 >
-> <details><summary>Edited 11 files, ran 4 commands</summary>
+> <details><summary>Edited 11 files</summary>
 >
-> - Ran `$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates'; Get-Content -LiteralPath "$repo\api-mongo\scripts\seed-admin.ts", "$repo\api-postgres\prisma\seed-admin.ts", "$repo\api-mongo\src\modules\auth\dto\register.dto.ts", "$repo\api-postgres\src\modules\auth\dto\register.dto.ts"`
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/.env.example` (+1 -1)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/scripts/seed-admin.ts` (+8 -0)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/config/env.schema.ts` (+1 -1)
@@ -10823,17 +10816,14 @@ Para concluir o fluxo de e-mail:
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/prisma/seed-admin.ts` (+13 -1)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/config/env.schema.ts` (+1 -1)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/register.dto.ts` (+13 -2)
-> - Ran `$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates'; Get-Content -LiteralPath "$repo\api-mongo\scripts\integration-check.mjs"; Get-Content -LiteralPath "$repo\api-postgres\scripts\integration-check.mjs"; Get-Content -LiteralPath "$repo\api-mongo\postman\api-mongo.postman_collection.json" -TotalCount 130`
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.service.spec.ts` (+5 -0)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.service.spec.ts` (+5 -0)
-> - Ran `npm run build`
-> - Ran `npm run build`
 >
 > </details>
 >
 > Os dois templates já compilam com o fluxo funcional. Vou agora tornar o teste manual claro: Postman receberá variáveis para os tokens copiados do Mailpit, e a documentação mostrará o percurso cadastro → confirmação → login → reset.
 >
-> <details><summary>Edited 12 files, ran 6 commands</summary>
+> <details><summary>Edited 12 files</summary>
 >
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docker-compose.yml` (+2 -0)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/postman/api-mongo.postman_collection.json` (+39 -1)
@@ -10845,139 +10835,41 @@ Para concluir o fluxo de e-mail:
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.service.spec.ts` (+43 -1)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/postman/api-mongo.postman_collection.json` (+3 -3)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/postman/api-postgres.postman_collection.json` (+3 -3)
-> - Ran `$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content -LiteralPath "$repo\templates\api-mongo\docs\README.md" -TotalCount 100; Get-Content -LiteralPath "$repo\templates\api-mongo\docs\api-reference.md"; Get-Content -LiteralPath "$repo\README.md" -TotalCount 160`
-> - Ran `npm test -- --runInBand`
-> - Ran `npm test -- --runInBand`
-> - Ran `Get-Content -LiteralPath 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-postgres\docs\README.md' -Tail 20; Get-Content -LiteralPath 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-postgres\docs\api-reference.md'`
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md` (+12 -1)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/README.md` (+12 -1)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/api-reference.md` (+5 -5)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/api-reference.md` (+5 -5)
-> - Ran `npx prettier --write "src/modules/auth/auth.service.ts" "src/modules/auth/auth.controller.ts" "src/modules/auth/auth.module.ts" "src/modules/auth/auth.service.spec.ts" "src/modules/auth/dto/register.dto.ts" "src/modules/auth/dto/verify-email.dto.ts" "src/modules/auth/dto/resend-verification.dto.ts" "src/modules/auth/dto/forgot-password.dto.ts" "src/modules/auth/dto/reset-password.dto.ts" "src/modules/users/users.service.ts" "src/infrastructure/email/email.service.ts" "src/infrastructure/email/email.module.ts" "src/config/env.schema.ts" "scripts/seed-admin.ts"`
-> - Ran `npx prettier --write "src/modules/auth/auth.service.ts" "src/modules/auth/auth.controller.ts" "src/modules/auth/auth.module.ts" "src/modules/auth/auth.service.spec.ts" "src/modules/auth/dto/register.dto.ts" "src/modules/auth/dto/verify-email.dto.ts" "src/modules/auth/dto/resend-verification.dto.ts" "src/modules/auth/dto/forgot-password.dto.ts" "src/modules/auth/dto/reset-password.dto.ts" "src/modules/users/users.service.ts" "src/infrastructure/email/email.service.ts" "src/infrastructure/email/email.module.ts" "src/config/env.schema.ts" "prisma/seed-admin.ts"`
 >
 > </details>
 >
 > Documentação, Postman e formatação foram atualizados. Agora vou validar JSON/Compose, build, lint e testes; depois subo cada stack separadamente para testar o fluxo real com Mailpit.
 >
-> <details><summary>Ran 10 commands</summary>
->
-> - Ran `$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates'; $paths=@("$repo\api-mongo\postman\api-mongo.postman_collection.json","$repo\api-postgres\postman\api-postgres.postman_collection.json"); foreach($path in $paths){ Get-Content -Raw -LiteralPath $path | ConvertFrom-Json | Out-Null; Write-Output "JSON válido: $path" }`
-> - Ran `docker compose config --quiet`
-> - Ran `npm run build`
-> - Ran `npm run build`
-> - Ran `docker compose config --quiet`
-> - Ran `npm test -- --runInBand`
-> - Ran `npm test -- --runInBand`
-> - Ran `npm run lint`
-> - Ran `npm run lint`
-> - Ran `docker ps --format "{{.Names}}\t{{.Ports}}"`
->
-> </details>
->
 > PostgreSQL já está ativo, então vou validá-lo primeiro: rebuild com Mailpit, aplicar a migration, executar seed e percorrer o fluxo real. Depois faço o mesmo com Mongo, sem manter as duas APIs disputando a porta 3000.
->
-> <details><summary>Ran a command</summary>
->
-> - Ran `docker compose up --build -d`
->
-> </details>
 >
 > O teste real encontrou um problema objetivo: os `package.json` receberam Nodemailer, mas os locks independentes dos templates não foram sincronizados. Vou corrigir os dois locks e repetir o build Docker.
 >
-> <details><summary>Ran 8 commands</summary>
->
-> - Ran `npm install --package-lock-only --workspaces=false`
-> - Ran `npm install --package-lock-only --workspaces=false`
-> - Ran `docker compose up --build -d`
-> - Ran `docker compose ps; docker compose logs api --tail 80`
-> - Ran `docker compose build api`
-> - Ran `docker compose up -d`
-> - Ran `docker compose exec -T api npx prisma migrate deploy`
-> - Ran `docker compose exec -T api npm run seed`
->
-> </details>
->
 > Migration e seed PostgreSQL passaram. Agora vou criar um usuário de teste real, confirmar que o login é bloqueado antes da verificação, buscar o e-mail no Mailpit e consumir o token.
->
-> <details><summary>Ran 4 commands</summary>
->
-> - Ran `$testEmail='email-flow-postgres@example.com'; $body=@{email=$testEmail;password='[REDACTED_SECRET]'} | ConvertTo-Json; try { $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/register' -Method Post -ContentType 'application/json' -Body $body; "STATUS=$($response.StatusCode)"; $response.Content } catch { "STATUS=$([int]$_.Exception.Response.StatusCode)"; $_.ErrorDetails.Message }`
-> - Ran `$body=@{email='email-flow-postgres@example.com';password='[REDACTED_SECRET]'} | ConvertTo-Json; try { $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/login' -Method Post -ContentType 'application/json' -Body $body; "STATUS=$($response.StatusCode)"; $response.Content } catch { "STATUS=$([int]$_.Exception.Response.StatusCode)"; $_.ErrorDetails.Message }`
-> - Ran `$messages=Invoke-RestMethod -Uri 'http://localhost:8025/api/v1/messages'; $messages | ConvertTo-Json -Depth 6`
-> - Ran `$messages=Invoke-RestMethod -Uri 'http://localhost:8025/api/v1/messages'; $snippet=($messages.messages | Where-Object { $_.To.Address -contains 'email-flow-postgres@example.com' } | Select-Object -First 1).Snippet; $token=[REDACTED_SECRET] -split 'token=')[1]); $body=@{token=$token} | ConvertTo-Json; $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/verify-email' -Method Post -ContentType 'application/json' -Body $body; "STATUS=$($response.StatusCode)"`
->
-> </details>
 >
 > O e-mail chegou e o bloqueio funcionou. A primeira automação de extração usou um filtro PowerShell incorreto e enviou token vazio; vou repetir com a mensagem já identificada. Isso não indica falha da API.
 >
-> <details><summary>Ran 5 commands</summary>
->
-> - Ran `$messages=Invoke-RestMethod -Uri 'http://localhost:8025/api/v1/messages'; $snippet=$messages.messages[0].Snippet; $token=[REDACTED_SECRET] -split 'token='[REDACTED_SECRET] "TOKEN_LENGTH=$($token.Length)"; $body=@{token=$token} | ConvertTo-Json; try { $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/verify-email' -Method Post -ContentType 'application/json' -Body $body; "STATUS=$($response.StatusCode)" } catch { "STATUS=$([int]$_.Exception.Response.StatusCode)"; $_.ErrorDetails.Message }`
-> - Ran `$body=@{email='email-flow-postgres@example.com';password='[REDACTED_SECRET]'} | ConvertTo-Json; $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/login' -Method Post -ContentType 'application/json' -Body $body; "STATUS=$($response.StatusCode)"; "COOKIE_PRESENT=$([bool]$response.Headers['Set-Cookie'])"`
-> - Ran `$body=@{email='email-flow-postgres@example.com'} | ConvertTo-Json; $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/forgot-password' -Method Post -ContentType 'application/json' -Body $body; "STATUS=$($response.StatusCode)"`
-> - Ran `$messages=Invoke-RestMethod -Uri 'http://localhost:8025/api/v1/messages'; $message=$messages.messages | Where-Object { $_.Subject -eq 'Redefina sua senha' } | Select-Object -First 1; $token=[REDACTED_SECRET] -split 'token='[REDACTED_SECRET] "TOKEN_LENGTH=$($token.Length)"; $body=@{token=[REDACTED_SECRET]'NovaSenhaSegura123!'} | ConvertTo-Json; try { $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/reset-password' -Method Post -ContentType 'application/json' -Body $body; "STATUS=$($response.StatusCode)" } catch { "STATUS=$([int]$_.Exception.Response.StatusCode)"; $_.ErrorDetails.Message }`
-> - Ran `$email='email-flow-postgres@example.com'; $loginBody=@{email=$email;password='[REDACTED_SECRET]'} | ConvertTo-Json; $login=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/login' -Method Post -ContentType 'application/json' -Body $loginBody; $cookie=($login.Headers['Set-Cookie'] -split ';')[0]; $forgotBody=@{email=$email} | ConvertTo-Json; $null=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/forgot-password' -Method Post -ContentType 'application/json' -Body $forgotBody; Start-Sleep -Milliseconds 300; $messages=Invoke-RestMethod -Uri 'http://localhost:8025/api/v1/messages'; $message=$messages.messages | Where-Object { $_.Subject -eq 'Redefina sua senha' } | Select-Object -First 1; $token=[REDACTED_SECRET] -split 'token='[REDACTED_SECRET] $resetBody=@{token=[REDACTED_SECRET]'SenhaFinalSegura123!'} | ConvertTo-Json; $reset=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/reset-password' -Method Post -ContentType 'application/json' -Body $resetBody; try { $refresh=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/refresh' -Method Post -Headers @{Cookie=$cookie}; "REFRESH_STATUS=$($refresh.StatusCode)" } catch { "RESET_STATUS=$($reset.StatusCode)"; "REFRESH_STATUS=$([int]$_.Exception.Response.StatusCode)" }`
->
-> </details>
->
 > PostgreSQL passou de ponta a ponta, inclusive revogação da sessão após reset. Vou parar essa stack sem apagar dados e repetir o mesmo fluxo no Mongo.
->
-> <details><summary>Ran 6 commands</summary>
->
-> - Ran `docker compose stop`
-> - Ran `docker compose build api`
-> - Ran `docker compose up -d`
-> - Ran `docker compose exec -T api npm run seed`
-> - Ran `$body=@{email='email-flow-mongo@example.com';password='[REDACTED_SECRET]'} | ConvertTo-Json; try { $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/register' -Method Post -ContentType 'application/json' -Body $body; "STATUS=$($response.StatusCode)"; $response.Content } catch { "STATUS=$([int]$_.Exception.Response.StatusCode)"; $_.ErrorDetails.Message }`
-> - Ran `docker compose logs api --tail 100; docker compose ps`
->
-> </details>
 >
 > O Mongo revelou uma condição de inicialização da rede: a API subiu enquanto o nome `redis` ainda não resolvia e o cliente ficou reconectando. Como Redis já está saudável, vou reiniciar somente a API e repetir; se persistir, ajusto a conexão para falhar/recuperar corretamente.
 >
-> <details><summary>Ran 8 commands</summary>
->
-> - Ran `docker compose restart api`
-> - Ran `$body=@{email='email-flow-mongo-2@example.com';password='[REDACTED_SECRET]'} | ConvertTo-Json; try { $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/register' -Method Post -ContentType 'application/json' -Body $body -TimeoutSec 15; "STATUS=$($response.StatusCode)"; $response.Content } catch { if ($_.Exception.Response) { "STATUS=$([int]$_.Exception.Response.StatusCode)" }; $_.ErrorDetails.Message; $_.Exception.Message }`
-> - Ran `docker compose exec -T api getent hosts redis; docker inspect api-mongo-api-1 --format "{{json .NetworkSettings.Networks}}"; docker inspect api-mongo-redis-1 --format "{{json .NetworkSettings.Networks}}"`
-> - Ran `docker inspect api-mongo-redis-1 --format "{{json .NetworkSettings.Networks}}"`
-> - Ran `docker compose up -d --force-recreate redis api`
-> - Ran `$body=@{email='email-flow-mongo-3@example.com';password='[REDACTED_SECRET]'} | ConvertTo-Json; try { $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/register' -Method Post -ContentType 'application/json' -Body $body -TimeoutSec 15; "STATUS=$($response.StatusCode)"; $response.Content } catch { if ($_.Exception.Response) { "STATUS=$([int]$_.Exception.Response.StatusCode)" }; $_.ErrorDetails.Message; $_.Exception.Message }`
-> - Ran `$email='email-flow-mongo-3@example.com'; $loginBody=@{email=$email;password='[REDACTED_SECRET]'} | ConvertTo-Json; try { $null=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/login' -Method Post -ContentType 'application/json' -Body $loginBody; 'PRE_VERIFY_LOGIN=200' } catch { "PRE_VERIFY_LOGIN=$([int]$_.Exception.Response.StatusCode)" }; $messages=Invoke-RestMethod -Uri 'http://localhost:8025/api/v1/messages'; $message=$messages.messages | Where-Object { $_.To[0].Address -eq $email -and $_.Subject -eq 'Confirme seu e-mail' } | Select-Object -First 1; $token=[REDACTED_SECRET] -split 'token='[REDACTED_SECRET] $verifyBody=@{token=$token} | ConvertTo-Json; $verify=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/verify-email' -Method Post -ContentType 'application/json' -Body $verifyBody; $login=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/login' -Method Post -ContentType 'application/json' -Body $loginBody; "VERIFY_STATUS=$($verify.StatusCode)"; "POST_VERIFY_LOGIN=$($login.StatusCode)"`
-> - Ran `$email='email-flow-mongo-3@example.com'; $loginBody=@{email=$email;password='[REDACTED_SECRET]'} | ConvertTo-Json; $login=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/login' -Method Post -ContentType 'application/json' -Body $loginBody; $cookie=($login.Headers['Set-Cookie'] -split ';')[0]; $forgotBody=@{email=$email} | ConvertTo-Json; $forgot=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/forgot-password' -Method Post -ContentType 'application/json' -Body $forgotBody; Start-Sleep -Milliseconds 300; $messages=Invoke-RestMethod -Uri 'http://localhost:8025/api/v1/messages'; $message=$messages.messages | Where-Object { $_.To[0].Address -eq $email -and $_.Subject -eq 'Redefina sua senha' } | Select-Object -First 1; $token=[REDACTED_SECRET] -split 'token='[REDACTED_SECRET] $resetBody=@{token=[REDACTED_SECRET]'SenhaFinalSegura123!'} | ConvertTo-Json; $reset=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/reset-password' -Method Post -ContentType 'application/json' -Body $resetBody; try { $refresh=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/refresh' -Method Post -Headers @{Cookie=$cookie}; "REFRESH_STATUS=$($refresh.StatusCode)" } catch { "FORGOT_STATUS=$($forgot.StatusCode)"; "RESET_STATUS=$($reset.StatusCode)"; "REFRESH_STATUS=$([int]$_.Exception.Response.StatusCode)" }`
->
-> </details>
->
 > O Mongo revelou uma falha real: resetou a senha, mas a sessão antiga ainda renovou. Vou inspecionar o schema/filtro do refresh token e corrigir antes de considerar o fluxo pronto.
 >
-> <details><summary>Edited 2 files, ran 5 commands</summary>
+> <details><summary>Edited 2 files</summary>
 >
-> - Ran `Get-Content -LiteralPath 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo\src\modules\auth\schemas\refresh-token.schema.ts'; docker compose exec -T mongo mongosh nest_api --quiet --eval "db.refreshtokens.find({}).sort({createdAt:-1}).limit(5).toArray()"`
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.service.ts` (+1 -1)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/schemas/refresh-token.schema.ts` (+3 -3)
-> - Ran `docker compose build api`
-> - Ran `docker compose up -d --force-recreate api`
-> - Ran `$email='email-flow-mongo-3@example.com'; $loginBody=@{email=$email;password='[REDACTED_SECRET]'} | ConvertTo-Json; $login=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/login' -Method Post -ContentType 'application/json' -Body $loginBody; $cookie=($login.Headers['Set-Cookie'] -split ';')[0]; $forgotBody=@{email=$email} | ConvertTo-Json; $forgot=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/forgot-password' -Method Post -ContentType 'application/json' -Body $forgotBody; Start-Sleep -Milliseconds 300; $messages=Invoke-RestMethod -Uri 'http://localhost:8025/api/v1/messages'; $message=$messages.messages | Where-Object { $_.To[0].Address -eq $email -and $_.Subject -eq 'Redefina sua senha' } | Select-Object -First 1; $token=[REDACTED_SECRET] -split 'token='[REDACTED_SECRET] $resetBody=@{token=[REDACTED_SECRET]'SenhaMongoFinal123!'} | ConvertTo-Json; $reset=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/reset-password' -Method Post -ContentType 'application/json' -Body $resetBody; try { $refresh=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/auth/refresh' -Method Post -Headers @{Cookie=$cookie}; "REFRESH_STATUS=$($refresh.StatusCode)" } catch { "FORGOT_STATUS=$($forgot.StatusCode)"; "RESET_STATUS=$($reset.StatusCode)"; "REFRESH_STATUS=$([int]$_.Exception.Response.StatusCode)" }`
-> - Ran `docker compose exec -T api npm run test:integration`
 >
 > </details>
 >
 > Mongo agora passou o fluxo completo e a suíte de integração. Vou fazer a checagem final do PostgreSQL com a stack já migrada e, ao terminar, deixo um único template ativo para evitar conflito de portas.
 >
-> <details><summary>Ran 5 commands</summary>
->
-> - Ran `docker compose stop`
-> - Ran `docker compose up -d`
-> - Ran `docker compose exec -T api npm run test:integration`
-> - Ran `git status --short; git diff --stat`
-> - Ran `npm ci --dry-run`
->
-> </details>
->
 > A validação principal terminou verde. Antes de entregar, vou fechar um detalhe de reutilização em produção: SMTP opcional com autenticação e TLS, mantendo Mailpit sem credenciais no desenvolvimento.
 >
-> <details><summary>Edited 8 files, ran 4 commands</summary>
+> <details><summary>Edited 8 files</summary>
 >
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/.env.example` (+3 -0)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/config/env.schema.ts` (+7 -1)
@@ -10985,23 +10877,8 @@ Para concluir o fluxo de e-mail:
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/.env.example` (+3 -0)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/config/env.schema.ts` (+7 -1)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/infrastructure/email/email.service.ts` (+4 -1)
-> - Ran `npx prettier --write "src/config/env.schema.ts" "src/infrastructure/email/email.service.ts"`
-> - Ran `npx prettier --write "src/config/env.schema.ts" "src/infrastructure/email/email.service.ts"`
-> - Ran `npm run build`
-> - Ran `npm run build`
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md` (+2 -0)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/README.md` (+2 -0)
->
-> </details>
->
-> <details><summary>Plan</summary>
->
-> Fluxo implementado e validado em execução real nos dois bancos.
->
-> - [x] Auditar alterações parciais e contratos atuais de Auth/Users
-> - [x] Implementar verificação de e-mail e reset de senha nos dois templates
-> - [x] Atualizar Swagger, Postman, Docker e documentação
-> - [x] Executar build, testes e validações do fluxo
 >
 > </details>
 </details>
@@ -11186,13 +11063,12 @@ Próximos passos, na melhor ordem:
 
 Minha recomendação é corrigir primeiro `FRONTEND_URL` e os templates dos e-mails.
 
-<details><summary>9 previous messages</summary>
+<details><summary>7 previous messages</summary>
 
 > Vou fazer tudo exceto o frontend: corrigir `FRONTEND_URL`, melhorar os e-mails, ampliar testes e registrar eventos de auditoria sem tokens/senhas. :codex-annotation{index="1"}
 >
-> <details><summary>Edited 8 files, ran a command</summary>
+> <details><summary>Edited 8 files</summary>
 >
-> - Ran `$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; rg -n "APP_URL|FRONTEND_URL|sendVerification|sendPasswordReset|AUTH_EMAIL|PASSWORD_RESET" "$repo\templates\api-mongo" "$repo\templates\api-postgres" -g '!node_modules/**' -g '!dist/**'`
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/.env.example` (+1 -1)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md` (+1 -1)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/config/env.schema.ts` (+1 -1)
@@ -11209,19 +11085,9 @@ Minha recomendação é corrigir primeiro `FRONTEND_URL` e os templates dos e-ma
 > Source: automatic
 > Status: completed
 >
-> <details><summary>Ran 5 commands</summary>
->
-> - Ran `rg -n "APP_URL|FRONTEND_URL|sendAccountEmail|sendVerification|sendPasswordReset" templates/api-mongo templates/api-postgres docs`
-> - Ran `rg -n -uu "APP_URL|FRONTEND_URL" templates/api-mongo templates/api-postgres; Get-Content templates/api-mongo/src/modules/audit/audit.types.ts; Get-Content templates/api-mongo/src/modules/auth/auth.controller.ts; Get-Content templates/api-mongo/src/modules/auth/auth.service.ts`
-> - Ran `Get-Content -Raw templates/api-mongo/src/modules/audit/audit.types.ts; Get-Content -Raw templates/api-mongo/src/modules/auth/auth.controller.ts`
-> - Ran `Get-Content -Raw templates/api-mongo/src/modules/auth/auth.service.ts; Get-Content -Raw templates/api-postgres/src/modules/auth/auth.service.ts`
-> - Ran `Get-Content -Raw templates/api-mongo/src/infrastructure/email/email.service.ts; Get-Content -Raw templates/api-mongo/src/modules/auth/auth.service.spec.ts; Get-Content -Raw templates/api-mongo/src/modules/auth/dto/register.dto.ts; Get-Content -Raw templates/api-mongo/src/modules/auth/dto/reset-password.dto.ts`
->
-> </details>
->
 > A configuração dos links já foi corrigida para `FRONTEND_URL` e os e-mails já têm versão HTML e texto. Agora estou fechando a parte mais importante: auditoria dos quatro fluxos e comportamento seguro quando o SMTP estiver indisponível.
 >
-> <details><summary>Created 2 files, edited 10 files, ran 5 commands</summary>
+> <details><summary>Created 2 files, edited 10 files</summary>
 >
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/audit/audit.types.ts` (+4 -0)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.controller.ts` (+18 -8)
@@ -11229,50 +11095,21 @@ Minha recomendação é corrigir primeiro `FRONTEND_URL` e os templates dos e-ma
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.controller.ts` (+18 -8)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.service.ts` (+72 -15)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.service.ts` (+62 -6)
-> - Ran `rg -n "verifyEmail\(|resendVerification\(|forgotPassword\(|resetPassword\(" templates/api-mongo/src templates/api-postgres/src --glob "*.ts"`
-> - Ran `Get-Content -Raw templates/api-postgres/src/modules/auth/auth.service.spec.ts; Get-Content -Raw templates/api-postgres/src/modules/auth/dto/register.dto.ts`
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.service.spec.ts` (+90 -2)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.service.spec.ts` (+93 -2)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/dto/password-policy.spec.ts` (+31 -0)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/password-policy.spec.ts` (+31 -0)
-> - Ran `rg -n -uu "APP_URL|AUTH_EMAIL_VERIFIED|AUTH_PASSWORD_RESET|AUTH_VERIFICATION_RESENT|Auditoria|audit" README.md docs templates/api-mongo/docs templates/api-postgres/docs --glob "*.md" --glob "*.env*"`
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md` (+1 -1)
 > - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/README.md` (+1 -1)
-> - Ran `npx prettier --write src/modules/audit/audit.types.ts src/modules/auth/auth.controller.ts src/modules/auth/auth.service.ts src/modules/auth/auth.service.spec.ts src/modules/auth/dto/password-policy.spec.ts src/infrastructure/email/email.service.ts src/config/env.schema.ts`
-> - Ran `npx prettier --write src/modules/audit/audit.types.ts src/modules/auth/auth.controller.ts src/modules/auth/auth.service.ts src/modules/auth/auth.service.spec.ts src/modules/auth/dto/password-policy.spec.ts src/infrastructure/email/email.service.ts src/config/env.schema.ts`
 >
 > </details>
 >
 > A lógica está fechada nos dois templates. Vou validar agora compilação e testes; isso também confirma que as novas assinaturas do controller, os eventos de auditoria e a política de senha ficaram iguais em Mongo e PostgreSQL.
 >
-> <details><summary>Edited a file, ran 12 commands</summary>
+> <details><summary>Edited a file</summary>
 >
-> - Ran `npm test -- --runInBand; npm run build`
-> - Ran `npm test -- --runInBand; npm run build`
-> - Ran `npm run build`
-> - Ran `npm run build`
-> - Ran `git diff --check; git status --short; rg -n -uu "APP_URL" templates --glob "!dist/**" --glob "!node_modules/**"`
-> - Ran `(Get-Content -Raw templates/api-mongo/package.json | ConvertFrom-Json).scripts | ConvertTo-Json -Compress; (Get-Content -Raw templates/api-postgres/package.json | ConvertFrom-Json).scripts | ConvertTo-Json -Compress`
-> - Ran `npm run lint`
-> - Ran `npm run lint`
-> - Ran `rg -n "verify-email|reset-password|FRONTEND_URL|confirmação de e-mail|redefinição" docs templates/api-mongo/docs templates/api-postgres/docs --glob "*.md"`
-> - Ran `Get-Content docs/technical-reference.md | Select-Object -Skip 65 -First 40`
 > - Wrote `~/Documents/Dev/nestjs-api-templates/docs/technical-reference.md` (+11 -5)
-> - Ran `Get-Content docs/technical-reference.md | Select-Object -Skip 35 -First 32`
-> - Ran `rg -n "RATE_LIMIT|Throttle|Redis" templates/api-mongo/src templates/api-mongo/.env.example templates/api-mongo/docs/README.md | Select-Object -First 80`
 > - Wrote `~/Documents/Dev/nestjs-api-templates/docs/technical-reference.md` (+2 -4)
->
-> </details>
->
-> <details><summary>Plan</summary>
->
-> O pacote foi concluído nos dois templates e validado com testes, lint e build.
->
-> - [x] Renomear APP_URL para FRONTEND_URL e ajustar documentação/configuração
-> - [x] Melhorar e-mails com HTML e fallback em texto
-> - [x] Registrar eventos de confirmação e redefinição na auditoria
-> - [x] Adicionar testes de expiração, uso único, reenvio, senha fraca e SMTP indisponível
-> - [x] Formatar, compilar e testar MongoDB e PostgreSQL
 >
 > </details>
 </details>
@@ -11350,15 +11187,9 @@ FRONTEND_URL=http://localhost:5173
 
 Minha recomendação é seguir agora com os itens 1 e 2: validar tudo em execução real e colocar o fluxo de e-mail na CI.
 
-<details><summary>2 previous messages</summary>
+<details><summary>1 previous message</summary>
 
 > Vou localizar o trecho exato nos dois templates e verificar se ele está realmente no código-fonte — e não apenas na documentação.
->
-> <details><summary>Ran a command</summary>
->
-> - Ran `rg -n "sendAccountEmail|const text|const html|FRONTEND_URL|sendMail" templates/api-mongo/src/infrastructure/email/email.service.ts templates/api-postgres/src/infrastructure/email/email.service.ts`
->
-> </details>
 </details>
 
 Está nestes arquivos:
@@ -11455,3 +11286,3863 @@ docker compose up --build -d
 - `FRONTEND_URL` pública.
 
 A próxima etapa recomendada é automatizar o fluxo de e-mail nos testes de integração e validar a CI nos dois templates.
+
+> antes como faço para enviar um email de verdade pra o email q vai ser cadastrado
+
+<details><summary>1 previous message</summary>
+
+> Vou conferir como o `docker-compose` repassa as variáveis SMTP, porque se ele estiver fixando `MAIL_HOST=mailpit`, alterar apenas o `.env` não será suficiente.
+</details>
+
+Hoje o Mailpit não envia e-mails para a internet: ele apenas captura os e-mails localmente. Para enviar de verdade, a API precisa se conectar ao SMTP de um provedor.
+
+Há um detalhe importante: atualmente o Docker Compose força:
+
+```yaml
+MAIL_HOST: mailpit
+```
+
+Portanto, mesmo alterando o `.env`, dentro do Docker ele continuará usando o Mailpit.
+
+Para permitir SMTP real, o ideal é alterar nos dois `docker-compose.yml`:
+
+```yaml
+environment:
+  REDIS_URL: redis://redis:6379
+  MAIL_HOST: ${MAIL_HOST:-mailpit}
+```
+
+Assim, se `MAIL_HOST` não estiver configurado, usa Mailpit. Se estiver, usa o SMTP real.
+
+### Teste rápido com Gmail
+
+Primeiro, ative a autenticação de dois fatores na conta Google e gere uma “senha de app”. Não use a senha normal da conta.
+
+Configure o `.env`:
+
+```env
+FRONTEND_URL=http://localhost:5173
+
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_SECURE=true
+MAIL_USER=seuemail@gmail.com
+MAIL_PASSWORD=sua-senha-de-app
+MAIL_FROM="Minha API <seuemail@gmail.com>"
+```
+
+Depois recrie a API:
+
+```bash
+docker compose up --build -d
+```
+
+Ao cadastrar:
+
+```http
+POST http://localhost:3000/api/v1/auth/register
+```
+
+```json
+{
+  "email": "destinatario@gmail.com",
+  "password": "SenhaSegura123!"
+}
+```
+
+A API executará este fluxo:
+
+```text
+Cadastro
+  → gera token
+  → salva somente o hash
+  → cria link com FRONTEND_URL
+  → conecta em smtp.gmail.com
+  → Gmail entrega ao destinatário
+```
+
+Para confirmar se houve erro:
+
+```bash
+docker compose logs -f api
+```
+
+Para produção, não recomendo Gmail pessoal. O melhor é usar um provedor transacional, como AWS SES, Resend, SendGrid ou Postmark. Nesse caso, você configura as credenciais SMTP fornecidas pelo serviço:
+
+```env
+MAIL_HOST=smtp.provedor.com
+MAIL_PORT=465
+MAIL_SECURE=true
+MAIL_USER=usuario-fornecido
+MAIL_PASSWORD=senha-fornecida
+MAIL_FROM="Minha Aplicação <no-reply@seudominio.com>"
+```
+
+Também será necessário validar seu domínio e configurar SPF, DKIM e DMARC para reduzir a chance de os e-mails caírem no spam.
+
+> [2026-08-26 11:03:55.802 +0000] INFO: Nest application successfully started {"context":"NestApplication"}[2026-08-26 11:04:29.305 +0000] INFO: request errored {"req":{"id":1,"method":"POST","url":"/api/v1/auth/register","query":{},"params":{"path":["v1","auth","register"]},"headers":{"content-type":"application/json","user-agent":"PostmanRuntime/7.56.1","accept":"*/*","postman-token":"c2f00274-b47d-46fb-a0fd-c6ebb81a8ca0","host":"localhost:3000","accept-encoding":"gzip, deflate, br","connection":"keep-alive","content-length":"74","cookie":"[Redacted]"},"remoteAddress":"::ffff:172.20.0.1","remotePort":59960},"requestId":"1c039a6c-de3a-4c5e-9c34-f4fde9953507","res":{"statusCode":500,"headers":{"x-request-id":"1c039a6c-de3a-4c5e-9c34-f4fde9953507","vary":"Origin","access-control-allow-credentials":"true","content-security-policy":"default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests","cross-origin-opener-policy":"same-origin","cross-origin-resource-policy":"same-origin","origin-agent-cluster":"?1","referrer-policy":"no-referrer","strict-transport-security":"max-age=31536000; includeSubDomains","x-content-type-options":"nosniff","x-dns-prefetch-control":"off","x-download-options":"noopen","x-frame-options":"SAMEORIGIN","x-permitted-cross-domain-policies":"none","x-xss-protection":"0","x-ratelimit-limit":"10","x-ratelimit-remaining":"9","x-ratelimit-reset":"900","content-type":"application/json; charset=utf-8","content-length":"222","etag":"W/"de-fkoiVsDfGtbxNtuapMLIcImrGqE""}},"responseTime":153}    err: {      "type": "Error",      "message": "failed with status code 500",      "stack":          Error: failed with status code 500              at onResFinished (/app/node\_modules/pino-http/logger.js:115:39)              at ServerResponse.onResponseComplete (/app/node\_modules/pino-http/logger.js:178:14)              at ServerResponse.emit (node:events:521:24)              at onFinish (node:\_http\_outgoing:1079:10)              at callback (node:internal/streams/writable:764:21)              at afterWrite (node:internal/streams/writable:708:5)              at afterWriteTick (node:internal/streams/writable:694:10)              at process.processTicksAndRejections (node:internal/process/task\_queues:89:21)    }
+
+<details><summary>1 previous message</summary>
+
+> Esse trecho mostra apenas o resultado HTTP 500, não a exceção original. Vou identificar qual template está rodando e consultar os logs completos do container e do banco; pelo tempo de 153 ms, o erro provavelmente ocorreu antes do envio SMTP.
+</details>
+
+O erro não é do e-mail. A API dentro do container está tentando acessar o PostgreSQL em:
+
+```text
+localhost:5432
+```
+
+Isso foi confirmado pelo comando do Prisma:
+
+```text
+Datasource "db": PostgreSQL at "localhost:5432"
+P1001: Can't reach database server
+```
+
+Dentro do container, `localhost` significa o próprio container da API. O hostname correto do banco no Docker Compose é `postgres`.
+
+No `templates/api-postgres/docker-compose.yml`, o serviço `api` precisa ficar assim:
+
+```yaml
+services:
+  api:
+    build: .
+    env_file: .env
+    ports:
+      - '${PORT:-3000}:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/nest_api?schema=public
+      REDIS_URL: redis://redis:6379
+      MAIL_HOST: ${MAIL_HOST:-mailpit}
+```
+
+Depois execute, dentro de `templates/api-postgres`:
+
+```bash
+docker compose up --build -d
+docker compose exec -T api npx prisma migrate deploy
+docker compose exec -T api npm run seed
+```
+
+Confirme:
+
+```bash
+docker compose exec -T api npx prisma migrate status
+```
+
+O resultado esperado é:
+
+```text
+Database schema is up to date!
+```
+
+Depois teste:
+
+```http
+GET http://localhost:3000/api/v1/health/ready
+```
+
+Deve retornar `200`. Só então teste o cadastro novamente.
+
+A aplicação conseguiu iniciar porque o Prisma abre a conexão com o banco sob demanda. O erro apareceu apenas quando o cadastro tentou consultar o usuário. Também precisamos melhorar o Exception Filter para registrar internamente a exceção original; atualmente ele esconde corretamente os detalhes do cliente, mas também não mostra a causa real nos logs.
+
+> fOI MAS O EMAIL N CHEGOU
+
+<details><summary>1 previous message</summary>
+
+> O `seed` apenas cria/atualiza roles e o administrador; ele não envia e-mail. :codex-annotation{index="1"} Vou verificar se a API está apontando para o Mailpit ou para um SMTP real e se algum e-mail foi capturado.
+</details>
+
+Encontrei a causa. A configuração está misturando Mailpit com Gmail:
+
+```env
+MAIL_HOST=mailpit
+MAIL_PORT=465
+MAIL_SECURE=true
+```
+
+O Mailpit escuta na porta `1025`, sem TLS. Por isso ocorreu:
+
+```text
+connect ECONNREFUSED 172.20.0.3:465
+```
+
+Além disso, `npm run seed` não envia e-mail; ele apenas cria roles e o administrador. :codex-annotation{index="1"}
+
+Como você quer enviar e-mail real pelo Gmail, altere no `docker-compose.yml`:
+
+```yaml
+environment:
+  DATABASE_URL: postgresql://postgres:postgres@postgres:5432/nest_api?schema=public
+  REDIS_URL: redis://redis:6379
+  MAIL_HOST: ${MAIL_HOST:-mailpit}
+```
+
+E mantenha no `.env`:
+
+```env
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_SECURE=true
+MAIL_USER=gabrielmarcosprisco@gmail.com
+MAIL_PASSWORD=SENHA_DE_APP_DO_GOOGLE
+MAIL_FROM="Minha API <gabrielmarcosprisco@gmail.com>"
+```
+
+`MAIL_PASSWORD` precisa ser uma senha de app do Google, não a senha normal da conta. A conta precisa ter autenticação em dois fatores habilitada.
+
+Recrie a API:
+
+```bash
+docker compose up --build -d --force-recreate api
+```
+
+Confira a configuração carregada:
+
+```bash
+docker compose exec -T api node -e "console.log({
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  secure: process.env.MAIL_SECURE,
+  user: process.env.MAIL_USER
+})"
+```
+
+O resultado esperado:
+
+```text
+host: smtp.gmail.com
+port: 465
+secure: true
+```
+
+Como o usuário já foi criado, não tente cadastrá-lo novamente. Solicite outro e-mail:
+
+```http
+POST http://localhost:3000/api/v1/auth/resend-verification
+Content-Type: application/json
+```
+
+```json
+{
+  "email": "email-do-usuario-cadastrado@gmail.com"
+}
+```
+
+Acompanhe o envio:
+
+```bash
+docker compose logs -f api
+```
+
+Se não houver erro SMTP, verifique também a pasta de spam do destinatário.
+
+> onde vejo se deu serro smtp
+
+Você vê o erro SMTP nos logs da API:
+
+```bash
+docker compose logs -f api
+```
+
+Quando houver erro, aparecerá algo como:
+
+```text
+ERROR: Unable to send email verification email
+Error: connect ECONNREFUSED ...
+```
+
+Para mostrar apenas erros relacionados ao envio:
+
+```bash
+docker compose logs api | grep -i "email\|smtp\|ECONNREFUSED\|authentication"
+```
+
+No Git Bash do Windows, esse comando funciona normalmente.
+
+Erros comuns:
+
+```text
+ECONNREFUSED
+```
+
+Servidor ou porta incorretos.
+
+```text
+Invalid login
+```
+
+Usuário ou senha de app incorretos.
+
+```text
+Username and Password not accepted
+```
+
+O Gmail recusou a autenticação; normalmente foi usada a senha comum em vez da senha de app.
+
+```text
+ETIMEDOUT
+```
+
+Bloqueio de rede, firewall ou servidor SMTP indisponível.
+
+Importante: atualmente a API captura o erro SMTP, registra no log e ainda responde `201` ou `204`. Isso evita revelar informações sobre contas cadastradas.
+
+Quando funciona, atualmente aparece somente:
+
+```text
+request completed
+```
+
+Isso não confirma claramente que o SMTP aceitou a mensagem. O ideal é adicionarmos um log explícito, sem expor token:
+
+```text
+INFO: Email accepted by SMTP
+{
+  "type": "email_verification",
+  "recipient": "ga***@gmail.com",
+  "messageId": "..."
+}
+```
+
+Mesmo “aceito pelo SMTP” não garante entrega na caixa de entrada; o provedor ainda pode enviar para spam ou rejeitar posteriormente.
+
+> ainda nao envou, mas quero me me informe onde encotrou o erro e como
+
+<details><summary>2 previous messages</summary>
+
+> Vou apontar exatamente o arquivo, a configuração efetivamente carregada dentro do container e a linha do log que comprovou a causa.
+>
+> A configuração SMTP agora está correta e os reenvios não geraram erro SMTP. Porém eles terminaram em 10–15 ms, o que indica que o serviço provavelmente encerrou antes de enviar — quando o usuário não existe, está inativo ou já está verificado. Vou conferir apenas o estado desses usuários no banco.
+</details>
+
+Encontrei dois problemas diferentes em momentos diferentes.
+
+### Primeiro erro: SMTP misturado com Mailpit
+
+Encontrei executando:
+
+```bash
+docker compose exec -T api node -e "console.log({
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  secure: process.env.MAIL_SECURE
+})"
+```
+
+O container informou:
+
+```text
+MAIL_HOST=mailpit
+MAIL_PORT=465
+MAIL_SECURE=true
+```
+
+Depois consultei:
+
+```bash
+docker compose logs api mailpit
+```
+
+O log mostrou:
+
+```text
+Unable to send email verification email
+connect ECONNREFUSED 172.20.0.3:465
+```
+
+E o Mailpit informou que estava escutando na porta `1025`, sem criptografia. Isso provou que a API tentou acessar o Mailpit usando a porta segura do Gmail.
+
+Esse primeiro problema já foi corrigido. Agora o container informa:
+
+```text
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_SECURE=true
+```
+
+### Problema atual: o Postman está enviando outro e-mail
+
+A requisição “Resend verification” da coleção está com este body fixo:
+
+```json
+{
+  "email": "new.user@example.com"
+}
+```
+
+Isso está no arquivo:
+
+[api-postgres.postman_collection.json](~/Documents/Dev/nestjs-api-templates/templates/api-postgres/postman/api-postgres.postman_collection.json:58)
+
+Consultei o banco e encontrei:
+
+```text
+new.user@example.com
+emailVerifiedAt = 2026-08-25 19:35:08
+```
+
+Ou seja, esse usuário já está verificado. O endpoint encerra sem enviar quando o usuário:
+
+- não existe;
+- está inativo;
+- já está verificado.
+
+Ele ainda responde `204` de propósito, para não revelar informações sobre contas cadastradas.
+
+O usuário que está aguardando confirmação é:
+
+```text
+gabriel.cunha@cocari.com.br
+emailVerifiedAt = null
+```
+
+Use no Postman:
+
+```json
+{
+  "email": "gabriel.cunha@cocari.com.br"
+}
+```
+
+Rota:
+
+```http
+POST http://localhost:3000/api/v1/auth/resend-verification
+```
+
+E acompanhe:
+
+```bash
+docker compose logs -f api
+```
+
+Também confirmei que não existia nenhum evento `AUTH_VERIFICATION_RESENT` na auditoria. Isso comprova que as requisições anteriores encerraram antes da etapa de envio.
+
+A coleção Postman precisa ser ajustada para utilizar uma variável, por exemplo:
+
+```json
+{
+  "email": "{{userEmail}}"
+}
+```
+
+Assim ela não continuará usando `new.user@example.com` fixamente.
+
+> ajusta tudo ai&#x20;
+>
+> Ewja5G8k8s9VkBmUpDjzjbGApyQ""}},"responseTime":12}
+> api-1  | [2026-08-26 11:21:24.640 +0000] ERROR: Unable to send email verification email {"req":{"id":5,"method":"POST","url":"/api/v1/auth/resend-verification","query":{},"params":{"path":["v1","auth","resend-verification"]},"headers":{"content-type":"application/json","user-agent":"PostmanRuntime/7.56.1","accept":"*/*","postman-token":"d06c3ed5-6b79-4aa6-864c-869b04b665d0","host":"localhost:3000","accept-encoding":"gzip, deflate, br","connection":"keep-alive","content-length":"44","cookie":"[Redacted]"},"remoteAddress":"::ffff:172.20.0.1","remotePort":35850},"requestId":"6adc0194-0d5f-4793-8bae-52258175c3c2","context":"AuthService"}
+> api-1  |       "message": "Unable to send email verification email",
+
+<details><summary>5 previous messages</summary>
+
+> Agora a requisição chegou à etapa de envio, então o e-mail do Postman está correto. Vou capturar a exceção SMTP completa, corrigir a configuração reutilizável nos dois templates, trocar os e-mails fixos do Postman por variável e melhorar os logs de sucesso/erro sem expor tokens ou senha.
+>
+> A exceção completa é `ECONNREFUSED 142.251.0.109:465`: o DNS do Gmail resolveu, mas a conexão TCP na porta 465 foi recusada antes da autenticação. Vou testar 465 e 587 a partir do próprio container; se 587 estiver disponível, ajustarei para STARTTLS, que é a alternativa correta.
+>
+> A causa atual não é credencial: as portas `465` e `587` do Gmail estão sendo recusadas pela rede antes do login. Isso não pode ser resolvido por senha. Mesmo assim, vou corrigir agora tudo que está sob controle do template; no final separo claramente o que ficou bloqueado pela rede.
+>
+> <details><summary>Created 2 files, edited 11 files, deleted 2 files</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docker-compose.yml` (+2 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/postman/api-mongo.postman_collection.json` (+8 -4)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/postman/api-postgres.postman_collection.json` (+8 -4)
+> - Deleted `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/.env.example` (+0 -20)
+> - Deleted `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/.env.example` (+0 -20)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/.env.example` (+20 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/.env.example` (+20 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.service.ts` (+11 -6)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.service.ts` (+11 -6)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.service.ts` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.service.ts` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/common/filters/global-exception.filter.ts` (+9 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/common/filters/global-exception.filter.ts` (+10 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/email/email.service.ts` (+16 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/infrastructure/email/email.service.ts` (+16 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/README.md` (+2 -0)
+>
+> </details>
+>
+> Os ajustes de código e configuração estão feitos. Agora estou validando as coleções Postman, garantindo que nenhum segredo tenha ficado no `.env.example` e executando testes/build dos dois templates.
+</details>
+
+Ajustei os dois templates. Porém o envio real pelo Gmail continua bloqueado pela rede, não pelo código.
+
+O teste feito dentro do container retornou:
+
+```text
+smtp.gmail.com:465 → ECONNREFUSED
+smtp.gmail.com:587 → ECONNREFUSED
+```
+
+Isso acontece antes da autenticação. Portanto, não é erro da senha de app; provavelmente a rede corporativa, firewall ou provedor está bloqueando SMTP externo.
+
+O que foi ajustado:
+
+- Docker Compose configurável para Mailpit ou SMTP externo.
+- URLs internas corretas para MongoDB/PostgreSQL.
+- Coleções Postman agora utilizam:
+  - `{{userEmail}}`
+  - `{{userPassword}}`
+  - `{{adminEmail}}`
+  - `{{adminPassword}}`
+- Removidas credenciais do `.env.example`.
+- Log de sucesso SMTP:
+
+```text
+email verification email accepted by SMTP
+```
+
+- Log de falha com a causa técnica.
+- Auditoria de reenvio/reset agora registra `FAILURE` quando o SMTP falhar.
+- Erros 500 inesperados passam a registrar a exceção original.
+- HTML dos e-mails reorganizado e identado.
+- Documentação atualizada.
+- MongoDB: 24 testes aprovados e build concluído.
+- PostgreSQL: 24 testes aprovados e build concluído.
+- API PostgreSQL reconstruída e health check retornando `200`.
+
+No Postman, reimporte a coleção atualizada. Alterar o arquivo local não atualiza automaticamente a coleção já importada.
+
+Para conseguir enviar de verdade, você possui três opções:
+
+1. Liberar saída TCP nas portas `465` ou `587` na rede/firewall.
+2. Testar utilizando outra rede, como um hotspot do celular.
+3. Usar um provedor de e-mail por API HTTPS na porta `443`, opção que recomendo para produção porque redes normalmente não bloqueiam HTTPS.
+
+Enquanto isso, o Mailpit continua funcionando localmente com:
+
+```env
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_SECURE=false
+MAIL_USER=
+MAIL_PASSWORD=
+```
+
+Se a senha de app do Gmail chegou a ser colocada no `.env.example`, recomendo revogá-la e gerar outra. O arquivo foi limpo e não havia uma senha salva na versão atual do Git, mas rotacionar é a opção mais segura.
+
+> provavelmente ta dando erro por conta {
+>   "email": "gabriel.cunha@cocari.com.br"
+> } e to tentando enviar pra esse q e da empres  vou tentar pra outro ai tu ve o erro
+
+Pode testar, mas o destinatário corporativo não explica o erro atual.
+
+O erro foi:
+
+```text
+connect ECONNREFUSED smtp.gmail.com:465
+```
+
+Isso aconteceu antes de o Gmail receber o endereço do destinatário. Portanto, trocar `@cocari.com.br` por Gmail provavelmente continuará apresentando o mesmo erro de conexão.
+
+Para testar corretamente:
+
+- Se for um e-mail novo, use `POST /auth/register`.
+- Se o e-mail já existe e ainda não foi confirmado, use `POST /auth/resend-verification`.
+- Se o e-mail já está confirmado, use `POST /auth/forgot-password`, porque o reenvio de confirmação será ignorado.
+
+Exemplo:
+
+```json
+{
+  "email": "outroemail@gmail.com"
+}
+```
+
+Enquanto testa, deixe este comando aberto:
+
+```bash
+docker compose logs -f api
+```
+
+Se aparecer `ECONNREFUSED`, continua sendo bloqueio de rede. Se aparecer `Invalid login` ou `Username and Password not accepted`, chegamos ao Gmail e o problema passa a ser autenticação. Se aparecer `accepted by SMTP`, o Gmail aceitou a mensagem. Envie o próximo log que eu identifico exatamente.
+
+> realmente, chegando em casa eu testo pra ver
+
+Perfeito. Em casa, teste preferencialmente com uma rede diferente da corporativa.
+
+Antes, confirme:
+
+```bash
+docker compose exec -T api node -e "console.log({
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  secure: process.env.MAIL_SECURE
+})"
+```
+
+Esperado:
+
+```text
+host: smtp.gmail.com
+port: 465
+secure: true
+```
+
+Depois deixe os logs abertos:
+
+```bash
+docker compose logs -f api
+```
+
+E solicite o envio. O resultado ideal será:
+
+```text
+email verification email accepted by SMTP
+```
+
+Se a porta `465` continuar recusada em casa, tente:
+
+```env
+MAIL_PORT=587
+MAIL_SECURE=false
+```
+
+Depois recrie a API:
+
+```bash
+docker compose up --build -d --force-recreate api
+```
+
+Não envie aqui a senha de app nem o conteúdo completo do `.env`.
+
+> agora oq esta pendente ainda ?
+
+O backend principal está praticamente concluído. O que permanece pendente, em ordem:
+
+1. Testar o SMTP real em outra rede:
+   - Gmail nas portas `465` ou `587`;
+   - confirmar o log `accepted by SMTP`;
+   - verificar caixa de entrada e spam.
+
+2. Validar o fluxo completo em execução real nos dois templates:
+   - PostgreSQL;
+   - MongoDB;
+   - cadastro;
+   - confirmação;
+   - login;
+   - recuperação de senha;
+   - revogação das sessões;
+   - auditoria.
+
+3. Automatizar o fluxo de e-mail nos testes de integração e na CI:
+   - subir Mailpit;
+   - cadastrar usuário;
+   - buscar o e-mail pela API do Mailpit;
+   - extrair o token;
+   - confirmar o e-mail;
+   - testar reset de senha;
+   - repetir para MongoDB e PostgreSQL.
+
+4. Corrigir o warning do NestJS:
+
+```text
+Unsupported route path: "/api/*"
+```
+
+A aplicação funciona, mas devemos eliminar esse aviso usando o padrão atual de rotas do Nest/Express.
+
+5. Criar futuramente o frontend, conforme ficou adiado:
+   - `/verify-email`;
+   - `/reset-password`.
+
+6. Preparar envio para produção:
+   - escolher Gmail apenas para teste ou um provedor transacional;
+   - configurar domínio;
+   - SPF, DKIM e DMARC;
+   - armazenar credenciais em secrets, nunca no repositório.
+
+Minha recomendação é seguir agora com os itens 3 e 4. O teste SMTP real depende da rede da sua casa, mas podemos automatizar todo o fluxo usando Mailpit e corrigir o warning enquanto isso.
+
+> Guarde isso no backlog
+
+<details><summary>2 previous messages</summary>
+
+> Vou registrar esses itens no backlog do repositório, separados entre validação imediata, automação, frontend e preparação para produção.
+>
+> <details><summary>Created a file, edited 2 files</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/README.md` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/README.md` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/backlog.md` (+28 -0)
+>
+> </details>
+</details>
+
+Backlog criado em [docs/backlog.md](~/Documents/Dev/nestjs-api-templates/docs/backlog.md).
+
+Também adicionei links para ele no README principal e no guia de manutenção. Foram registrados:
+
+- teste SMTP em outra rede;
+- validação completa nos dois templates;
+- integração automática com Mailpit na CI;
+- correção do warning `/api/*`;
+- páginas futuras de confirmação e redefinição;
+- configuração de e-mail para produção;
+- SPF, DKIM, DMARC e secrets.
+
+> como posso visualizar melhor erros da api, em tempo real qual sua indicado, quero melhorar a observabilidade
+
+<details><summary>2 previous messages</summary>
+
+> Vou comparar uma solução simples para desenvolvimento com uma estrutura escalável para produção, aproveitando o Pino e o `requestId` que já existem. Para recomendar ferramentas atuais, vou conferir apenas a documentação oficial de observabilidade.
+>
+> <details><summary>Searched the web</summary>
+>
+> Searched the web for `site:opentelemetry.io docs JavaScript Node.js logs traces metrics OpenTelemetry official ...`
+>
+> Searched the web for `site:docs.sentry.io/platforms/javascript/guides/nestjs/ NestJS setup tracing logs official Sentry ...`
+>
+> </details>
+</details>
+
+Hoje você já possui uma boa base com Pino, logs JSON, `requestId` e registro de exceções. Porém os logs ficam presos no terminal do container.
+
+Para acompanhar agora, em tempo real:
+
+```bash
+docker compose logs --tail=100 -f api
+```
+
+No PowerShell, somente erros e avisos:
+
+```powershell
+docker compose logs -f api |
+  Select-String "ERROR|WARN|Unhandled|Unable"
+```
+
+Para pesquisar uma requisição específica:
+
+```powershell
+docker compose logs api |
+  Select-String "6adc0194-0d5f-4793-8bae-52258175c3c2"
+```
+
+## Minha recomendação para o template
+
+Eu adotaria uma arquitetura vendor-neutral baseada em:
+
+```text
+NestJS
+ ├─ Pino → logs JSON
+ ├─ OpenTelemetry → traces e métricas
+ ├─ requestId + traceId
+ │
+ ▼
+Grafana Alloy
+ ├─ Loki → logs
+ ├─ Tempo → traces
+ └─ Prometheus → métricas
+          │
+          ▼
+        Grafana
+   dashboards e alertas
+```
+
+O Grafana Alloy consegue receber e encaminhar logs, traces OpenTelemetry e métricas Prometheus, evitando um agente diferente para cada sinal. [Documentação oficial do Grafana Alloy](https://grafana.com/docs/alloy/latest/)
+
+Como você usa Docker Desktop no Windows, eu não recomendo o plugin de logging do Loki: a própria documentação informa que plugins Docker não são suportados no Windows. Alloy é a escolha mais apropriada para coletar os logs dos containers. [Documentação oficial do Loki](https://grafana.com/docs/loki/latest/send-data/docker-driver/)
+
+## O que você conseguiria visualizar
+
+No Grafana, seria possível filtrar:
+
+```text
+Todos os erros 500
+Erros do AuthService
+Falhas de SMTP
+Requisições lentas
+Erros de um usuário
+Eventos de determinado requestId
+Erros do MongoDB ou PostgreSQL
+Falhas ocorridas nos últimos 5 minutos
+```
+
+Exemplo de log estruturado ideal:
+
+```json
+{
+  "level": "error",
+  "service": "api-postgres",
+  "environment": "production",
+  "requestId": "6adc0194-0d5f-4793-8bae-52258175c3c2",
+  "traceId": "57c4c68367e64787",
+  "module": "AuthService",
+  "operation": "sendVerificationEmail",
+  "error": {
+    "type": "Error",
+    "message": "connect ECONNREFUSED 142.251.0.109:465",
+    "code": "ECONNREFUSED"
+  },
+  "timestamp": "2026-08-26T11:21:24.640Z"
+}
+```
+
+Nunca devemos registrar:
+
+- senhas;
+- tokens JWT;
+- refresh tokens;
+- cookies;
+- senha SMTP;
+- token de confirmação ou redefinição.
+
+## OpenTelemetry
+
+OpenTelemetry adicionaria rastreamento completo:
+
+```text
+POST /auth/register                    2.4s
+ ├─ consultar usuário no PostgreSQL   18ms
+ ├─ Argon2                            140ms
+ ├─ criar usuário                     12ms
+ ├─ persistir token                   120ms
+ └─ enviar e-mail SMTP                2.1s ❌
+```
+
+Assim você não vê somente que ocorreu um erro: você identifica qual etapa falhou e quanto tempo cada operação consumiu.
+
+No JavaScript, traces e métricas do OpenTelemetry estão estáveis; a integração própria de logs ainda está em desenvolvimento. Por isso, recomendo continuar usando Pino para logs e OpenTelemetry para traces e métricas. [Documentação oficial do OpenTelemetry para JavaScript](https://opentelemetry.io/docs/languages/js/)
+
+## Sentry: opcional
+
+Sentry seria uma integração adicional e opcional para erros de aplicação. Ele oferece:
+
+- agrupamento automático de erros iguais;
+- stack trace;
+- frequência e quantidade de usuários afetados;
+- ambiente e versão;
+- alertas;
+- integração com deploy e commits.
+
+É mais simples para descobrir rapidamente “qual erro novo apareceu?”, enquanto Grafana é melhor para investigar o sistema completo.
+
+A desvantagem é adicionar dependência de um serviço externo. Por isso, eu deixaria Sentry opcional por variável:
+
+```env
+SENTRY_DSN=
+SENTRY_ENABLED=false
+```
+
+O SDK oficial possui integração específica com NestJS e instrumentação de tracing. [Documentação oficial do Sentry para NestJS](https://docs.sentry.io/platforms/javascript/guides/nestjs/install/esm__v8.x)
+
+## Ordem recomendada
+
+1. Padronizar completamente os logs de erro:
+   - `service`;
+   - `environment`;
+   - `module`;
+   - `operation`;
+   - `requestId`;
+   - código e stack da exceção.
+
+2. Adicionar um `docker-compose.observability.yml` opcional com:
+   - Grafana;
+   - Loki;
+   - Alloy.
+
+3. Criar dashboards:
+   - erros 5xx;
+   - erros por módulo;
+   - requisições lentas;
+   - status HTTP;
+   - falhas de banco, Redis e SMTP.
+
+4. Adicionar OpenTelemetry:
+   - traces HTTP;
+   - Prisma/Mongoose;
+   - Redis;
+   - chamadas SMTP;
+   - `traceId` nos logs do Pino.
+
+5. Adicionar métricas:
+   - quantidade de requisições;
+   - latência p50/p95/p99;
+   - taxa de erros;
+   - login falho;
+   - rate limits;
+   - envio de e-mails.
+
+6. Configurar alertas:
+   - aumento de erros 500;
+   - banco indisponível;
+   - Redis indisponível;
+   - SMTP falhando;
+   - aumento anormal de logins inválidos.
+
+Minha indicação concreta para este template é: **Pino + Grafana Alloy + Loki + Tempo + Prometheus + Grafana**, deixando o Sentry como integração opcional. Para começar sem complicar demais, implementaríamos primeiro somente **Grafana + Loki + Alloy**, o que já permitiria visualizar e pesquisar os erros em tempo real.
+
+> Uma duvida, voca acha que pro template eu ja implemento isso ?, ou só implemento em projetos a parte
+>
+> o intuito do template e ja dxr tudo meio pronto pra quando eu FOR CRIAR novos projetos
+
+Sim, eu colocaria no template — mas como recurso opcional, não obrigatório.
+
+O melhor equilíbrio para seu objetivo é:
+
+```text
+Template inclui tudo preparado
+        ↓
+Observabilidade desabilitada por padrão
+        ↓
+Novo projeto decide quando habilitar
+```
+
+Assim, ao copiar somente `api-mongo` ou `api-postgres`, o projeto funciona normalmente sem subir Grafana, Loki e Tempo. Quando precisar, você ativa a observabilidade com um comando.
+
+## O que deve estar sempre ativo
+
+Estas partes são leves e fundamentais:
+
+- Pino com logs JSON;
+- `requestId`;
+- Exception Filter registrando a exceção original;
+- mascaramento de tokens, cookies e senhas;
+- logs com módulo, operação e ambiente;
+- health checks;
+- tempo e status das requisições.
+
+Isso pertence à arquitetura base de qualquer API.
+
+## O que deve vir pronto, mas opcional
+
+Eu incluiria nos dois templates:
+
+```text
+src/infrastructure/observability/
+  observability.module.ts
+  instrumentation.ts
+  observability.config.ts
+
+observability/
+  alloy/
+    config.alloy
+  loki/
+    config.yml
+  tempo/
+    config.yml
+  prometheus/
+    prometheus.yml
+  grafana/
+    provisioning/
+    dashboards/
+
+docker-compose.observability.yml
+```
+
+Variáveis:
+
+```env
+OTEL_ENABLED=false
+OTEL_SERVICE_NAME=api-postgres
+OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4318
+
+METRICS_ENABLED=false
+SENTRY_ENABLED=false
+SENTRY_DSN=
+```
+
+Execução normal:
+
+```bash
+docker compose up -d
+```
+
+Execução com observabilidade:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.observability.yml \
+  up --build -d
+```
+
+Acesso ao Grafana:
+
+```text
+http://localhost:3001
+```
+
+## Por que não deixar sempre ligado?
+
+Grafana, Loki, Tempo, Prometheus e Alloy consomem mais memória e CPU que a própria API em projetos pequenos.
+
+Se ficarem obrigatórios:
+
+- desenvolvimento fica mais pesado;
+- Docker demora mais para subir;
+- aumenta o número de configurações;
+- projetos simples carregam infraestrutura desnecessária;
+- testes e CI ficam mais demorados.
+
+Por isso, a infraestrutura deve existir no template, mas ser ativada somente quando necessária.
+
+## O que eu não colocaria obrigatoriamente
+
+Sentry deve ser uma integração opcional. Muitos projetos utilizarão apenas Grafana; outros podem utilizar Datadog, New Relic, Elastic ou Grafana Cloud.
+
+OpenTelemetry evita acoplar a aplicação a um fornecedor específico:
+
+```text
+Aplicação gera OpenTelemetry
+              ↓
+Projeto escolhe o destino
+              ├─ Grafana
+              ├─ Datadog
+              ├─ New Relic
+              └─ outro backend compatível
+```
+
+## Minha recomendação final
+
+Para o seu template:
+
+- Pino, `requestId`, tratamento de erros e health: sempre ativos.
+- OpenTelemetry: implementado, mas controlado por variável.
+- Métricas Prometheus: implementadas, mas opcionais.
+- Stack Grafana local: disponível em um Compose separado.
+- Dashboards básicos: já provisionados.
+- Sentry: documentado como integração opcional, sem ser obrigatório.
+- Produção: a API apenas exporta telemetria; Grafana/Loki/Tempo não devem necessariamente ser implantados junto dela.
+
+Isso mantém o template realmente “pronto para começar” sem obrigar todo novo projeto a carregar uma infraestrutura pesada. Essa é a opção que recomendo implementar.
+
+> Implemente ent
+
+<details><summary>19 previous messages</summary>
+
+> Vou implementar a observabilidade como recurso opcional nos dois templates: a API continuará funcionando normalmente sem a stack, e haverá um Compose separado para Grafana, Loki, Tempo, Prometheus e Alloy. Primeiro vou mapear o bootstrap, logging e versões atuais para integrar sem duplicar responsabilidades.
+>
+> A base usará OpenTelemetry apenas para traces e `prom-client` para métricas; os logs continuam no Pino, pois a própria documentação do OpenTelemetry ainda classifica logs JavaScript como em desenvolvimento. As dependências serão instaladas nos dois projetos e seus locks independentes serão preservados.
+>
+> <details><summary>Created 12 files, edited 8 files, searched the web</summary>
+>
+> Searched the web for `@prometheus-io/client Node.js official GitHub metrics Registry Histogram Counter collectDefaultMetrics ...`
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/instrumentation.ts` (+33 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/metrics.controller.ts` (+25 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/metrics.interceptor.ts` (+43 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/metrics.service.ts` (+67 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/observability.module.ts` (+14 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/trace-context.ts` (+9 -0)
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/instrumentation.ts` (+28 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/metrics.controller.ts` (+25 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/metrics.interceptor.ts` (+38 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/metrics.service.ts` (+63 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/observability.module.ts` (+14 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/trace-context.ts` (+8 -0)
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/infrastructure/observability/instrumentation.ts` (+28 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/infrastructure/observability/metrics.controller.ts` (+25 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/infrastructure/observability/metrics.interceptor.ts` (+38 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/infrastructure/observability/metrics.service.ts` (+63 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/infrastructure/observability/observability.module.ts` (+14 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/infrastructure/observability/trace-context.ts` (+8 -0)
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/.env.example` (+5 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/app.module.ts` (+6 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/config/env.schema.ts` (+14 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/main.ts` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/.env.example` (+5 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/app.module.ts` (+6 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/config/env.schema.ts` (+14 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/main.ts` (+1 -0)
+>
+> </details>
+>
+> A instrumentação da API já está adicionada: métricas HTTP, métricas do processo Node, traces OTLP e `traceId`/`spanId` nos logs, tudo desligado por padrão. Agora vou adicionar a stack local opcional e os dashboards provisionados.
+>
+> <details><summary>Created 16 files, edited 8 files</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docker-compose.observability.yml` (+74 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/observability/alloy/config.alloy` (+65 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/observability/grafana/provisioning/dashboards/dashboards.yml` (+8 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/observability/grafana/provisioning/datasources/datasources.yml` (+35 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/observability/loki/config.yml` (+29 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/observability/prometheus/prometheus.yml` (+8 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/observability/tempo/config.yml` (+19 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docker-compose.observability.yml` (+74 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/observability/alloy/config.alloy` (+65 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/observability/grafana/provisioning/dashboards/dashboards.yml` (+8 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/observability/grafana/provisioning/datasources/datasources.yml` (+35 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/observability/loki/config.yml` (+29 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/observability/prometheus/prometheus.yml` (+8 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/observability/tempo/config.yml` (+19 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/.env.example` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docker-compose.observability.yml` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/app.module.ts` (+7 -4)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/config/env.schema.ts` (+4 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/.env.example` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docker-compose.observability.yml` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/app.module.ts` (+7 -4)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/config/env.schema.ts` (+4 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/observability/grafana/dashboards/nestjs-api-overview.json` (+134 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/observability/grafana/dashboards/nestjs-api-overview.json` (+134 -0)
+>
+> </details>
+>
+> Build e testes passaram nos dois templates, e os dois arquivos Compose são válidos. Vou subir a stack opcional no PostgreSQL para validar de verdade coleta de métricas, logs, traces e provisionamento do Grafana antes de replicar a validação no Mongo.
+>
+> Context compaction
+>
+> Source: automatic
+> Status: completed
+>
+> Vou concluir a implementação agora: validar a stack em execução, corrigir eventuais erros de configuração, adicionar testes e fechar documentação/Postman nos dois templates. Depois te entrego os comandos exatos e os painéis disponíveis.
+>
+> A aplicação base está saudável, mas os containers opcionais ainda não chegaram a subir — a execução anterior terminou durante o download/build. Vou iniciar novamente e verificar serviço por serviço; isso também confirma que o template funciona de verdade, não só compila.
+>
+> Encontrei o primeiro problema real: os `package.json` receberam OpenTelemetry/Prometheus, mas os locks independentes de cada template não foram sincronizados. Isso quebraria justamente o uso isolado de `api-mongo` ou `api-postgres`. Vou corrigir os dois locks antes de continuar.
+>
+> Métricas e traces já estão chegando. Achei um detalhe no coletor de logs: os containers foram descobertos, mas o rótulo `compose_service` não foi criado, então os painéis de logs ficariam vazios. Vou corrigir a origem desse rótulo nos dois templates e validar novamente.
+>
+> <details><summary>Created 2 files, edited 8 files, searched the web</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/observability/alloy/config.alloy` (+2 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/observability/alloy/config.alloy` (+2 -2)
+>
+> Searched the web for `site:grafana.com/docs/alloy/latest/reference/components/discovery/discovery.docker __meta_docker_container_label ...`
+>
+> Searched the web for `http://localhost:12345`
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/observability/grafana/dashboards/nestjs-api-overview.json` (+2 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/observability/grafana/dashboards/nestjs-api-overview.json` (+2 -2)
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/app.module.ts` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/app.module.ts` (+1 -0)
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/postman/api-mongo.postman_collection.json` (+8 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/postman/api-postgres.postman_collection.json` (+8 -0)
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/metrics.service.spec.ts` (+36 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/infrastructure/observability/metrics.service.spec.ts` (+36 -0)
+>
+> </details>
+>
+> A stack PostgreSQL já está funcional: API, métricas, Prometheus, traces, Tempo, logs, Loki e dashboard Grafana. Também corrigi os logs duplicados e acrescentei o endpoint operacional à coleção Postman. Agora estou fechando os testes e o guia de uso/produção para os dois templates.
+>
+> <details><summary>Created 2 files, edited 6 files</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/README.md` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/observability.md` (+98 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/README.md` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/observability.md` (+98 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/backlog.md` (+3 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/infrastructure/observability/metrics.interceptor.ts` (+2 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/infrastructure/observability/metrics.interceptor.ts` (+2 -1)
+>
+> </details>
+>
+> Os testes passaram (26 em cada template) e os builds também. O lint apontou apenas um aviso novo de tipagem no interceptor de métricas; já corrigi. Vou agora validar a mesma stack completa no MongoDB, preservando os volumes do PostgreSQL.
+>
+> A validação Mongo revelou que a correlação funcionava, mas Pino repetia `requestId`, `service`, `traceId` e `spanId` no mesmo JSON. Isso é ruim para consultas. Vou centralizar a geração do ID no próprio logger e usar `mixin` para adicionar contexto uma única vez; a resposta HTTP continuará usando exatamente o mesmo `requestId`.
+>
+> <details><summary>Edited 5 files</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/app.module.ts` (+13 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/common/middleware/request-id.middleware.ts` (+2 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/app.module.ts` (+13 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/common/middleware/request-id.middleware.ts` (+2 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/README.md` (+6 -3)
+>
+> </details>
+>
+> Implementação concluída e validada nos dois bancos. O MongoDB ficou ativo agora para você conseguir abrir o Grafana e explorar; PostgreSQL foi desligado sem apagar os volumes. Vou abrir o painel local e te deixar os comandos de uso no resumo.
+>
+> <details><summary>Called a tool</summary>
+>
+> Tool call
+>
+> Tool: open_in_codex
+> Status: completed
+>
+> </details>
+</details>
+
+Implementação de observabilidade concluída nos templates MongoDB e PostgreSQL.
+
+Foi adicionado:
+
+- Pino com logs JSON estruturados.
+- Correlação por `requestId`, `traceId` e `spanId`.
+- OpenTelemetry para traces.
+- Métricas Prometheus.
+- Endpoint `GET /api/v1/metrics`.
+- Grafana Alloy para coleta.
+- Loki para logs.
+- Tempo para traces.
+- Prometheus para métricas.
+- Grafana com dashboard provisionado.
+- Stack opcional via `docker-compose.observability.yml`.
+- Testes unitários do módulo de métricas.
+- Postman atualizado.
+- Documentação completa para os dois templates.
+
+Arquivos principais:
+
+- [Observabilidade MongoDB](~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/observability.md)
+- [Observabilidade PostgreSQL](~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/observability.md)
+- [Compose MongoDB](~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docker-compose.observability.yml)
+- [Compose PostgreSQL](~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docker-compose.observability.yml)
+
+Para subir com observabilidade:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.observability.yml up --build -d
+```
+
+Acessos:
+
+- Grafana: `http://localhost:3001`
+- Login local: `admin`
+- Senha local: `admin`
+- Prometheus: `http://localhost:9090`
+- Métricas da API: `http://localhost:3000/api/v1/metrics`
+- Tempo: `http://localhost:3200`
+- Loki: `http://localhost:3100`
+- Alloy: `http://localhost:12345`
+
+O dashboard é o **NestJS API Overview**.
+
+Validações realizadas:
+
+- MongoDB: 26 testes passando e build aprovado.
+- PostgreSQL: 26 testes passando e build aprovado.
+- Prometheus coletando a API.
+- Logs consultáveis no Loki.
+- Traces chegando ao Tempo.
+- Dashboard carregado no Grafana.
+- `requestId` da resposta igual ao ID presente no log.
+- Templates instaláveis isoladamente com `npm ci`.
+- Collections Postman e JSONs validados.
+
+A stack MongoDB está rodando neste momento. Para desligar sem apagar os dados:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.observability.yml down
+```
+
+A implementação segue as abordagens oficiais do [OpenTelemetry para Node.js](https://opentelemetry.io/docs/languages/js/) e do [Grafana Alloy](https://grafana.com/docs/alloy/latest/).
+
+Única observação restante: o `npm audit` ainda aponta três vulnerabilidades altas no template PostgreSQL. Não executei `npm audit fix --force`, pois poderia introduzir mudanças incompatíveis. Isso deve ser analisado separadamente.
+
+> qhual conta pra entra no grafana
+
+Use as credenciais locais:
+
+- Usuário: `admin`
+- Senha: `admin`
+
+Essas credenciais são apenas para desenvolvimento local. No primeiro acesso, o Grafana pode solicitar a troca da senha.
+
+> Explqieu cada coisa dessa implamantação bem detalhado e passo a passo do q foi feito e como funciona
+
+<details><summary>2 previous messages</summary>
+
+> Vou usar a skill de visualização porque esse fluxo envolve vários componentes e caminhos — requisição, log, métrica, trace e dashboard — e um diagrama vai deixar a relação entre eles muito mais clara. Primeiro vou conferir as configurações finais e depois explico cada arquivo e o fluxo ponta a ponta.
+>
+> <details><summary>Edited 2 files</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/observability.md` (+3 -4)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/observability.md` (+3 -4)
+>
+> </details>
+</details>
+
+A implementação cria três formas complementares de observar a API: logs, métricas e traces. O Grafana centraliza a visualização, mas a API continua funcionando sem essa stack opcional.
+
+## Visão geral da arquitetura
+
+```mermaid
+flowchart LR
+    Client[Postman / Frontend] --> API[NestJS API]
+
+    API -->|logs JSON no stdout| Docker[Docker logs]
+    Docker --> Alloy[Grafana Alloy]
+    Alloy --> Loki[Loki]
+
+    Prometheus[Prometheus] -->|GET /api/v1/metrics| API
+
+    API -->|traces OTLP/HTTP| Alloy
+    Alloy --> Tempo[Tempo]
+
+    Loki --> Grafana[Grafana]
+    Prometheus --> Grafana
+    Tempo --> Grafana
+```
+
+Na prática:
+
+- Pino escreve logs JSON.
+- Alloy lê os logs dos containers e envia para o Loki.
+- A API expõe métricas em `/api/v1/metrics`.
+- Prometheus consulta esse endpoint periodicamente.
+- OpenTelemetry cria traces.
+- Alloy recebe os traces e envia para o Tempo.
+- Grafana consulta Loki, Prometheus e Tempo.
+
+---
+
+# 1. Logs com Pino
+
+O projeto já usava Pino. A implementação ajustou o logger para produzir logs apropriados para observabilidade.
+
+Um log da API fica parecido com:
+
+```json
+{
+  "level": 30,
+  "time": 1787747139827,
+  "reqId": "observability-validation-001",
+  "req": {
+    "method": "GET",
+    "url": "/api/v1/health"
+  },
+  "service": "api-mongo",
+  "environment": "development",
+  "traceId": "13440d21a8c99517a656003b67a0ded2",
+  "spanId": "b38044ae3050d252",
+  "res": {
+    "statusCode": 200
+  },
+  "responseTime": 3,
+  "msg": "request completed"
+}
+```
+
+## Campos importantes
+
+### `level`
+
+Nível do log:
+
+- `30`: info;
+- `40`: warning;
+- `50`: error;
+- `60`: fatal.
+
+No Grafana, podemos filtrar, por exemplo:
+
+```logql
+{container=~".*-api-1"} | json | level >= 50
+```
+
+Isso mostra somente erros da API.
+
+### `reqId`
+
+Identifica uma requisição específica.
+
+A resposta da API continua retornando:
+
+```json
+{
+  "success": true,
+  "data": {},
+  "meta": {
+    "requestId": "observability-validation-001"
+  }
+}
+```
+
+No log, o mesmo valor aparece em `reqId`:
+
+```json
+{
+  "reqId": "observability-validation-001"
+}
+```
+
+Portanto:
+
+```text
+response.meta.requestId
+          │
+          └── mesmo valor
+                    │
+                    ▼
+               log.reqId
+```
+
+Se um usuário informar um `requestId`, você pode localizar exatamente aquela requisição no Grafana.
+
+### `service`
+
+Identifica qual aplicação gerou o log:
+
+```json
+{
+  "service": "api-mongo"
+}
+```
+
+ou:
+
+```json
+{
+  "service": "api-postgres"
+}
+```
+
+Isso é importante quando vários projetos enviam logs para a mesma plataforma.
+
+### `environment`
+
+Identifica o ambiente:
+
+```json
+{
+  "environment": "development"
+}
+```
+
+Em produção:
+
+```json
+{
+  "environment": "production"
+}
+```
+
+### `traceId`
+
+Identifica o trace completo da requisição.
+
+```json
+{
+  "traceId": "13440d21a8c99517a656003b67a0ded2"
+}
+```
+
+O mesmo trace pode conter vários spans.
+
+### `spanId`
+
+Identifica uma etapa específica dentro do trace.
+
+Por exemplo:
+
+```text
+Trace
+├── requisição HTTP
+├── execução do controller
+├── execução do service
+├── consulta ao Mongo/PostgreSQL
+└── chamada externa
+```
+
+Cada uma dessas etapas pode ser representada por um span.
+
+---
+
+# 2. Geração e propagação do `requestId`
+
+A configuração do Pino passou a usar `genReqId`.
+
+O funcionamento é:
+
+```text
+Chegou header x-request-id?
+│
+├── Sim → reutiliza o valor recebido
+│
+└── Não → gera um UUID
+```
+
+Exemplo enviado pelo cliente:
+
+```http
+GET /api/v1/health
+x-request-id: frontend-request-123
+```
+
+A API responde:
+
+```http
+x-request-id: frontend-request-123
+```
+
+E o JSON contém:
+
+```json
+{
+  "meta": {
+    "requestId": "frontend-request-123"
+  }
+}
+```
+
+O log também contém:
+
+```json
+{
+  "reqId": "frontend-request-123"
+}
+```
+
+Isso permite que um API Gateway, frontend ou outro microsserviço envie seu próprio identificador.
+
+Se nenhum ID for enviado, a API gera algo como:
+
+```text
+cfcad0a4-cf62-4702-9582-da2b1d7c54ed
+```
+
+Também foi ajustado o `RequestIdMiddleware` para preservar o ID criado pelo Pino, evitando que dois IDs diferentes fossem gerados para a mesma requisição.
+
+---
+
+# 3. Logs bonitos no desenvolvimento e JSON na observabilidade
+
+Foi adicionada a variável:
+
+```dotenv
+LOG_PRETTY=true
+```
+
+## Com `LOG_PRETTY=true`
+
+O terminal mostra algo mais fácil de ler:
+
+```text
+INFO: request completed
+  method: GET
+  url: /api/v1/health
+  statusCode: 200
+  responseTime: 3
+```
+
+É adequado para desenvolvimento local.
+
+## Com `LOG_PRETTY=false`
+
+O log fica como JSON:
+
+```json
+{
+  "level": 30,
+  "reqId": "...",
+  "traceId": "...",
+  "responseTime": 3
+}
+```
+
+Isso é melhor para Loki, Datadog, Elastic, CloudWatch e outros coletores.
+
+A composição de observabilidade configura automaticamente:
+
+```yaml
+LOG_PRETTY: "false"
+```
+
+Portanto, você não precisa mudar o `.env` manualmente quando usar a stack completa.
+
+---
+
+# 4. OpenTelemetry e traces
+
+Foi criado o arquivo:
+
+```text
+src/infrastructure/observability/instrumentation.ts
+```
+
+Ele inicializa o OpenTelemetry antes que o NestJS carregue os módulos da aplicação.
+
+Por isso, o `main.ts` começa com:
+
+```typescript
+import './infrastructure/observability/instrumentation';
+```
+
+A ordem importa. O OpenTelemetry precisa ser iniciado antes do NestJS, Express, Mongoose e outros componentes que serão instrumentados.
+
+## Ativação
+
+Por padrão:
+
+```dotenv
+OTEL_ENABLED=false
+```
+
+Na stack opcional:
+
+```yaml
+OTEL_ENABLED: "true"
+```
+
+## Identificação do serviço
+
+```dotenv
+OTEL_SERVICE_NAME=api-mongo
+OTEL_SERVICE_VERSION=0.1.0
+```
+
+No PostgreSQL:
+
+```dotenv
+OTEL_SERVICE_NAME=api-postgres
+```
+
+Esses valores aparecem nos traces e permitem diferenciar aplicações e versões.
+
+## Envio dos traces
+
+A aplicação envia os traces usando OTLP por HTTP:
+
+```dotenv
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://alloy:4318/v1/traces
+```
+
+O fluxo é:
+
+```text
+NestJS
+  │
+  │ OTLP HTTP
+  ▼
+Alloy :4318
+  │
+  │ OTLP gRPC em lotes
+  ▼
+Tempo :4317
+```
+
+O Alloy agrupa os spans em lotes antes de enviá-los ao Tempo. Isso evita enviar uma chamada de rede separada para cada pequeno span.
+
+## Instrumentação automática
+
+Foi utilizado:
+
+```typescript
+getNodeAutoInstrumentations()
+```
+
+Isso habilita instrumentações compatíveis com:
+
+- Node.js HTTP;
+- Express;
+- NestJS;
+- MongoDB/Mongoose;
+- PostgreSQL e bibliotecas compatíveis;
+- Redis;
+- outras bibliotecas Node suportadas.
+
+A instrumentação de filesystem foi desabilitada:
+
+```typescript
+'@opentelemetry/instrumentation-fs': {
+  enabled: false,
+}
+```
+
+O filesystem costuma gerar muitos spans pouco úteis para uma API e pode deixar o trace poluído.
+
+A instrumentação automática do Pino também foi desabilitada porque a própria configuração do logger já injeta `traceId` e `spanId` de maneira controlada.
+
+---
+
+# 5. Contexto do trace nos logs
+
+Foi criado:
+
+```text
+src/infrastructure/observability/trace-context.ts
+```
+
+Sua responsabilidade é consultar o span ativo:
+
+```typescript
+const span = trace.getSpan(context.active());
+```
+
+Quando existe um span, ele retorna:
+
+```typescript
+{
+  traceId: spanContext.traceId,
+  spanId: spanContext.spanId,
+}
+```
+
+Esses dados são inseridos no log pelo `mixin` do Pino.
+
+O `mixin` é executado no momento em que o log é escrito, portanto pega o contexto OpenTelemetry ativo daquela execução.
+
+Isso permite o seguinte fluxo:
+
+```text
+Erro encontrado no Loki
+        │
+        ├── reqId → identifica a requisição da API
+        │
+        └── traceId → abre o trace completo no Tempo
+```
+
+---
+
+# 6. Módulo de observabilidade
+
+Foi criado um módulo separado:
+
+```text
+src/infrastructure/observability/
+├── instrumentation.ts
+├── metrics.controller.ts
+├── metrics.interceptor.ts
+├── metrics.service.ts
+├── metrics.service.spec.ts
+├── observability.module.ts
+└── trace-context.ts
+```
+
+Ele fica em `infrastructure` porque observabilidade não é uma regra de negócio.
+
+Por exemplo:
+
+- Auth é negócio/aplicação.
+- Users é negócio/aplicação.
+- RBAC é negócio/aplicação.
+- Prometheus e OpenTelemetry são infraestrutura.
+
+O módulo é importado no `AppModule`:
+
+```typescript
+ObservabilityModule
+```
+
+---
+
+# 7. MetricsService
+
+O `MetricsService` mantém um registro Prometheus isolado para a aplicação.
+
+Ele cria duas métricas HTTP principais.
+
+## Contador de requisições
+
+```text
+http_server_requests_total
+```
+
+Exemplo:
+
+```text
+http_server_requests_total{
+  method="GET",
+  route="/health",
+  status_code="200",
+  service="api-mongo",
+  environment="development"
+} 42
+```
+
+Isso significa que aquela combinação processou 42 requisições.
+
+Com essa métrica podemos calcular:
+
+- requisições por segundo;
+- quantidade de erros;
+- endpoints mais usados;
+- distribuição por status HTTP.
+
+## Histograma de duração
+
+```text
+http_server_request_duration_seconds
+```
+
+Ele guarda a duração das requisições em intervalos:
+
+```typescript
+[
+  0.005,
+  0.01,
+  0.025,
+  0.05,
+  0.1,
+  0.25,
+  0.5,
+  1,
+  2.5,
+  5,
+  10,
+]
+```
+
+Os valores são segundos:
+
+- `0.005`: 5 ms;
+- `0.1`: 100 ms;
+- `1`: 1 segundo;
+- `10`: 10 segundos.
+
+Isso permite calcular percentis como p95.
+
+## O que é p95?
+
+Se a latência p95 for 300 ms:
+
+```text
+95% das requisições terminaram em até 300 ms
+5% demoraram mais que 300 ms
+```
+
+É geralmente mais útil que apenas a média, porque a média pode esconder requisições muito lentas.
+
+## Métricas do Node.js
+
+Também são coletadas métricas padrão:
+
+```text
+nodejs_*
+```
+
+Por exemplo:
+
+- memória;
+- event loop;
+- garbage collector;
+- handles ativos;
+- CPU do processo.
+
+---
+
+# 8. MetricsInterceptor
+
+O interceptor é global:
+
+```typescript
+{
+  provide: APP_INTERCEPTOR,
+  useClass: MetricsInterceptor,
+}
+```
+
+Portanto, ele observa automaticamente todas as requisições NestJS.
+
+O fluxo é:
+
+```text
+Requisição chega
+      │
+      ▼
+Salva horário inicial
+      │
+      ▼
+Controller e Service executam
+      │
+      ├── sucesso → usa status da resposta
+      │
+      └── erro → usa status da HttpException ou 500
+      │
+      ▼
+Calcula duração
+      │
+      ▼
+Registra contador e histograma
+```
+
+A duração é calculada com:
+
+```typescript
+process.hrtime.bigint()
+```
+
+Essa função usa um relógio de alta precisão, apropriado para medir tempo de execução.
+
+## Por que usar a rota do NestJS?
+
+Para uma rota como:
+
+```http
+GET /users/123
+GET /users/456
+GET /users/789
+```
+
+A métrica deve usar um padrão estável:
+
+```text
+/users/:id
+```
+
+E não gerar uma série diferente para cada usuário.
+
+Criar uma label para cada ID causaria alta cardinalidade e poderia sobrecarregar o Prometheus.
+
+---
+
+# 9. Endpoint `/metrics`
+
+Foi criado:
+
+```http
+GET /api/v1/metrics
+```
+
+Esse endpoint retorna texto Prometheus:
+
+```text
+# HELP http_server_requests_total Total number of HTTP requests handled by the API.
+# TYPE http_server_requests_total counter
+
+http_server_requests_total{
+  method="GET",
+  route="/health",
+  status_code="200",
+  service="api-mongo",
+  environment="development"
+} 10
+```
+
+Ele possui:
+
+```typescript
+@Public()
+@SkipThrottle()
+@ApiExcludeController()
+```
+
+### `@Public()`
+
+O Prometheus não precisa enviar JWT para coletar métricas.
+
+### `@SkipThrottle()`
+
+O Prometheus consulta periodicamente. A coleta não deve consumir o rate limit público da API.
+
+### `@ApiExcludeController()`
+
+O endpoint não aparece no Swagger porque é um endpoint operacional, não um endpoint usado pelo frontend.
+
+Ele foi adicionado ao Postman dentro da pasta Health, mas só funciona quando:
+
+```dotenv
+METRICS_ENABLED=true
+```
+
+Quando estiver desabilitado, retorna `404`.
+
+## Segurança
+
+Em produção, ser público no NestJS não significa que deve ficar público na internet.
+
+O endpoint deve ser acessível somente pela rede interna:
+
+```text
+Internet
+   │
+   ├── /api/v1/users     ✅
+   ├── /api/v1/auth      ✅
+   └── /api/v1/metrics   ❌ bloqueado pelo proxy/firewall
+                              │
+                              └── Prometheus interno ✅
+```
+
+---
+
+# 10. Prometheus
+
+O arquivo é:
+
+```text
+observability/prometheus/prometheus.yml
+```
+
+Ele configura o Prometheus para consultar:
+
+```text
+http://api:3000/api/v1/metrics
+```
+
+Exemplo conceitual:
+
+```yaml
+scrape_configs:
+  - job_name: nestjs-api
+    static_configs:
+      - targets:
+          - api:3000
+    metrics_path: /api/v1/metrics
+```
+
+O Prometheus consulta o endpoint periodicamente e armazena os valores como séries temporais.
+
+Por exemplo:
+
+```text
+09:00 → 100 requisições
+09:01 → 150 requisições
+09:02 → 230 requisições
+```
+
+Com isso, o Grafana consegue desenhar gráficos ao longo do tempo.
+
+---
+
+# 11. Grafana Alloy
+
+O Alloy funciona como coletor central.
+
+Arquivo:
+
+```text
+observability/alloy/config.alloy
+```
+
+Ele possui duas responsabilidades.
+
+## Coleta de logs
+
+O Alloy acessa o socket do Docker:
+
+```yaml
+- /var/run/docker.sock:/var/run/docker.sock:ro
+```
+
+O `:ro` significa somente leitura.
+
+Ele descobre os containers:
+
+```text
+api-mongo-api-1
+api-mongo-mongo-1
+api-mongo-redis-1
+api-mongo-mailpit-1
+api-mongo-prometheus-1
+...
+```
+
+Depois lê os logs e envia para:
+
+```text
+http://loki:3100/loki/api/v1/push
+```
+
+Cada log recebe um label com o nome do container:
+
+```json
+{
+  "container": "api-mongo-api-1"
+}
+```
+
+O dashboard filtra a API com:
+
+```logql
+{container=~".*-api-1"}
+```
+
+## Recebimento de traces
+
+O Alloy abre:
+
+```text
+4317 → OTLP gRPC
+4318 → OTLP HTTP
+```
+
+A API envia para a porta `4318`.
+
+Depois o Alloy utiliza um processador de lotes e encaminha para o Tempo.
+
+---
+
+# 12. Loki
+
+O Loki armazena e consulta logs.
+
+Arquivo:
+
+```text
+observability/loki/config.yml
+```
+
+Os logs chegam assim:
+
+```text
+Docker → Alloy → Loki
+```
+
+No Grafana, a consulta básica da API é:
+
+```logql
+{container=~".*-api-1"}
+```
+
+Para interpretar o JSON:
+
+```logql
+{container=~".*-api-1"} | json
+```
+
+Somente erros:
+
+```logql
+{container=~".*-api-1"} | json | level >= 50
+```
+
+Buscar um request ID específico:
+
+```logql
+{container=~".*-api-1"} | json | reqId="observability-validation-001"
+```
+
+---
+
+# 13. Tempo
+
+O Tempo armazena traces distribuídos.
+
+Arquivo:
+
+```text
+observability/tempo/config.yml
+```
+
+Um trace pode mostrar algo parecido:
+
+```text
+GET /api/v1/users
+└── Express request
+    └── NestJS controller
+        └── UsersService
+            ├── consulta ao banco
+            └── serialização da resposta
+```
+
+Ele ajuda a responder:
+
+- onde uma requisição ficou lenta;
+- qual chamada demorou mais;
+- se o problema ocorreu na API, banco ou integração externa;
+- qual caminho a requisição percorreu.
+
+O Tempo é particularmente útil quando futuramente houver:
+
+- múltiplas APIs;
+- filas;
+- microsserviços;
+- serviços externos;
+- workers.
+
+---
+
+# 14. Grafana
+
+O Grafana é a interface principal.
+
+URL:
+
+```text
+http://localhost:3001
+```
+
+Credenciais locais:
+
+```text
+Usuário: admin
+Senha: admin
+```
+
+Os datasources são provisionados automaticamente:
+
+- Prometheus;
+- Loki;
+- Tempo.
+
+Você não precisa cadastrá-los manualmente.
+
+Também foi criado o dashboard:
+
+```text
+NestJS API Overview
+```
+
+## Painéis disponíveis
+
+### Taxa de requisições
+
+Mostra quantas requisições a API processa por segundo.
+
+### Erros HTTP 5xx
+
+Mostra respostas que indicam erro interno:
+
+```text
+500
+502
+503
+504
+```
+
+### Latência p95
+
+Mostra quanto tempo 95% das requisições levam para terminar.
+
+### Logs da API
+
+Exibe logs da API em tempo real.
+
+### Logs de erro
+
+Filtra logs com nível de erro.
+
+## Correlação Loki → Tempo
+
+O datasource do Loki reconhece `traceId`.
+
+Ao encontrar um log com:
+
+```json
+{
+  "traceId": "13440d21a8c99517a656003b67a0ded2"
+}
+```
+
+você pode abrir o trace correspondente no Tempo.
+
+---
+
+# 15. Docker Compose opcional
+
+A stack normal continua sendo iniciada com:
+
+```bash
+docker compose up --build -d
+```
+
+Ela sobe somente os serviços normais do projeto:
+
+```text
+API
+Banco
+Redis
+Mailpit
+```
+
+Para observabilidade:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.observability.yml \
+  up --build -d
+```
+
+O segundo arquivo complementa o primeiro:
+
+```text
+docker-compose.yml
+├── API
+├── Mongo/PostgreSQL
+├── Redis
+└── Mailpit
+
+docker-compose.observability.yml
+├── habilita métricas e traces na API
+├── força logs JSON
+├── Alloy
+├── Loki
+├── Tempo
+├── Prometheus
+└── Grafana
+```
+
+Assim, observabilidade não fica obrigatória para todo projeto criado com o template.
+
+---
+
+# 16. Variáveis adicionadas
+
+```dotenv
+LOG_PRETTY=true
+METRICS_ENABLED=false
+OTEL_ENABLED=false
+OTEL_SERVICE_NAME=api-mongo
+OTEL_SERVICE_VERSION=0.1.0
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4318/v1/traces
+```
+
+No PostgreSQL, muda apenas:
+
+```dotenv
+OTEL_SERVICE_NAME=api-postgres
+```
+
+## Resumo das variáveis
+
+| Variável | Função |
+|---|---|
+| `LOG_PRETTY` | alterna terminal legível e JSON estruturado |
+| `METRICS_ENABLED` | habilita `/api/v1/metrics` |
+| `OTEL_ENABLED` | habilita geração e exportação de traces |
+| `OTEL_SERVICE_NAME` | identifica a aplicação |
+| `OTEL_SERVICE_VERSION` | informa a versão enviada ao backend |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | endereço que recebe os traces |
+
+---
+
+# 17. Testes adicionados
+
+Foi criado:
+
+```text
+metrics.service.spec.ts
+```
+
+Os testes verificam dois cenários.
+
+## Métricas habilitadas
+
+```typescript
+const service = new MetricsService(createConfig(true));
+
+service.recordHttpRequest(
+  'GET',
+  '/api/v1/health',
+  200,
+  0.025,
+);
+```
+
+O teste confirma que o resultado contém:
+
+```text
+http_server_requests_total
+route="/api/v1/health"
+status_code="200"
+```
+
+## Métricas desabilitadas
+
+```typescript
+const service = new MetricsService(createConfig(false));
+```
+
+Mesmo chamando `recordHttpRequest`, nenhuma métrica HTTP é registrada.
+
+Resultado final:
+
+- MongoDB: 26 testes passando.
+- PostgreSQL: 26 testes passando.
+- Builds dos dois templates aprovados.
+- Locks independentes validados com `npm ci`.
+
+---
+
+# 18. Como investigar um erro na prática
+
+Imagine que o frontend recebeu:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_SERVER_ERROR",
+    "message": "Internal server error"
+  },
+  "meta": {
+    "requestId": "abc-123"
+  }
+}
+```
+
+O processo seria:
+
+1. Abrir o Grafana em `http://localhost:3001`.
+2. Entrar em **Explore**.
+3. Selecionar o datasource **Loki**.
+4. Consultar:
+
+```logql
+{container=~".*-api-1"} | json | reqId="abc-123"
+```
+
+5. Analisar:
+
+```json
+{
+  "reqId": "abc-123",
+  "traceId": "f91e...",
+  "level": 50,
+  "msg": "request errored"
+}
+```
+
+6. Copiar ou abrir o `traceId` no Tempo.
+7. Identificar qual operação falhou ou ficou lenta.
+8. Usar métricas do Prometheus para verificar se foi um erro isolado ou se a taxa de erros aumentou no período.
+
+---
+
+# 19. Desenvolvimento versus produção
+
+## Desenvolvimento
+
+Pode usar toda a stack Docker local:
+
+```text
+Grafana + Loki + Tempo + Prometheus + Alloy
+```
+
+É simples e já está pronta.
+
+## Produção
+
+Não é obrigatório subir todos esses containers junto com a API.
+
+O mais comum é:
+
+```text
+API
+ ├── logs → plataforma da empresa
+ ├── métricas → Prometheus gerenciado
+ └── traces → endpoint OTLP gerenciado
+```
+
+Pode ser Grafana Cloud, Datadog, New Relic, Elastic, Azure Monitor, AWS ou uma stack interna.
+
+Em produção:
+
+- não exponha `/metrics` publicamente;
+- não exponha Loki, Tempo, Alloy ou Prometheus na internet;
+- troque a senha do Grafana;
+- configure retenção;
+- configure alertas;
+- use volumes/armazenamento apropriados;
+- coloque credenciais em secrets.
+
+Os guias permanentes estão em:
+
+- [MongoDB](~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/observability.md)
+- [PostgreSQL](~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/observability.md)
+
+> onde fica isso pra mim ver, pro xemplo crrei um a conta e nao apareceu o erro no grafan do email pq ?, outra coisa q n to entendo ´é q tem um monte de coisa mas n sei pra q serve loki allow
+
+<details><summary>1 previous message</summary>
+
+> Vou conferir nos logs atuais se o erro de e-mail chegou ao container e ao Loki. Assim consigo separar três possibilidades: o envio não falhou, o erro ocorreu antes de o Alloy começar a coletar, ou o painel está usando um filtro que não encontra esse formato. :codex-annotation{index="1"}
+</details>
+
+Não apareceu erro porque, no teste atual, o envio de e-mail não falhou. Eu conferi diretamente no container e no Loki.
+
+O log registrado foi:
+
+```text
+email verification email accepted by SMTP
+```
+
+Com nível:
+
+```json
+{
+  "level": 30,
+  "context": "AuthService"
+}
+```
+
+`level: 30` significa `INFO`, não erro. O painel “Error logs” mostra apenas níveis `50` ou superiores.
+
+Além disso, a API está configurada atualmente com:
+
+```text
+MAIL_HOST=mailpit
+```
+
+Ou seja: o e-mail foi enviado para o Mailpit local, não para uma caixa de e-mail real. Você pode visualizá-lo em:
+
+```text
+http://localhost:8025
+```
+
+## Onde ver `request completed`
+
+:codex-annotation{index="1"}
+
+### Pelo terminal
+
+Dentro da pasta do template MongoDB:
+
+```bash
+docker compose logs -f api
+```
+
+Como você subiu a stack de observabilidade, também pode usar:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.observability.yml \
+  logs -f api
+```
+
+O `-f` mantém o terminal acompanhando os logs em tempo real.
+
+Depois faça uma requisição no Postman:
+
+```http
+GET http://localhost:3000/api/v1/health
+```
+
+O terminal mostrará algo como:
+
+```json
+{
+  "level": 30,
+  "reqId": "c80f6d59-4e35-4a29-b387-55730e9cc629",
+  "req": {
+    "method": "GET",
+    "url": "/api/v1/health"
+  },
+  "res": {
+    "statusCode": 200
+  },
+  "responseTime": 3,
+  "msg": "request completed"
+}
+```
+
+Quando `LOG_PRETTY=true`, ele fica mais legível:
+
+```text
+INFO: request completed
+  method: GET
+  url: /api/v1/health
+  statusCode: 200
+  responseTime: 3
+```
+
+Na stack de observabilidade usamos `LOG_PRETTY=false`, porque o Alloy e o Loki trabalham melhor com JSON.
+
+## Onde encontrar no Grafana
+
+1. Abra `http://localhost:3001`.
+2. Entre com `admin` / `admin`.
+3. Acesse **Explore**.
+4. Selecione o datasource **Loki**.
+5. Use esta consulta:
+
+```logql
+{container=~".*-api-1"} | json
+```
+
+6. Escolha o período correto no canto superior direito, por exemplo **Last 1 hour**.
+7. Clique em **Run query**.
+
+Para acompanhar ao vivo, use o modo **Live** do Explore, quando disponível.
+
+## Procurar somente logs de e-mail
+
+No Explore/Loki:
+
+```logql
+{container=~".*-api-1"} |= "email"
+```
+
+Mais específico:
+
+```logql
+{container=~".*-api-1"} |= "email verification"
+```
+
+No estado atual você encontrará mensagens como:
+
+```text
+email verification email accepted by SMTP
+```
+
+Isso significa:
+
+```text
+API gerou o e-mail
+        ↓
+API conectou ao Mailpit
+        ↓
+Mailpit aceitou a mensagem
+        ↓
+Log INFO registrado
+```
+
+Abra `http://localhost:8025` para visualizar a mensagem.
+
+## Procurar somente erros
+
+```logql
+{container=~".*-api-1"} | json | level >= 50
+```
+
+Atualmente essa consulta não retorna erro de e-mail porque foram encontrados três envios aceitos pelo Mailpit e nenhum erro.
+
+Se houvesse falha SMTP, apareceria algo como:
+
+```json
+{
+  "level": 50,
+  "context": "AuthService",
+  "msg": "Unable to send email verification email",
+  "err": {
+    "message": "connect ECONNREFUSED ..."
+  }
+}
+```
+
+## Para que serve cada ferramenta
+
+Pense no fluxo como uma sequência:
+
+```text
+Pino → Alloy → Loki → Grafana
+```
+
+### Pino
+
+É quem cria o log dentro da aplicação NestJS.
+
+Exemplo:
+
+```typescript
+this.logger.log('email verification email accepted by SMTP');
+```
+
+Resultado:
+
+```json
+{
+  "level": 30,
+  "context": "AuthService",
+  "msg": "email verification email accepted by SMTP"
+}
+```
+
+Sem Pino, a aplicação não produziria os logs estruturados.
+
+### Docker logs
+
+O Pino escreve o JSON na saída padrão do container:
+
+```text
+stdout
+```
+
+Você consegue visualizar diretamente com:
+
+```bash
+docker compose logs -f api
+```
+
+Porém, o Docker não é uma boa ferramenta para pesquisar milhares de logs antigos.
+
+### Grafana Alloy
+
+O Alloy é o coletor.
+
+Ele fica observando os containers:
+
+```text
+api-mongo-api-1
+api-mongo-mongo-1
+api-mongo-redis-1
+api-mongo-mailpit-1
+```
+
+Quando algum container escreve um log, o Alloy:
+
+1. lê o log;
+2. adiciona informações como nome do container;
+3. envia o log para o Loki.
+
+Ele também recebe os traces OpenTelemetry da API e envia para o Tempo.
+
+```text
+                     ┌── logs ──→ Loki
+API/Docker → Alloy ──┤
+                     └── traces → Tempo
+```
+
+O Alloy não é a interface que você usa diariamente. Ele é o transportador/coletor.
+
+### Loki
+
+O Loki é o banco de logs.
+
+Ele recebe e armazena os logs enviados pelo Alloy.
+
+Você pesquisa usando LogQL:
+
+```logql
+{container=~".*-api-1"} | json
+```
+
+Ou:
+
+```logql
+{container=~".*-api-1"} | json | reqId="abc-123"
+```
+
+O Loki faz para logs algo parecido com o que o PostgreSQL faz para dados: armazena e permite consultar.
+
+### Grafana
+
+Grafana é somente a interface visual.
+
+Ele não é o responsável principal por armazenar os dados.
+
+O Grafana consulta:
+
+```text
+Loki       → logs
+Prometheus → métricas
+Tempo      → traces
+```
+
+Portanto:
+
+```text
+Grafana
+├── pergunta ao Loki: quais erros aconteceram?
+├── pergunta ao Prometheus: quantas requisições ocorreram?
+└── pergunta ao Tempo: por onde essa requisição passou?
+```
+
+### Prometheus
+
+Armazena números ao longo do tempo.
+
+Exemplos:
+
+```text
+Quantidade de requisições
+Quantidade de erros 500
+Tempo das requisições
+Uso de memória
+Comportamento do Node.js
+```
+
+A API fornece esses números em:
+
+```text
+http://localhost:3000/api/v1/metrics
+```
+
+O Prometheus consulta esse endereço periodicamente.
+
+### OpenTelemetry
+
+É quem cria os traces dentro da API.
+
+Um trace representa todo o caminho de uma requisição:
+
+```text
+GET /api/v1/users
+└── Express
+    └── NestJS
+        └── UsersController
+            └── UsersService
+                └── MongoDB
+```
+
+Ele também cria:
+
+- `traceId`: identificador do caminho completo;
+- `spanId`: identificador de uma etapa específica.
+
+### Tempo
+
+O Tempo armazena os traces criados pelo OpenTelemetry.
+
+Ele ajuda a identificar:
+
+- qual etapa ficou lenta;
+- onde ocorreu uma falha;
+- quanto tempo cada operação demorou;
+- quais serviços participaram da requisição.
+
+## Diferença entre log, métrica e trace
+
+| Recurso | Responde qual pergunta? | Ferramenta |
+|---|---|---|
+| Log | “O que aconteceu?” | Pino + Loki |
+| Métrica | “Quantas vezes e com que frequência?” | Prometheus |
+| Trace | “Por onde a requisição passou e onde demorou?” | OpenTelemetry + Tempo |
+| Interface | “Onde visualizo tudo?” | Grafana |
+
+Exemplo de erro de e-mail:
+
+- Log: mostra `ECONNREFUSED`.
+- Métrica: mostra aumento de respostas HTTP 500.
+- Trace: mostra em qual etapa do envio SMTP ocorreu a demora/falha.
+- Grafana: apresenta tudo isso na interface.
+
+## Como investigar usando o `requestId`
+
+Se uma resposta retornar:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_SERVER_ERROR",
+    "message": "Internal server error"
+  },
+  "meta": {
+    "requestId": "abc-123"
+  }
+}
+```
+
+Pesquise no Loki:
+
+```logql
+{container=~".*-api-1"} | json | reqId="abc-123"
+```
+
+O log encontrado pode conter:
+
+```json
+{
+  "reqId": "abc-123",
+  "traceId": "f91e123...",
+  "level": 50,
+  "msg": "Unable to send email"
+}
+```
+
+Com isso você tem:
+
+```text
+requestId da resposta
+        ↓
+reqId no Loki
+        ↓
+traceId no log
+        ↓
+trace completo no Tempo
+```
+
+No seu teste atual, o caminho foi bem-sucedido:
+
+```text
+Cadastro realizado
+      ↓
+E-mail criado
+      ↓
+Mailpit aceitou
+      ↓
+Log INFO registrado no Loki
+      ↓
+Mensagem disponível em http://localhost:8025
+```
+
+Atualmente, como você subiu com a stack de observabilidade, está:
+
+```dotenv
+LOG_PRETTY=false
+```
+
+:codex-annotation{index="1"}
+
+O `docker-compose.observability.yml` sobrescreve automaticamente para `false`, por isso os logs aparecem como JSON:
+
+```json
+{"level":30,"reqId":"...","msg":"request completed"}
+```
+
+Isso é proposital para o Alloy/Loki interpretar os campos.
+
+Se subir somente:
+
+```bash
+docker compose up --build -d
+```
+
+será usado o valor do `.env`, normalmente:
+
+```dotenv
+LOG_PRETTY=true
+```
+
+Assim os logs do terminal ficam mais legíveis. Para confirmar o valor atual:
+
+```bash
+docker compose exec api printenv LOG_PRETTY
+```
+
+Com observabilidade, mantenha `false`. Você visualiza os logs de forma organizada pelo Grafana.
+
+> ela ta exposta hj ?
+
+Sim. Atualmente ela está exposta localmente, sem JWT:
+
+```text
+http://localhost:3000/api/v1/metrics
+```
+
+:codex-annotation{index="1"}
+
+Isso acontece porque o endpoint usa:
+
+```typescript
+@Public()
+@SkipThrottle()
+```
+
+E o Docker publica a porta `3000` no computador.
+
+Porém, ela só responde quando:
+
+```dotenv
+METRICS_ENABLED=true
+```
+
+Sem a stack de observabilidade, fica desabilitada e retorna `404`.
+
+Em produção, o ideal é não expor `/metrics` pela internet. O proxy/API Gateway deve bloquear essa rota externamente e permitir apenas que o Prometheus, dentro da rede privada, acesse:
+
+```text
+Prometheus interno → /api/v1/metrics ✅
+Internet → /api/v1/metrics ❌
+```
+
+No seu ambiente local atual, estar acessível é normal e necessário para o Prometheus coletar as métricas.
+
+> mas quando eu subir em produção ele ta configura certo ?
+
+Parcialmente. Se subir apenas o Compose normal, está seguro por padrão porque:
+
+```dotenv
+METRICS_ENABLED=false
+OTEL_ENABLED=false
+```
+
+Mas se usar em produção:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.observability.yml up -d
+```
+
+a configuração atual é voltada para desenvolvimento e não está pronta para produção, pois:
+
+- `/api/v1/metrics` fica habilitado e acessível pela porta pública da API;
+- Grafana usa `admin/admin`;
+- Grafana, Prometheus, Loki, Tempo e Alloy publicam portas no host;
+- não há autenticação ou TLS nesses serviços;
+- retenção e armazenamento ainda são locais.
+
+Para produção, o recomendado é:
+
+```text
+Internet → proxy/reverse proxy → rotas públicas da API
+                               └─ /metrics bloqueado
+
+Prometheus na rede interna → /metrics permitido
+```
+
+Portanto:
+
+- Compose normal: métricas desabilitadas por padrão ✅
+- Compose de observabilidade: adequado para desenvolvimento/homologação ✅
+- Produção usando o Compose de observabilidade exatamente como está: não recomendado ❌
+
+O ideal é criarmos um `docker-compose.production.yml` que não publique as portas internas, use secrets e deixe apenas a API acessível externamente.
+
+Significa que o arquivo atual foi feito para facilitar o desenvolvimento local, então ele abre várias portas diretamente no seu computador/servidor.
+
+:codex-annotation{index="1"}
+
+Hoje temos aproximadamente:
+
+```yaml
+api:
+  ports:
+    - "3000:3000"
+
+grafana:
+  ports:
+    - "3001:3000"
+
+prometheus:
+  ports:
+    - "9090:9090"
+
+loki:
+  ports:
+    - "3100:3100"
+
+tempo:
+  ports:
+    - "3200:3200"
+
+alloy:
+  ports:
+    - "4317:4317"
+    - "4318:4318"
+    - "12345:12345"
+```
+
+## O que `ports` significa
+
+Esta configuração:
+
+```yaml
+ports:
+  - "9090:9090"
+```
+
+significa:
+
+```text
+porta 9090 do servidor
+        ↓
+porta 9090 do container Prometheus
+```
+
+Se o firewall ou servidor permitir, alguém poderia tentar acessar:
+
+```text
+http://seu-servidor:9090
+```
+
+O mesmo vale para Loki, Tempo, Alloy e Grafana.
+
+No desenvolvimento isso é conveniente porque você abre tudo pelo navegador. Em produção, não queremos publicar todos esses serviços.
+
+## Como deveria funcionar em produção
+
+```text
+                       INTERNET
+                           │
+                           ▼
+                   HTTPS / porta 443
+                           │
+                    Reverse Proxy
+                    Nginx/Traefik
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+        rotas públicas             /metrics
+              │                         │
+              ▼                         ▼
+           API NestJS                bloqueado
+              │
+              │ rede interna Docker
+              │
+      ┌───────┼────────┬────────┐
+      ▼       ▼        ▼        ▼
+ PostgreSQL Redis  Prometheus  Alloy
+                           │
+                    ┌──────┴──────┐
+                    ▼             ▼
+                   Loki          Tempo
+```
+
+Somente o proxy publica uma porta:
+
+```yaml
+ports:
+  - "443:443"
+```
+
+Os outros containers continuam se comunicando usando a rede interna do Docker.
+
+## `ports` versus `expose`
+
+### `ports`
+
+Publica no servidor:
+
+```yaml
+prometheus:
+  ports:
+    - "9090:9090"
+```
+
+Permite acessar pelo host:
+
+```text
+http://servidor:9090
+```
+
+### `expose`
+
+Disponibiliza somente dentro da rede Docker:
+
+```yaml
+prometheus:
+  expose:
+    - "9090"
+```
+
+A API e o Grafana conseguem acessar:
+
+```text
+http://prometheus:9090
+```
+
+Mas um usuário externo não consegue acessar diretamente:
+
+```text
+http://servidor:9090
+```
+
+Para produção, geralmente usaríamos `expose` nos serviços internos.
+
+## Como ficaria conceitualmente
+
+```yaml
+services:
+  api:
+    expose:
+      - "3000"
+
+  prometheus:
+    expose:
+      - "9090"
+
+  loki:
+    expose:
+      - "3100"
+
+  tempo:
+    expose:
+      - "3200"
+
+  alloy:
+    expose:
+      - "4317"
+      - "4318"
+      - "12345"
+
+  grafana:
+    expose:
+      - "3000"
+
+  nginx:
+    ports:
+      - "80:80"
+      - "443:443"
+```
+
+Nesse cenário, somente o Nginx pode ser acessado externamente.
+
+## E o Grafana?
+
+Existem algumas opções.
+
+### Opção 1: somente rede privada
+
+```text
+VPN da empresa → Grafana
+Internet pública → bloqueado
+```
+
+É a opção mais segura.
+
+### Opção 2: Grafana publicado com autenticação
+
+```text
+https://grafana.seudominio.com
+```
+
+Mas deve ter:
+
+- HTTPS;
+- senha forte;
+- autenticação corporativa, se possível;
+- restrição de IP ou VPN;
+- usuário `admin` diferente do padrão.
+
+### Opção 3: Grafana Cloud
+
+A infraestrutura envia logs, métricas e traces para o Grafana Cloud. Você não mantém containers Loki, Tempo, Prometheus e Grafana em produção.
+
+Para um template reutilizável, manter a stack local e permitir integração com uma plataforma externa é uma abordagem melhor.
+
+## Por que `admin/admin` é um problema?
+
+Hoje temos:
+
+```yaml
+GF_SECURITY_ADMIN_USER: admin
+GF_SECURITY_ADMIN_PASSWORD: admin
+```
+
+Isso é aceitável localmente.
+
+Em produção, qualquer pessoa que conhecesse o endereço poderia tentar:
+
+```text
+usuário: admin
+senha: admin
+```
+
+A senha deveria vir de variável protegida:
+
+```yaml
+environment:
+  GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+  GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+```
+
+E os valores reais ficariam em um gerenciador de secrets, não dentro do Git.
+
+## O que significa “usar secrets”
+
+Não deixar isso no código:
+
+```dotenv
+GRAFANA_ADMIN_PASSWORD=minha-senha-real
+```
+
+Nem no Compose:
+
+```yaml
+GF_SECURITY_ADMIN_PASSWORD: senha123
+```
+
+O valor deve ser fornecido pelo ambiente de deploy, por exemplo:
+
+```text
+GitHub Actions Secrets
+AWS Secrets Manager
+Azure Key Vault
+Kubernetes Secrets
+Docker Secrets
+Vault
+```
+
+O Compose apenas referencia:
+
+```yaml
+GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+```
+
+## E o endpoint `/metrics`?
+
+Mesmo sem publicar o Prometheus, a API ainda estará disponível externamente.
+
+Se a API estiver em:
+
+```text
+https://api.meuprojeto.com
+```
+
+alguém poderia tentar:
+
+```text
+https://api.meuprojeto.com/api/v1/metrics
+```
+
+Por isso o reverse proxy deve bloquear essa rota externamente:
+
+```nginx
+location /api/v1/metrics {
+    deny all;
+}
+```
+
+Enquanto o Prometheus acessa a API diretamente pela rede Docker:
+
+```text
+http://api:3000/api/v1/metrics
+```
+
+Ele não passa pelo domínio público.
+
+## Por que criar outro arquivo?
+
+Para separar os objetivos:
+
+```text
+docker-compose.yml
+└── desenvolvimento normal
+
+docker-compose.observability.yml
+└── desenvolvimento com Grafana, Loki, Tempo e Prometheus
+
+docker-compose.production.yml
+└── produção com portas restritas, secrets e configurações seguras
+```
+
+Assim, não precisamos prejudicar a facilidade do ambiente local para garantir a segurança da produção.
+
+O arquivo de produção teria:
+
+- somente proxy nas portas `80/443`;
+- API acessível apenas pelo proxy;
+- `/metrics` bloqueado externamente;
+- banco e Redis apenas na rede interna;
+- Grafana/Loki/Tempo/Prometheus sem portas públicas;
+- senhas vindas do ambiente;
+- health checks;
+- política de restart;
+- limites de recursos;
+- volumes persistentes;
+- configuração adequada de retenção.
+
+Resumindo:
+
+```text
+Desenvolvimento:
+você consegue abrir tudo pelo localhost.
+
+Produção:
+somente o que o usuário realmente precisa fica público.
+O restante continua funcionando dentro da rede privada.
+```
+
+<details><summary>2 previous messages</summary>
+
+> As Above.
+>
+> Ta complimanco demais quero algo mais simple funcional e seguro pra mim pegar esse template pronto e ja usar
+>
+> e sim
+>
+> eu quero isso aqui
+>
+> Desenvolvimento:
+> você consegue abrir tudo pelo localhost.
+>
+> Produção:
+> somente o que o usuário realmente precisa fica público.
+> O restante continua funcionando dentro da rede privada.
+>
+> porem quero que me explqie como funciona
+</details>
+
+Você tem razão: não precisamos transformar o template em uma infraestrutura enorme. A solução pode ser simples, com apenas dois modos de execução.
+
+## Resultado desejado
+
+```text
+Desenvolvimento
+├── API: localhost:3000
+├── Grafana: localhost:3001
+├── Prometheus: localhost:9090
+├── Loki: localhost:3100
+├── Tempo: localhost:3200
+├── Mongo/PostgreSQL: acessível localmente
+└── Redis e Mailpit: acessíveis localmente
+
+Produção
+├── API: pública por HTTPS
+├── /metrics: bloqueado externamente
+├── Grafana: acesso somente pelo servidor/VPN/túnel SSH
+├── Prometheus: somente rede interna
+├── Loki: somente rede interna
+├── Tempo: somente rede interna
+├── Banco: somente rede interna
+└── Redis: somente rede interna
+```
+
+## Como faremos
+
+Teremos dois arquivos principais:
+
+```text
+docker-compose.yml
+docker-compose.production.yml
+```
+
+E manteremos o adicional de observabilidade local:
+
+```text
+docker-compose.observability.yml
+```
+
+### Desenvolvimento normal
+
+```bash
+docker compose up --build -d
+```
+
+### Desenvolvimento com Grafana
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.observability.yml \
+  up --build -d
+```
+
+### Produção
+
+```bash
+docker compose \
+  -f docker-compose.production.yml \
+  up --build -d
+```
+
+Assim você não precisa ficar alterando o Compose manualmente.
+
+# Como a produção funcionará
+
+```mermaid
+flowchart LR
+    Internet[Internet] --> Gateway[Caddy HTTPS]
+
+    Gateway -->|rotas da API| API[NestJS API]
+    Gateway -->|/metrics| Block[Bloqueado]
+
+    Prometheus[Prometheus interno] -->|/api/v1/metrics| API
+    API --> Database[(Mongo/PostgreSQL)]
+    API --> Redis[(Redis)]
+    API --> Alloy[Alloy]
+    Alloy --> Loki[Loki]
+    Alloy --> Tempo[Tempo]
+
+    Grafana[Grafana interno] --> Prometheus
+    Grafana --> Loki
+    Grafana --> Tempo
+```
+
+## 1. Apenas o Caddy fica público
+
+O Caddy funciona como a porta de entrada:
+
+```text
+Internet → Caddy → API
+```
+
+Ele publica somente:
+
+```text
+80  → HTTP
+443 → HTTPS
+```
+
+A API não publica diretamente a porta `3000`.
+
+Em vez disso:
+
+```yaml
+api:
+  expose:
+    - "3000"
+```
+
+Isso significa que a API pode ser acessada pelo Caddy e pelos containers internos, mas não diretamente pela internet.
+
+## 2. Caddy encaminha as requisições
+
+Quando alguém acessa:
+
+```text
+https://api.meuprojeto.com/api/v1/auth/login
+```
+
+O caminho será:
+
+```text
+Cliente
+   ↓
+Caddy
+   ↓
+API NestJS na porta interna 3000
+```
+
+O usuário não sabe nem precisa saber que a API está na porta `3000`.
+
+## 3. O Caddy bloqueia `/metrics`
+
+Se alguém tentar acessar pela internet:
+
+```text
+https://api.meuprojeto.com/api/v1/metrics
+```
+
+O Caddy responde `404`.
+
+A regra será semelhante a:
+
+```caddyfile
+@metrics path /api/v1/metrics
+respond @metrics 404
+
+reverse_proxy api:3000
+```
+
+Mas o Prometheus acessa a API diretamente pela rede Docker:
+
+```text
+http://api:3000/api/v1/metrics
+```
+
+Portanto:
+
+```text
+Internet → /metrics ❌
+
+Prometheus interno → /metrics ✅
+```
+
+## 4. Banco e Redis ficam internos
+
+Em desenvolvimento, podemos acessar:
+
+```text
+localhost:5432
+localhost:27017
+localhost:6379
+```
+
+Em produção, não publicaremos essas portas.
+
+Os serviços se comunicam pelo nome do container:
+
+```text
+API → postgres:5432
+API → mongo:27017
+API → redis:6379
+```
+
+Externamente, estas conexões não funcionarão:
+
+```text
+servidor:5432 ❌
+servidor:27017 ❌
+servidor:6379 ❌
+```
+
+Isso reduz bastante a superfície de ataque.
+
+## 5. Loki, Tempo, Prometheus e Alloy ficam internos
+
+Eles não precisam ser acessados pelo usuário da API.
+
+A comunicação ocorre dentro do Docker:
+
+```text
+Alloy → loki:3100
+Alloy → tempo:4317
+Prometheus → api:3000
+Grafana → prometheus:9090
+Grafana → loki:3100
+Grafana → tempo:3200
+```
+
+Esses nomes funcionam porque todos estão na mesma rede Docker.
+
+Não precisamos publicar:
+
+```text
+3100
+3200
+4317
+4318
+9090
+12345
+```
+
+## 6. Como você acessará o Grafana em produção
+
+O Grafana ficará ligado apenas ao endereço local do servidor:
+
+```yaml
+ports:
+  - "127.0.0.1:3001:3000"
+```
+
+Isso significa:
+
+```text
+Internet → servidor:3001 ❌
+Servidor → localhost:3001 ✅
+```
+
+Para acessar do seu computador, você pode usar um túnel SSH:
+
+```bash
+ssh -L 3001:127.0.0.1:3001 usuario@servidor
+```
+
+Depois abre normalmente:
+
+```text
+http://localhost:3001
+```
+
+O navegador envia para seu computador, o SSH encaminha de forma segura para o Grafana no servidor.
+
+Você continuará usando o Grafana normalmente, mas ele não ficará aberto para a internet.
+
+## 7. Senhas no `.env.production`
+
+O arquivo versionado terá somente um exemplo:
+
+```text
+.env.production.example
+```
+
+Com valores assim:
+
+```dotenv
+DOMAIN=api.meuprojeto.com
+
+JWT_ACCESS_SECRET=change-me
+GRAFANA_ADMIN_USER=admin
+GRAFANA_ADMIN_PASSWORD=change-me
+
+DATABASE_URL=change-me
+REDIS_URL=redis://redis:6379
+```
+
+O arquivo real será:
+
+```text
+.env.production
+```
+
+E continuará no `.gitignore`.
+
+Você cria uma vez no servidor:
+
+```bash
+cp .env.production.example .env.production
+```
+
+Depois preenche os valores reais.
+
+O Compose usa:
+
+```yaml
+env_file:
+  - .env.production
+```
+
+As senhas reais não sobem para o GitHub.
+
+## 8. HTTPS
+
+O Caddy consegue obter e renovar certificado HTTPS automaticamente.
+
+Você informa:
+
+```dotenv
+DOMAIN=api.meuprojeto.com
+```
+
+O domínio deve apontar para o IP do servidor.
+
+O Caddy então:
+
+1. verifica o domínio;
+2. solicita certificado;
+3. habilita HTTPS;
+4. renova o certificado automaticamente;
+5. redireciona HTTP para HTTPS.
+
+Assim, o acesso fica:
+
+```text
+https://api.meuprojeto.com
+```
+
+## O que você precisará configurar em um projeto novo
+
+Somente os valores específicos:
+
+```dotenv
+DOMAIN=
+JWT_ACCESS_SECRET=
+GRAFANA_ADMIN_PASSWORD=
+DATABASE_URL=
+SMTP_REAL=
+```
+
+O restante já ficará preparado no template.
+
+## Estrutura final simples
+
+```text
+api-mongo/
+├── docker-compose.yml
+├── docker-compose.observability.yml
+├── docker-compose.production.yml
+├── Caddyfile
+├── .env.example
+├── .env.production.example
+└── observability/
+```
+
+A mesma estrutura existirá no PostgreSQL.
+
+## Resumo
+
+Desenvolvimento:
+
+```text
+Tudo acessível pelo localhost para facilitar seu trabalho.
+```
+
+Produção:
+
+```text
+Caddy é a única entrada pública.
+API fica atrás do Caddy.
+Banco e Redis ficam internos.
+Prometheus acessa /metrics internamente.
+Loki, Tempo e Alloy ficam internos.
+Grafana é acessado por túnel SSH.
+Senhas ficam no .env.production.
+HTTPS é configurado pelo Caddy.
+```
+
+Essa solução é simples de usar, mantém o template pronto e evita expor serviços internos desnecessariamente.
+
+> Bora la ent lembre de ajustar as docs, a docs de passo a passo, tudo, pq dps dessa implementação testar do zero tudo pra ver se está facil pra implementar
+
+<details><summary>17 previous messages</summary>
+
+> Vou implementar nos dois templates com o mesmo contrato: Compose de produção independente, Caddy com HTTPS e bloqueio externo de `/metrics`, serviços internos, Grafana preso ao `127.0.0.1`, exemplos de ambiente e documentação completa. Depois farei um teste “projeto novo”: configuração limpa, validação dos arquivos, build e subida controlada para confirmar que o passo a passo é realmente reproduzível.
+>
+> <details><summary>Ran 3 commands</summary>
+>
+> - Ran `Get-ChildItem -Force | Select-Object Name; if (Test-Path AGENTS.md) { Get-Content -Raw AGENTS.md }; Get-Content -Raw templates\api-mongo\docker-compose.yml; Get-Content -Raw templates\api-postgres\docker-compose.yml; Get-Content -Raw templates\api-mongo\Dockerfile; Get-Content -Raw templates\api-postgres\Dockerfile; Get-Content -Raw templates\api-mongo\.env.example; Get-Content -Raw templates\api-postgres\.env.example; Get-Content -Raw templates\api-mongo\.dockerignore; Get-Content -Raw templates\api-postgres\.dockerignore`
+> - Ran `Get-Content -Raw templates\api-postgres\package.json; Get-Content -Raw templates\api-mongo\package.json; Get-Content -Raw templates\api-postgres\prisma.config.ts; rg -n "creating-a-module|Docker|production|produção|migrate" docs templates/api-mongo/docs templates/api-postgres/docs README.md`
+> - Ran `Get-Content -Raw templates\api-mongo\src\main.ts; Get-Content -Raw templates\api-postgres\src\main.ts; Get-Content -Raw templates\api-mongo\src\config\env.schema.ts; Get-Content -Raw templates\api-postgres\src\config\env.schema.ts; Get-Content -Raw .gitignore; Get-Content -Raw templates\api-mongo\.gitignore; Get-Content -Raw templates\api-postgres\.gitignore`
+>
+> </details>
+>
+> Auditoria concluída. Há um ponto importante além das portas: atrás do Caddy, a API precisa confiar exatamente em um proxy para continuar enxergando o IP real do cliente; caso contrário, o rate limit trataria todos como o mesmo IP. Vou incluir essa configuração automaticamente somente em produção.
+>
+> <details><summary>Created 6 files, edited 6 files, ran 2 commands</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/.env.production.example` (+42 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/Caddyfile` (+12 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docker-compose.production.yml` (+218 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/.env.production.example` (+42 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/Caddyfile` (+12 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docker-compose.production.yml` (+219 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/.env.example` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/config/env.schema.ts` (+4 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/main.ts` (+3 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/.env.example` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/config/env.schema.ts` (+4 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/main.ts` (+3 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/main.ts` (+5 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/main.ts` (+5 -1)
+> - Ran `docker compose --env-file .env.production.example -f docker-compose.production.yml config --quiet`
+> - Ran `docker compose --env-file .env.production.example -f docker-compose.production.yml config --quiet`
+>
+> </details>
+>
+> O Compose rejeitou corretamente a configuração sem `.env.production`; isso é intencional para impedir deploy com segredos ausentes. Para validar como um usuário novo faria, vou copiar temporariamente o arquivo de exemplo, testar e removê-lo ao final — exatamente o fluxo documentado.
+>
+> <details><summary>Ran 4 commands</summary>
+>
+> - Ran `$source=(Resolve-Path .env.production.example).Path; $target=Join-Path (Get-Location) '.env.production'; Copy-Item -LiteralPath $source -Destination $target; try { docker compose --env-file .env.production -f docker-compose.production.yml config --quiet } finally { Remove-Item -LiteralPath $target -Force }`
+> - Ran `$source=(Resolve-Path .env.production.example).Path; $target=Join-Path (Get-Location) '.env.production'; Copy-Item -LiteralPath $source -Destination $target; try { docker compose --env-file .env.production -f docker-compose.production.yml config --quiet } finally { Remove-Item -LiteralPath $target -Force }`
+> - Ran `Get-ChildItem docs -File | Select-Object Name; Get-Content -Raw templates\api-mongo\docs\README.md; Get-Content -Raw templates\api-postgres\docs\README.md; Get-Content -Raw templates\api-mongo\docs\observability.md; Get-Content -Raw README.md`
+> - Ran `rg -n "Variáveis|CORS_ORIGIN|TRUST_PROXY|METRICS_ENABLED|docker-compose|Docker" docs\technical-reference.md docs\architecture.md docs\creating-a-module.md`
+>
+> </details>
+>
+> A configuração de produção já está criada e passa na validação do Docker Compose. Agora vou documentar o caminho completo desde “copiei somente a pasta do template” até desenvolvimento, observabilidade e produção, incluindo validações esperadas e recuperação de problemas comuns.
+>
+> <details><summary>Created 3 files, edited 7 files, ran 4 commands</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/README.md` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/README.md` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md` (+7 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/observability.md` (+3 -4)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/production.md` (+141 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/README.md` (+7 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/observability.md` (+3 -4)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/production.md` (+143 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/README.md` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/README.md` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/getting-started.md` (+133 -0)
+> - Ran `Get-Content -Raw docs\backlog.md; git diff --check`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/backlog.md` (+9 -1)
+> - Ran `npm run lint; npm test -- --runInBand; npm run build`
+> - Ran `npm run lint; npm test -- --runInBand; npm run build`
+> - Ran `Get-Content -Raw templates\api-mongo\scripts\integration-check.mjs | Select-Object -First 1; Get-Content -Raw templates\api-postgres\scripts\integration-check.mjs | Select-Object -First 1`
+>
+> </details>
+>
+> Código, lint, testes unitários e builds passaram nos dois templates. Agora começa o teste mais importante: vou parar a stack atual sem apagar dados, copiar cada template para uma pasta temporária isolada, instalar com o lock próprio e subir bancos vazios como se fosse um projeto recém-clonado.
+>
+> <details><summary>Ran 4 commands</summary>
+>
+> - Ran `docker compose -f docker-compose.yml -f docker-compose.observability.yml down`
+> - Ran `$validationRoot='C:\Users\gabriel.cunha\Documents\ChatGPT\Template Inicial NestJS\.tmp-template-validation'; $workspaceRoot=(Resolve-Path 'C:\Users\gabriel.cunha\Documents\ChatGPT\Template Inicial NestJS').Path; $resolvedParent=[IO.Path]::GetFullPath($validationRoot); if(-not $resolvedParent.StartsWith($workspaceRoot,[StringComparison]::OrdinalIgnoreCase)){throw 'Unsafe validation path'}; if(Test-Path -LiteralPath $validationRoot){Remove-Item -LiteralPath $validationRoot -Recurse -Force}; New-Item -ItemType Directory -Path $validationRoot | Out-Null; foreach($name in @('api-mongo','api-postgres')){$source="C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\$name"; $target=Join-Path $validationRoot $name; New-Item -ItemType Directory -Path $target | Out-Null; Get-ChildItem -LiteralPath $source -Force | Where-Object {$_.Name -notin @('node_modules','dist','coverage','.env','.env.production')} | Copy-Item -Destination $target -Recurse -Force; Copy-Item -LiteralPath (Join-Path $target '.env.example') -Destination (Join-Path $target '.env')}; Get-ChildItem $validationRoot | Select-Object FullName`
+> - Ran `npm ci`
+> - Ran `npm ci`
+>
+> </details>
+>
+> As duas cópias isoladas reconheceram seus próprios `package-lock.json` e estão instalando sem depender do monorepo. Os avisos exibidos são de dependências transitivas antigas; não interromperam a instalação. Depois disso vou subir bancos realmente vazios e executar seed/login/refresh/RBAC/auditoria/rate limit.
+>
+> <details><summary>Ran 3 commands</summary>
+>
+> - Ran `docker compose up --build -d`
+> - Ran `docker compose exec -T api npm run seed; docker compose exec -T api npm run test:integration`
+> - Ran `docker compose down -v --remove-orphans`
+>
+> </details>
+>
+> O teste “copiei somente a pasta MongoDB” passou integralmente: `npm ci`, build Docker, banco vazio, seed e fluxo integrado. Agora vou repetir exatamente o mesmo processo com PostgreSQL, incluindo migrations automáticas/manuais conforme o ambiente.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `docker compose up --build -d`
+>
+> </details>
+>
+> <details><summary>Ran <code>'&quot;C:\\Users\\gabriel.cunha\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe&quot; -Command '&quot;'&quot;'docker compose exec -T api npx prisma migrate deploy; docker compose exec -T api npm run seed; docker compose exec -T api npm run test:integration'&quot;'&quot;</code></summary>
+>
+> ```bash
+> $ '"C:\\Users\\gabriel.cunha\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe" -Command '"'"'docker compose exec -T api npx prisma migrate deploy; docker compose exec -T api npm run seed; docker compose exec -T api npm run test:integration'"'"
+> ```
+>
+> Running
+>
+> Auto-review
+>
+> Status: denied
+> Risk: high
+> Rationale: Automatic approval review failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 12:57 PM.
+>
+> </details>
+>
+> System error
+>
+> You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 12:57 PM.
+>
+> <details><summary>Plan</summary>
+>
+> A configuração de produção e os guias foram criados para os dois templates. Agora começa a validação reproduzível do zero e os testes de segurança do proxy.
+>
+> - [x] Auditar Compose, variáveis, Dockerfiles e documentação atuais dos dois templates
+> - [x] Criar configuração de produção segura e equivalente para MongoDB e PostgreSQL
+> - [x] Atualizar documentação geral, guias específicos e passo a passo de uso do template
+> - [ ] Validar do zero instalação, build, configuração Docker e fluxos essenciais
+> - [ ] Corrigir problemas encontrados e entregar comandos finais
+>
+> </details>
+</details>
+
+> o falta
+
+<details><summary>1 previous message</summary>
+
+> System error
+>
+> You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 12:57 PM.
+</details>

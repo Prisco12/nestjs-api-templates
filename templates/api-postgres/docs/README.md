@@ -4,6 +4,8 @@
 
 NestJS, PostgreSQL, Prisma, JWT, Argon2, Pino, Swagger, Docker e Postman.
 
+Para logs centralizados, métricas, traces e Grafana, consulte o [guia de observabilidade](observability.md). Para publicar com HTTPS e serviços internos protegidos, consulte o [guia de produção](production.md).
+
 ## Configuração local
 
 1. Copie `.env.example` para `.env` e preencha `DATABASE_URL`, segredos JWT e credenciais de seed.
@@ -94,3 +96,9 @@ Importe `postman/api-postgres.postman_collection.json` no Postman. A coleção s
 ## Docker
 
 Use `DATABASE_URL=postgresql://postgres:postgres@postgres:5432/nest_api?schema=public` no `.env` e execute `docker compose up --build`. Redis e Mailpit também sobem automaticamente. Depois aplique as migrations com `docker compose exec api npx prisma migrate deploy` e execute `docker compose exec api npm run seed`.
+
+Modos disponíveis:
+
+- desenvolvimento: `docker compose up --build -d`;
+- desenvolvimento com observabilidade: `docker compose -f docker-compose.yml -f docker-compose.observability.yml up --build -d`;
+- produção: `docker compose --env-file .env.production -f docker-compose.production.yml up --build -d`.

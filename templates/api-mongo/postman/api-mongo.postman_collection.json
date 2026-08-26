@@ -27,6 +27,14 @@
         {
           "name": "Readiness",
           "request": { "method": "GET", "url": "{{baseUrl}}/health/ready" }
+        },
+        {
+          "name": "Prometheus metrics",
+          "request": {
+            "description": "Endpoint operacional disponível somente quando METRICS_ENABLED=true. Retorna texto no formato Prometheus.",
+            "method": "GET",
+            "url": "{{baseUrl}}/metrics"
+          }
         }
       ]
     },

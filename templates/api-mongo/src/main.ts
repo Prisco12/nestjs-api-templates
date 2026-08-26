@@ -1,7 +1,9 @@
+import './infrastructure/observability/instrumentation';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import { Application } from 'express';
 import helmet from 'helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
@@ -16,6 +18,12 @@ async function bootstrap() {
   app.use(new RequestIdMiddleware().use);
   app.useLogger(app.get(Logger));
   const config = app.get(ConfigService);
+  if (config.getOrThrow<boolean>('TRUST_PROXY')) {
+    const expressApplication = app
+      .getHttpAdapter()
+      .getInstance() as Application;
+    expressApplication.set('trust proxy', 1);
+  }
   const origins = config
     .getOrThrow<string>('CORS_ORIGIN')
     .split(',')

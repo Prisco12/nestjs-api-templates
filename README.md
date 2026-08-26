@@ -17,6 +17,9 @@ Cada pasta em `templates/` será uma aplicação NestJS completa, com dependênc
 - respostas, erros, paginação e observabilidade com convenções idênticas entre os templates.
 
 Leia o guia de manutenção em [docs/README.md](docs/README.md) e as decisões em [docs/architecture.md](docs/architecture.md).
+Consulte também o [backlog do projeto](docs/backlog.md).
+
+Para copiar apenas um template e iniciar um projeto do zero, siga o [guia de início rápido](docs/getting-started.md).
 
 ## Estrutura
 
@@ -41,3 +44,5 @@ Documentação deve acompanhar cada alteração funcional. Os guias específicos
 
 - [PostgreSQL](templates/api-postgres/docs/README.md)
 - [MongoDB](templates/api-mongo/docs/README.md)
+- Observabilidade: [PostgreSQL](templates/api-postgres/docs/observability.md) | [MongoDB](templates/api-mongo/docs/observability.md)
+- Produção: [PostgreSQL](templates/api-postgres/docs/production.md) | [MongoDB](templates/api-mongo/docs/production.md)
