@@ -12,7 +12,7 @@ Sempre que um endpoint, contrato, regra de autorização, variável de ambiente,
 
 Os logs devem mascarar dados sensíveis, incluindo `Authorization`, cookies e `Set-Cookie`.
 
-Para iniciar um projeto usando somente uma das pastas, consulte [Começando um projeto novo](getting-started.md). Para adicionar um domínio novo, consulte [Criando um módulo](creating-a-module.md).
+Para iniciar um projeto usando somente uma das pastas, consulte [Começando um projeto novo](getting-started.md). Para adicionar um domínio novo, consulte [Criando um módulo](creating-a-module.md). Para validar autenticação e e-mail de ponta a ponta, consulte [Teste de integração do fluxo de conta](integration-testing.md).
 
 ## Roles padrão
 

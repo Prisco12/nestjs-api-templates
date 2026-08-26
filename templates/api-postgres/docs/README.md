@@ -85,13 +85,13 @@ A cobertura atual valida regras de Auth, Rate Limit, Users e RBAC: e-mail duplic
 
 ## CI e integração
 
-O workflow `.github/workflows/ci.yml` compila, executa lint e testes unitários para os dois templates em cada push e Pull Request. Depois sobe Docker, aplica migrations, executa seed e valida health, login, refresh por cookie, RBAC, auditoria, logout e rate limit. Localmente, com a API Docker em execução, migration aplicada e seed executado, use `docker compose exec api npm run test:integration`.
+O workflow `.github/workflows/ci.yml` compila, executa lint e testes unitários em cada push e Pull Request. Depois sobe Docker, aplica migrations, executa seed e roda `npm run test:integration`. O cenário cria uma conta, obtém os tokens de confirmação/reset pela API do Mailpit e valida login, rotação e revogação do refresh cookie, troca de senha, `/users/me`, RBAC, auditoria, logout e rate limit. Localmente, com a API Docker em execução, migrations aplicadas e seed executado, use `docker compose exec -T api npm run test:integration`. A verificação curta anterior continua disponível em `npm run test:integration:smoke`.
 
 Ao copiar somente este template para um repositório novo, mantenha a pasta `.github/` que já está dentro dele. A CI standalone funciona sem os demais diretórios deste monorepo.
 
 ## API e testes manuais
 
-Importe `postman/api-postgres.postman_collection.json` no Postman. A coleção salva access e refresh tokens automaticamente após login/refresh.
+Importe `postman/api-postgres.postman_collection.json` no Postman. A coleção salva o access token e `userId` após login/refresh; o cookie jar mantém o refresh token HttpOnly. Depois de Register ou Forgot password, execute a requisição seguinte de captura do Mailpit para preencher `verificationToken` ou `passwordResetToken` automaticamente.
 
 ## Docker
 

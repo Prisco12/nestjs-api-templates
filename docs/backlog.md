@@ -4,10 +4,10 @@ Este arquivo reúne atividades aprovadas, mas ainda não concluídas, para os te
 
 ## Prioridade alta
 
-- [ ] Validar envio SMTP real fora da rede corporativa nas portas 465 e 587.
+- [x] Validar envio SMTP real fora da rede corporativa nas portas 465 e 587.
 - [x] Confirmar no log `email verification email accepted by SMTP` e verificar entrega na caixa de entrada ou spam.
-- [ ] Executar o fluxo completo de conta em Docker nos dois templates: cadastro, confirmação de e-mail, login, recuperação de senha, redefinição, revogação de sessões e auditoria.
-- [ ] Automatizar o fluxo de e-mail nos testes de integração e na CI usando a API do Mailpit para localizar a mensagem e extrair o token.
+- [x] Executar o fluxo completo de conta em Docker nos dois templates: cadastro, confirmação de e-mail, login, recuperação de senha, redefinição, revogação de sessões e auditoria.
+- [x] Automatizar o fluxo de e-mail nos testes de integração e na CI usando a API do Mailpit para localizar a mensagem e extrair o token.
 - [x] Corrigir o warning `Unsupported route path: "/api/*"` emitido pelo NestJS/Express durante a inicialização.
 - [x] Remover casts `any` inseguros dos services/testes e fazer a CI falhar quando o lint produzir warnings.
 

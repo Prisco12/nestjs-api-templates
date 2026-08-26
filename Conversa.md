@@ -15146,3 +15146,1990 @@ Essa solução é simples de usar, mantém o template pronto e evita expor servi
 >
 > You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 12:57 PM.
 </details>
+
+> Qual o metodo pra mim testar agr o envio de email, para ativar o smtp
+
+Para testar um envio real agora, configure o SMTP no `.env` do template que deseja executar.
+
+Observação: deixei uma validação temporária do PostgreSQL ocupando as portas. Antes, encerre-a:
+
+```bash
+cd "C:\Users\gabriel.cunha\Documents\ChatGPT\Template Inicial NestJS\.tmp-template-validation\api-postgres"
+docker compose down -v
+```
+
+Depois volte ao seu template, por exemplo MongoDB:
+
+```bash
+cd "C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo"
+```
+
+## 1. Configurar Gmail
+
+No `.env`:
+
+```dotenv
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_SECURE=false
+MAIL_USER=seu-email@gmail.com
+MAIL_PASSWORD=sua-senha-de-aplicativo
+MAIL_FROM=seu-email@gmail.com
+```
+
+Para Gmail, não use a senha normal:
+
+1. Ative autenticação em duas etapas na conta Google.
+2. Gere uma “Senha de app”.
+3. Coloque os 16 caracteres em `MAIL_PASSWORD`, sem espaços.
+
+Para porta `465`, seria:
+
+```dotenv
+MAIL_PORT=465
+MAIL_SECURE=true
+```
+
+Recomendo começar pela porta `587`.
+
+## 2. Outlook/Microsoft 365
+
+```dotenv
+MAIL_HOST=smtp.office365.com
+MAIL_PORT=587
+MAIL_SECURE=false
+MAIL_USER=seu-email@outlook.com
+MAIL_PASSWORD=sua-senha-ou-senha-de-aplicativo
+MAIL_FROM=seu-email@outlook.com
+```
+
+Contas corporativas podem ter SMTP autenticado bloqueado pelo administrador.
+
+## 3. Recriar a API
+
+Depois de alterar o `.env`:
+
+```bash
+docker compose up --build -d --force-recreate api
+```
+
+Acompanhe os logs:
+
+```bash
+docker compose logs -f api
+```
+
+## 4. Criar uma conta nova
+
+No Postman:
+
+```http
+POST http://localhost:3000/api/v1/auth/register
+Content-Type: application/json
+```
+
+```json
+{
+  "email": "email-real-que-vai-receber@example.com",
+  "password": "SenhaMuitoBoa123!"
+}
+```
+
+Use um e-mail ainda não cadastrado.
+
+## 5. Resultado esperado
+
+Quando o servidor SMTP aceitar:
+
+```text
+email verification email accepted by SMTP
+```
+
+Isso significa que o provedor aceitou a mensagem. Verifique:
+
+- caixa de entrada;
+- spam;
+- lixo eletrônico;
+- quarentena corporativa.
+
+Em caso de erro:
+
+```text
+Unable to send email verification email
+```
+
+Para filtrar:
+
+```bash
+docker compose logs --tail=200 api
+```
+
+No PowerShell:
+
+```powershell
+docker compose logs --tail=200 api |
+  Select-String -Pattern "SMTP|email|Unable|accepted"
+```
+
+## Reenviar confirmação
+
+Para uma conta existente ainda não verificada:
+
+```http
+POST http://localhost:3000/api/v1/auth/resend-verification
+Content-Type: application/json
+```
+
+```json
+{
+  "email": "email-real-que-vai-receber@example.com"
+}
+```
+
+## Como saber que não está usando Mailpit
+
+Confira:
+
+```bash
+docker compose exec api printenv MAIL_HOST
+```
+
+Para envio real, deve aparecer:
+
+```text
+smtp.gmail.com
+```
+
+ou o servidor do seu provedor.
+
+Se aparecer:
+
+```text
+mailpit
+```
+
+o e-mail continuará indo para `http://localhost:8025`, não para uma caixa real.
+
+Nunca envie o `.env` com a senha SMTP para o GitHub.
+
+> tem q rodar aseed to no mongo
+
+Se o MongoDB estiver vazio ou for a primeira execução, precisa rodar o seed:
+
+```bash
+docker compose up --build -d
+docker compose exec api npm run seed
+```
+
+Ele executa:
+
+```text
+seed:rbac  → cria/sincroniza roles e permissões
+seed:admin → cria o administrador inicial
+```
+
+Se o banco já tem as roles e o administrador, não é obrigatório. Porém, pode executar novamente com segurança: ele não duplica roles nem troca a senha do administrador existente.
+
+Depois teste o cadastro e o envio de e-mail.
+
+> vale lelmbrar q to rodando no any desk em outro pc
+>
+> User context
+>
+> Attachments:
+> - api-1 | [2026-08-26 16:51:39.137 +0000] INFO: request completed {"reqId":"5e790…: `~/.codex/attachments/09194646-efe9-4f7b-be8f-22c4cb1d6cb5/pasted-text.txt`
+
+<details><summary>3 previous messages</summary>
+
+> Vou ler o log completo para identificar se o problema é SMTP, rede da máquina remota, configuração do container ou apenas entrega. O AnyDesk em si não muda a API, mas significa que precisamos considerar a rede e o firewall do outro computador.
+>
+> <details><summary>Explored a file</summary>
+>
+> - Read `~/.codex/attachments/09194646-efe9-4f7b-be8f-22c4cb1d6cb5/pasted-text.txt`
+>
+> </details>
+>
+> Context compaction
+>
+> Source: automatic
+> Status: completed
+</details>
+
+O AnyDesk não interfere diretamente. O erro está acontecendo no computador remoto onde o Docker está rodando.
+
+O log mostra a causa exata:
+
+```text
+Default user role is unavailable. Run the database seed.
+```
+
+A API tentou cadastrar o usuário, mas não encontrou a role padrão `user`. No terminal do computador remoto, dentro de `templates/api-mongo`, execute:
+
+```bash
+docker compose exec api npm run seed
+```
+
+Depois, tente cadastrar novamente usando um e-mail ainda não utilizado.
+
+Isso ocorre antes do envio do e-mail, portanto ainda não é um erro de SMTP.
+
+Para acompanhar o próximo teste:
+
+```bash
+docker compose logs -f api
+```
+
+Quando o cadastro funcionar, procure:
+
+```text
+Email verification email accepted by SMTP
+```
+
+Se estiver usando Mailpit, o e-mail aparecerá em:
+
+```text
+http://localhost:8025
+```
+
+Como você está pelo AnyDesk, esse endereço deve ser aberto no navegador do computador remoto.
+
+Também existem vários `404` para `/api/v1/metrics` no log. Isso é separado do cadastro: o Prometheus está tentando coletar métricas, mas o endpoint está desativado. Depois corrigimos isso ajustando `METRICS_ENABLED`; primeiro execute o seed e valide o cadastro.
+
+A mensagem `Email verification email accepted by SMTP` :codex-annotation{index="2"} significa que o servidor SMTP aceitou o e-mail — não necessariamente que ele chegou à caixa de entrada real.
+
+Confirme para qual SMTP a API está enviando, no computador remoto:
+
+```bash
+docker compose exec api printenv MAIL_HOST
+docker compose exec api printenv MAIL_PORT
+docker compose ps
+```
+
+Existem dois cenários:
+
+- Se aparecer `MAIL_HOST=mailpit`, o e-mail não será enviado para Gmail/Outlook. Ele ficará somente no Mailpit.
+- Se aparecer `smtp.gmail.com` ou outro provedor real, ele não aparecerá no Mailpit; verifique caixa de entrada, spam e quarentena.
+
+Como você está usando AnyDesk, `http://localhost:8025` :codex-annotation{index="1"} precisa ser aberto no navegador do computador remoto onde o Docker está rodando. `localhost` sempre aponta para a própria máquina que abriu o navegador.
+
+Se estiver usando Mailpit, confira também:
+
+```bash
+docker compose logs --tail=100 mailpit
+```
+
+E tente acessar no computador remoto:
+
+```text
+http://127.0.0.1:8025
+```
+
+Se `docker compose ps` não mostrar o `mailpit` como `Up`, inicie-o:
+
+```bash
+docker compose up -d mailpit
+```
+
+Depois faça novamente o reenvio:
+
+```http
+POST /api/v1/auth/resend-verification
+Content-Type: application/json
+
+{
+  "email": "seu-email@exemplo.com"
+}
+```
+
+Se quiser receber na caixa de e-mail verdadeira, precisaremos configurar um SMTP real no `.env`; o Mailpit apenas captura mensagens localmente para desenvolvimento.
+
+> PS C:\Users\Gabriel Prisco\Documents\ADMIN - DEV\nestjs-api-templates\templates\api-mongo> docker compose exec api printenv MAIL\_HOST
+> smtp.gmail.com
+> PS C:\Users\Gabriel Prisco\Documents\ADMIN - DEV\nestjs-api-templates\templates\api-mongo> docker compose exec api printenv MAIL\_PORT
+> 587
+> PS C:\Users\Gabriel Prisco\Documents\ADMIN - DEV\nestjs-api-templates\templates\api-mongo> docker compose ps
+> NAME                     IMAGE                    COMMAND                  SERVICE      CREATED             STATUS                    PORTS
+> api-mongo-alloy-1        grafana/alloy:v1.10.2    "/bin/alloy run --se…"   alloy        19 minutes ago      Up 14 minutes             0.0.0.0:4317-4318->4317-4318/tcp, [::]:4317-4318->4317-4318/tcp, 0.0.0.0:12345->12345/tcp, [::]:12345->12345/tcp
+> api-mongo-api-1          api-mongo-api            "docker-entrypoint.s…"   api          7 minutes ago       Up 7 minutes              0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+> api-mongo-grafana-1      grafana/grafana:12.2.0   "/run.sh"                grafana      19 minutes ago      Up 14 minutes             0.0.0.0:3001->3000/tcp, [::]:3001->3000/tcp
+> api-mongo-loki-1         grafana/loki:3.5.3       "/usr/bin/loki -conf…"   loki         19 minutes ago      Up 14 minutes             0.0.0.0:3100->3100/tcp, [::]:3100->3100/tcp
+> api-mongo-mailpit-1      axllent/mailpit:v1.27    "/mailpit"               mailpit      About an hour ago   Up 14 minutes (healthy)   0.0.0.0:1025->1025/tcp, [::]:1025->1025/tcp, 0.0.0.0:8025->8025/tcp, [::]:8025->8025/tcp
+> api-mongo-mongo-1        mongo:8                  "docker-entrypoint.s…"   mongo        About an hour ago   Up 14 minutes (healthy)   0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp
+> api-mongo-prometheus-1   prom/prometheus:v3.5.0   "/bin/prometheus --c…"   prometheus   19 minutes ago      Up 14 minutes             0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp
+> api-mongo-redis-1        redis:7-alpine           "docker-entrypoint.s…"   redis        About an hour ago   Up 14 minutes (healthy)   0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+> api-mongo-tempo-1        grafana/tempo:2.8.2      "/tempo -config.file…"   tempo        19 minutes ago      Up 14 minutes             0.0.0.0:3200->3200/tcp, [::]:3200->3200/tcp
+> PS C:\Users\Gabriel Prisco\Documents\ADMIN - DEV\nestjs-api-templates\templates\api-mongo> docker compose logs --tail=100 mailpit
+> mailpit-1  | time="2026/08/26 15:49:34" level=info msg="[smtpd] starting on [::]:1025 (no encryption)"
+> mailpit-1  | time="2026/08/26 15:49:34" level=info msg="[http] starting on [::]:8025"
+> mailpit-1  | time="2026/08/26 15:49:34" level=info msg="[http] accessible via [http://localhost:8025/](http://localhost:8025/)"
+> mailpit-1  | [db] got terminated signal, shutting down
+> mailpit-1  | time="2026/08/26 16:43:52" level=info msg="[smtpd] starting on [::]:1025 (no encryption)"
+> mailpit-1  | time="2026/08/26 16:43:52" level=info msg="[http] starting on [::]:8025"
+> mailpit-1  | time="2026/08/26 16:43:52" level=info msg="[http] accessible via [http://localhost:8025/](http://localhost:8025/)"
+> PS C:\Users\Gabriel Prisco\Documents\ADMIN - DEV\nestjs-api-templates\templates\api-mongo>
+
+Agora ficou claro: a API está enviando pelo Gmail, não pelo Mailpit.
+
+```text
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+```
+
+Por isso o Mailpit está vazio, mesmo estando funcionando normalmente.
+
+A mensagem `Email verification email accepted by SMTP` significa que o Gmail recebeu a mensagem da API para encaminhamento. Agora confira:
+
+1. Caixa de entrada do destinatário.
+2. Spam/lixo eletrônico.
+3. Quarentena, caso seja e-mail corporativo.
+4. Caixa “Enviados” da conta Gmail configurada como remetente.
+5. Eventuais mensagens de falha/devolução recebidas pelo remetente.
+
+Confira também a configuração, sem exibir a senha:
+
+```powershell
+docker compose exec api sh -lc 'printenv | grep -E "^MAIL_(HOST|PORT|FROM|USER|SECURE)="'
+```
+
+Idealmente:
+
+```env
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_SECURE=false
+MAIL_USER=seuemail@gmail.com
+MAIL_FROM=NestJS API <seuemail@gmail.com>
+```
+
+O `MAIL_FROM` deve usar preferencialmente o mesmo endereço autenticado em `MAIL_USER`. Para Gmail, `MAIL_PASSWORD` deve ser uma senha de aplicativo, não a senha comum da conta.
+
+Depois de ajustar o `.env`, recrie o container:
+
+```powershell
+docker compose up -d --build --force-recreate api
+```
+
+Então acompanhe:
+
+```powershell
+docker compose logs -f api
+```
+
+E solicite novamente o e-mail.
+
+Como você está no AnyDesk, a conexão com o Gmail está sendo feita pelo computador remoto. Porém, como o Gmail já aceitou a mensagem, o AnyDesk e a conexão SMTP não parecem ser o problema. Se o destinatário for corporativo, faça um teste enviando para um Gmail pessoal; filtros empresariais frequentemente bloqueiam ou colocam mensagens SMTP automatizadas em quarentena.
+
+Sim, vamos testar o Gmail de verdade. O Mailpit pode continuar rodando, mas não participará desse teste. :codex-annotation{index="1"}
+
+### 1. Configure o `.env`
+
+```env
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_SECURE=false
+MAIL_USER=seu-email@gmail.com
+MAIL_PASSWORD=sua-senha-de-aplicativo
+MAIL_FROM=NestJS API <seu-email@gmail.com>
+```
+
+`MAIL_PASSWORD` precisa ser uma [senha de aplicativo do Google](https://support.google.com/accounts/answer/185833), normalmente com 16 caracteres. A conta precisa ter verificação em duas etapas ativada.
+
+### 2. Recrie a API
+
+```powershell
+docker compose up -d --build --force-recreate api
+```
+
+### 3. Acompanhe os logs
+
+```powershell
+docker compose logs -f api
+```
+
+### 4. Cadastre um Gmail pessoal ainda não utilizado
+
+```http
+POST http://localhost:3000/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "destinatario@gmail.com",
+  "password": "Senha@Forte123"
+}
+```
+
+Se a conta já estiver cadastrada e ainda não estiver verificada:
+
+```http
+POST http://localhost:3000/api/v1/auth/resend-verification
+Content-Type: application/json
+
+{
+  "email": "destinatario@gmail.com"
+}
+```
+
+### 5. Resultado esperado
+
+No terminal:
+
+```text
+Email verification email accepted by SMTP
+```
+
+Depois verifique no Gmail destinatário:
+
+- Caixa de entrada;
+- Spam;
+- aba Promoções;
+- “Todos os e-mails”.
+
+Confira também a pasta “Enviados” do Gmail configurado em `MAIL_USER`. Se estiver em “Enviados”, mas não chegar ao destinatário, o problema ocorre depois que o Gmail aceitou a mensagem — geralmente filtro de spam, endereço incorreto ou bloqueio do domínio destinatário.
+
+Para esse primeiro teste, recomendo usar Gmail como remetente e outro Gmail pessoal como destinatário. Isso elimina a possível interferência do servidor corporativo.
+
+> MAIL\_HOST=smtp.gmail.com
+> MAIL\_PORT=587
+> MAIL\_SECURE=false
+> MAIL\_USER=gabrielmarcosprisco\@gmail.com
+> MAIL\_PASSWORD=mkyt dwmm nres kmsk
+> MAIL\_FROM=gabrielmarcosprisco\@gmail.com
+
+Atenção: você acabou de compartilhar uma senha de aplicativo real. Considere-a comprometida.
+
+Faça agora:
+
+1. Acesse sua Conta Google → Segurança → Senhas de app.
+2. Revogue essa senha.
+3. Gere uma nova.
+4. Não envie a nova senha aqui nem faça commit do `.env`.
+
+Configure a nova senha sem espaços:
+
+```env
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_SECURE=false
+MAIL_USER=gabrielmarcosprisco@gmail.com
+MAIL_PASSWORD=NOVASENHADE16CARACTERES
+MAIL_FROM="NestJS API <gabrielmarcosprisco@gmail.com>"
+```
+
+Recrie a API:
+
+```powershell
+docker compose up -d --build --force-recreate api
+docker compose logs -f api
+```
+
+Garanta também que o `.env` está ignorado pelo Git:
+
+```powershell
+git check-ignore .env
+```
+
+O comando deve retornar `.env`. Depois teste com `register` ou `resend-verification` usando outro endereço Gmail como destinatário.
+
+> User context
+>
+> Attachments:
+> - api-1 | [2026-08-26 16:59:44.077 +0000] INFO: request completed {"reqId":"cbe73…: `~/.codex/attachments/6ba37170-ea99-4cb3-9026-6b3fd99186df/pasted-text.txt`
+
+<details><summary>2 previous messages</summary>
+
+> Vou analisar o novo log e separar o que é falha de envio do que são mensagens normais da API.
+>
+> <details><summary>Explored a file</summary>
+>
+> - Read `~/.codex/attachments/6ba37170-ea99-4cb3-9026-6b3fd99186df/pasted-text.txt`
+>
+> </details>
+</details>
+
+O teste do Gmail funcionou corretamente no backend:
+
+```text
+17:01:03 — email verification email accepted by SMTP
+POST /auth/resend-verification — 204
+responseTime — 3387ms
+```
+
+O identificador terminado em `@gmail.com` confirma que o Gmail aceitou a mensagem. A API não recebeu erro de autenticação nem de SMTP.
+
+Se ainda não apareceu:
+
+1. Pesquise na conta destinatária:
+
+```text
+in:anywhere newer_than:1d from:gabrielmarcosprisco@gmail.com
+```
+
+2. Verifique Spam, Promoções e “Todos os e-mails”.
+3. Confira a pasta “Enviados” de `gabrielmarcosprisco@gmail.com`.
+4. Teste enviando para outro Gmail pessoal, diferente do remetente.
+5. Se estiver enviando para o próprio remetente, o Gmail pode agrupar a mensagem na conversa existente ou deixá-la mais visível em “Enviados”.
+
+O log também mostra outro problema independente: o Prometheus consulta `/api/v1/metrics` a cada cinco segundos e recebe `404`. Para a observabilidade funcionar, coloque no `.env`:
+
+```env
+METRICS_ENABLED=true
+```
+
+Depois recrie a API:
+
+```powershell
+docker compose up -d --build --force-recreate api
+```
+
+Após isso, confirme:
+
+```powershell
+curl http://localhost:3000/api/v1/metrics
+```
+
+Deverá retornar métricas em texto, não `404`.
+
+E lembre-se de revogar a senha de aplicativo que foi compartilhada anteriormente e gerar outra.
+
+> agr cehgou kkkkk
+
+Boa! Então o fluxo real está validado:
+
+- API autenticou no Gmail.
+- Gmail aceitou a mensagem.
+- E-mail chegou ao destinatário.
+- `resend-verification` respondeu `204`.
+
+Só falta:
+
+1. Revogar a senha de aplicativo que foi exposta e gerar outra.
+2. Atualizar o `.env` com a nova senha.
+3. Ativar `METRICS_ENABLED=true` para eliminar os `404` do Prometheus.
+4. Recriar a API:
+
+```powershell
+docker compose up -d --build --force-recreate api
+```
+
+O atraso de alguns minutos pode acontecer normalmente no primeiro envio ou por análise antispam.
+
+> {
+>   "email": "gabrielmarco2sprisco\@gmail.com",
+>   "password": "123123"
+> }
+>
+> {
+>     "success": false,
+>     "error": {
+>         "code": "BAD\_REQUEST",
+>         "message": "Validation failed",
+>         "details": [
+>             "password is not strong enough"
+>         ]
+>     },
+>     "meta": {
+>         "requestId": "017df214-c4e1-494a-9dbf-fb625a2726e7",
+>         "timestamp": "2026-08-26T17:09:19.447Z",
+>         "path": "/api/v1/auth/register"
+>     }
+>
+> agr to no pc local, nao é melhor detalher mais oq precisa pr amelhora a senha
+
+Sim, o erro atual está genérico demais. O frontend e o desenvolvedor não sabem quais requisitos faltaram.
+
+`123123` falhou porque a validação padrão exige:
+
+- Pelo menos 8 caracteres;
+- uma letra minúscula;
+- uma letra maiúscula;
+- um número;
+- um caractere especial.
+
+Exemplo válido:
+
+```json
+{
+  "email": "gabrielmarco2sprisco@gmail.com",
+  "password": "Senha@123"
+}
+```
+
+Recomendo mudar a resposta para algo estruturado:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": [
+      {
+        "field": "password",
+        "code": "PASSWORD_TOO_WEAK",
+        "message": "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character."
+      }
+    ]
+  },
+  "meta": {
+    "requestId": "...",
+    "timestamp": "...",
+    "path": "/api/v1/auth/register"
+  }
+}
+```
+
+Essa estrutura é melhor porque o frontend pode usar `field` para marcar o campo e `code` para traduzir a mensagem.
+
+O ajuste deve ser feito nos dois templates, incluindo:
+
+- validação do cadastro;
+- redefinição e alteração de senha;
+- filtro global de validação;
+- Swagger;
+- Postman;
+- documentação e testes.
+
+Também recomendo centralizar a política de senha para que todas as rotas usem exatamente as mesmas regras.
+
+> vai la ent
+
+<details><summary>12 previous messages</summary>
+
+> Vou centralizar a política de senha e padronizar os erros por campo nos dois templates. Também atualizarei testes, Swagger/Postman e documentação para que cadastro e redefinição usem as mesmas regras.
+>
+> <details><summary>Ran 4 commands</summary>
+>
+> - Ran `Get-ChildItem -Force | Select-Object Name,FullName,Mode; rg --files -g 'AGENTS.md' -g 'package.json' -g '*register*.dto.ts' -g '*password*.dto.ts' -g '*exception*filter*.ts' -g '*.postman_collection.json'`
+> - Ran `Get-ChildItem -LiteralPath 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates' -Force | Select-Object Name,Mode; rg --files 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates' -g 'AGENTS.md' -g '*register*.dto.ts' -g '*password*.dto.ts' -g '*exception*filter*.ts' -g '*.postman_collection.json' -g 'package.json'`
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content -Raw -LiteralPath "$root\templates\api-mongo\src\modules\auth\dto\register.dto.ts"; Get-Content -Raw -LiteralPath "$root\templates\api-mongo\src\modules\auth\dto\reset-password.dto.ts"; Get-Content -Raw -LiteralPath "$root\templates\api-mongo\src\common\filters\global-exception.filter.ts"; rg -n "IsStrongPassword|Validation failed|password is not|register|reset-password" "$root\templates\api-mongo\src" "$root\templates\api-postgres\src" "$root\templates\api-mongo\test" "$root\templates\api-postgres\test" "$root\templates\api-mongo\docs" "$root\templates\api-postgres\docs"`
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content -Raw -LiteralPath "$root\templates\api-mongo\src\modules\auth\dto\password-policy.spec.ts"; rg -n "ValidationPipe|exceptionFactory|ApiBadRequestResponse|ApiResponse|register|reset-password" "$root\templates\api-mongo\src\main.ts" "$root\templates\api-mongo\src\modules\auth\auth.controller.ts"; Get-Content -Raw -LiteralPath "$root\templates\api-mongo\src\main.ts"; Get-Content -Raw -LiteralPath "$root\templates\api-mongo\src\modules\auth\auth.controller.ts"`
+>
+> </details>
+>
+> A política atual exige 12 caracteres — não 8 — além de maiúscula, minúscula, número e símbolo. Vou preservar essa regra mais segura e fazer a API informar cada requisito, com `field` e `code` próprios para o frontend.
+>
+> <details><summary>Created 4 files, edited 4 files, ran 3 commands</summary>
+>
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content -Raw -LiteralPath "$root\templates\api-postgres\src\modules\auth\dto\register.dto.ts"; Get-Content -Raw -LiteralPath "$root\templates\api-postgres\src\modules\auth\dto\reset-password.dto.ts"; Get-Content -Raw -LiteralPath "$root\templates\api-postgres\src\common\filters\global-exception.filter.ts"; Get-Content -Raw -LiteralPath "$root\templates\api-postgres\src\main.ts"; rg -n -C 3 'Senha123456|password|Validation failed|is not strong' "$root\templates\api-mongo\docs" "$root\templates\api-postgres\docs" "$root\docs" "$root\README.md" "$root\templates\api-mongo\postman\api-mongo.postman_collection.json" "$root\templates\api-postgres\postman\api-postgres.postman_collection.json"`
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content -LiteralPath "$root\templates\api-mongo\postman\api-mongo.postman_collection.json" -TotalCount 60; Get-Content -Raw -LiteralPath "$root\templates\api-mongo\docs\api-reference.md"; Get-Content -Raw -LiteralPath "$root\docs\technical-reference.md"`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/common/validation/validation-exception.factory.ts` (+38 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/dto/register.dto.ts` (+15 -15)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/dto/reset-password.dto.ts` (+14 -8)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/validation/password-policy.ts` (+52 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/common/validation/validation-exception.factory.ts` (+38 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/register.dto.ts` (+14 -15)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/reset-password.dto.ts` (+14 -8)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/validation/password-policy.ts` (+52 -0)
+> - Ran `Get-Command apply_patch -ErrorAction SilentlyContinue | Select-Object Name,Source,CommandType`
+>
+> </details>
+>
+> O repositório ativo está fora da pasta de trabalho liberada desta tarefa. Vou aplicar as alterações diretamente nele com permissão ampliada, preservando os demais arquivos e mudanças existentes.
+>
+> <details><summary>Created 4 files, edited 10 files, ran a command</summary>
+>
+> - Ran ``$patch = @'
+> *** Begin Patch
+> *** Add File: C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo\src\common\filters\validation-exception.factory.ts
+> +import { BadRequestException, ValidationError } from '@nestjs/common';
+> +
+> +export interface ValidationErrorDetail {
+> +  field: string;
+> +  code: string;
+> +  message: string;
+> +}
+> +
+> +function flattenValidationErrors(
+> +  errors: ValidationError[],
+> +  parent = '',
+> +): ValidationErrorDetail[] {
+> +  return errors.flatMap((error) => {
+> +    const field = parent ? `${parent}.${error.property}` : error.property;
+> +    const ownErrors = Object.entries(error.constraints ?? {}).map(
+> +      ([constraint, message]) => ({
+> +        field,
+> +        code:
+> +          (error.contexts?.[constraint]?.code as string | undefined) ??
+> +          'INVALID_VALUE',
+> +        message,
+> +      }),
+> +    );
+> +
+> +    return [
+> +      ...ownErrors,
+> +      ...flattenValidationErrors(error.children ?? [], field),
+> +    ];
+> +  });
+> +}
+> +
+> +export function validationExceptionFactory(errors: ValidationError[]) {
+> +  return new BadRequestException({
+> +    code: 'VALIDATION_ERROR',
+> +    message: 'Validation failed',
+> +    details: flattenValidationErrors(errors),
+> +  });
+> +}
+> *** Add File: C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-postgres\src\common\filters\validation-exception.factory.ts
+> +import { BadRequestException, ValidationError } from '@nestjs/common';
+> +
+> +export interface ValidationErrorDetail {
+> +  field: string;
+> +  code: string;
+> +  message: string;
+> +}
+> +
+> +function flattenValidationErrors(
+> +  errors: ValidationError[],
+> +  parent = '',
+> +): ValidationErrorDetail[] {
+> +  return errors.flatMap((error) => {
+> +    const field = parent ? `${parent}.${error.property}` : error.property;
+> +    const ownErrors = Object.entries(error.constraints ?? {}).map(
+> +      ([constraint, message]) => ({
+> +        field,
+> +        code:
+> +          (error.contexts?.[constraint]?.code as string | undefined) ??
+> +          'INVALID_VALUE',
+> +        message,
+> +      }),
+> +    );
+> +
+> +    return [
+> +      ...ownErrors,
+> +      ...flattenValidationErrors(error.children ?? [], field),
+> +    ];
+> +  });
+> +}
+> +
+> +export function validationExceptionFactory(errors: ValidationError[]) {
+> +  return new BadRequestException({
+> +    code: 'VALIDATION_ERROR',
+> +    message: 'Validation failed',
+> +    details: flattenValidationErrors(errors),
+> +  });
+> +}
+> *** Add File: C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo\src\modules\auth\dto\password-policy.ts
+> +import {
+> +  IsString,
+> +  IsStrongPassword,
+> +  MaxLength,
+> +  ValidationArguments,
+> +} from 'class-validator';
+> +
+> +export const PASSWORD_MIN_LENGTH = 12;
+> +export const PASSWORD_MAX_LENGTH = 128;
+> +
+> +const PASSWORD_RULES = {
+> +  minLength: PASSWORD_MIN_LENGTH,
+> +  minLowercase: 1,
+> +  minUppercase: 1,
+> +  minNumbers: 1,
+> +  minSymbols: 1,
+> +};
+> +
+> +function passwordPolicyMessage({ value }: ValidationArguments) {
+> +  if (typeof value !== 'string') {
+> +    return 'Password must be a string.';
+> +  }
+> +
+> +  const requirements = [
+> +    value.length < PASSWORD_MIN_LENGTH
+> +      ? `at least ${PASSWORD_MIN_LENGTH} characters`
+> +      : null,
+> +    !/[a-z]/.test(value) ? 'one lowercase letter' : null,
+> +    !/[A-Z]/.test(value) ? 'one uppercase letter' : null,
+> +    !/\d/.test(value) ? 'one number' : null,
+> +    !/[^A-Za-z0-9]/.test(value) ? 'one special character' : null,
+> +  ].filter((requirement): requirement is string => requirement !== null);
+> +
+> +  return `Password must contain ${requirements.join(', ')}.`;
+> +}
+> +
+> +export function IsApplicationPassword(): PropertyDecorator {
+> +  return (target, propertyKey) => {
+> +    IsString({
+> +      message: 'Password must be a string.',
+> +      context: { code: 'INVALID_PASSWORD_TYPE' },
+> +    })(target, propertyKey);
+> +    IsStrongPassword(PASSWORD_RULES, {
+> +      message: passwordPolicyMessage,
+> +      context: { code: 'PASSWORD_TOO_WEAK' },
+> +    })(target, propertyKey);
+> +    MaxLength(PASSWORD_MAX_LENGTH, {
+> +      message: `Password must be shorter than or equal to ${PASSWORD_MAX_LENGTH} characters.`,
+> +      context: { code: 'PASSWORD_TOO_LONG' },
+> +    })(target, propertyKey);
+> +  };
+> +}
+> *** Add File: C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-postgres\src\modules\auth\dto\password-policy.ts
+> +import {
+> +  IsString,
+> +  IsStrongPassword,
+> +  MaxLength,
+> +  ValidationArguments,
+> +} from 'class-validator';
+> +
+> +export const PASSWORD_MIN_LENGTH = 12;
+> +export const PASSWORD_MAX_LENGTH = 128;
+> +
+> +const PASSWORD_RULES = {
+> +  minLength: PASSWORD_MIN_LENGTH,
+> +  minLowercase: 1,
+> +  minUppercase: 1,
+> +  minNumbers: 1,
+> +  minSymbols: 1,
+> +};
+> +
+> +function passwordPolicyMessage({ value }: ValidationArguments) {
+> +  if (typeof value !== 'string') {
+> +    return 'Password must be a string.';
+> +  }
+> +
+> +  const requirements = [
+> +    value.length < PASSWORD_MIN_LENGTH
+> +      ? `at least ${PASSWORD_MIN_LENGTH} characters`
+> +      : null,
+> +    !/[a-z]/.test(value) ? 'one lowercase letter' : null,
+> +    !/[A-Z]/.test(value) ? 'one uppercase letter' : null,
+> +    !/\d/.test(value) ? 'one number' : null,
+> +    !/[^A-Za-z0-9]/.test(value) ? 'one special character' : null,
+> +  ].filter((requirement): requirement is string => requirement !== null);
+> +
+> +  return `Password must contain ${requirements.join(', ')}.`;
+> +}
+> +
+> +export function IsApplicationPassword(): PropertyDecorator {
+> +  return (target, propertyKey) => {
+> +    IsString({
+> +      message: 'Password must be a string.',
+> +      context: { code: 'INVALID_PASSWORD_TYPE' },
+> +    })(target, propertyKey);
+> +    IsStrongPassword(PASSWORD_RULES, {
+> +      message: passwordPolicyMessage,
+> +      context: { code: 'PASSWORD_TOO_WEAK' },
+> +    })(target, propertyKey);
+> +    MaxLength(PASSWORD_MAX_LENGTH, {
+> +      message: `Password must be shorter than or equal to ${PASSWORD_MAX_LENGTH} characters.`,
+> +      context: { code: 'PASSWORD_TOO_LONG' },
+> +    })(target, propertyKey);
+> +  };
+> +}
+> *** End Patch
+> '@
+> & apply_patch $patch``
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/common/filters/validation-exception.factory.ts` (+38 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/dto/password-policy.ts` (+52 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/common/filters/validation-exception.factory.ts` (+38 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/password-policy.ts` (+52 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/dto/register.dto.ts` (+15 -15)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/dto/reset-password.dto.ts` (+14 -8)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/register.dto.ts` (+14 -15)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/reset-password.dto.ts` (+14 -8)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/common/filters/global-exception.filter.ts` (+14 -9)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/main.ts` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/common/filters/global-exception.filter.ts` (+14 -9)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/main.ts` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/dto/password-policy.spec.ts` (+34 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/password-policy.spec.ts` (+34 -0)
+>
+> </details>
+>
+> A validação central já está conectada ao filtro global. Agora estou fechando o contrato público: exemplo no Swagger, explicação nas coleções Postman e documentação do formato que o frontend deve consumir.
+>
+> <details><summary>Edited 9 files, explored a file, ran 2 commands</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/postman/api-mongo.postman_collection.json` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.controller.ts` (+30 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/postman/api-postgres.postman_collection.json` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.controller.ts` (+30 -1)
+>
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; rg -n -C 2 "ApiBadRequestResponse" "$root\templates\api-mongo\src\modules\auth\auth.controller.ts" "$root\templates\api-postgres\src\modules\auth\auth.controller.ts"`
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.controller.ts` (+5 -5)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.controller.ts` (+5 -5)
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/technical-reference.md` (+28 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/api-reference.md` (+28 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/README.md` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/api-reference.md` (+28 -0)
+>
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; (Get-Content -Raw -LiteralPath "$root\templates\api-mongo\package.json" | ConvertFrom-Json).scripts | ConvertTo-Json; (Get-Content -Raw -LiteralPath "$root\templates\api-postgres\package.json" | ConvertFrom-Json).scripts | ConvertTo-Json`
+>
+> <details><summary>Explored a file</summary>
+>
+> - Read `~/Documents/Dev/nestjs-api-templates/package.json`
+>
+> </details>
+>
+> </details>
+>
+> O código e as documentações dos dois templates foram atualizados. Vou validar agora a política dinâmica, o envelope de erro, a compilação e a paridade Mongo/PostgreSQL.
+>
+> <details><summary>Ran 11 commands</summary>
+>
+> - Ran `npm test -- --runInBand`
+> - Ran `npm test -- --runInBand`
+> - Ran `npm run build`
+> - Ran `npm run build`
+> - Ran `npm run lint`
+> - Ran `npm run lint`
+> - Ran `git status --short; git diff --stat; $paths=@('templates/api-mongo/postman/api-mongo.postman_collection.json','templates/api-postgres/postman/api-postgres.postman_collection.json'); foreach($path in $paths){ Get-Content -Raw -LiteralPath $path | ConvertFrom-Json | Out-Null; Write-Output "$path OK" }`
+> - Ran `npx prettier --check "templates/api-mongo/src/common/filters/global-exception.filter.ts" "templates/api-mongo/src/common/filters/validation-exception.factory.ts" "templates/api-mongo/src/main.ts" "templates/api-mongo/src/modules/auth/auth.controller.ts" "templates/api-mongo/src/modules/auth/dto/password-policy.spec.ts" "templates/api-mongo/src/modules/auth/dto/password-policy.ts" "templates/api-mongo/src/modules/auth/dto/register.dto.ts" "templates/api-mongo/src/modules/auth/dto/reset-password.dto.ts" "templates/api-postgres/src/common/filters/global-exception.filter.ts" "templates/api-postgres/src/common/filters/validation-exception.factory.ts" "templates/api-postgres/src/main.ts" "templates/api-postgres/src/modules/auth/auth.controller.ts" "templates/api-postgres/src/modules/auth/dto/password-policy.spec.ts" "templates/api-postgres/src/modules/auth/dto/password-policy.ts" "templates/api-postgres/src/modules/auth/dto/register.dto.ts" "templates/api-postgres/src/modules/auth/dto/reset-password.dto.ts" "docs/technical-reference.md" "templates/api-mongo/docs/README.md" "templates/api-mongo/docs/api-reference.md" "templates/api-postgres/docs/README.md" "templates/api-postgres/docs/api-reference.md" "templates/api-mongo/postman/api-mongo.postman_collection.json" "templates/api-postgres/postman/api-postgres.postman_collection.json"`
+> - Ran `npx prettier --write "docs/technical-reference.md"`
+> - Ran `git diff --stat; git diff --check; npx prettier --check "templates/api-mongo/src/common/filters/global-exception.filter.ts" "templates/api-mongo/src/common/filters/validation-exception.factory.ts" "templates/api-mongo/src/main.ts" "templates/api-mongo/src/modules/auth/auth.controller.ts" "templates/api-mongo/src/modules/auth/dto/password-policy.spec.ts" "templates/api-mongo/src/modules/auth/dto/password-policy.ts" "templates/api-mongo/src/modules/auth/dto/register.dto.ts" "templates/api-mongo/src/modules/auth/dto/reset-password.dto.ts" "templates/api-postgres/src/common/filters/global-exception.filter.ts" "templates/api-postgres/src/common/filters/validation-exception.factory.ts" "templates/api-postgres/src/main.ts" "templates/api-postgres/src/modules/auth/auth.controller.ts" "templates/api-postgres/src/modules/auth/dto/password-policy.spec.ts" "templates/api-postgres/src/modules/auth/dto/password-policy.ts" "templates/api-postgres/src/modules/auth/dto/register.dto.ts" "templates/api-postgres/src/modules/auth/dto/reset-password.dto.ts" "docs/technical-reference.md" "templates/api-mongo/docs/README.md" "templates/api-mongo/docs/api-reference.md" "templates/api-postgres/docs/README.md" "templates/api-postgres/docs/api-reference.md"`
+> - Ran `git diff -- templates/api-mongo/src/modules/auth/auth.controller.ts templates/api-mongo/src/common/filters/global-exception.filter.ts templates/api-mongo/src/main.ts templates/api-mongo/src/modules/auth/dto/register.dto.ts templates/api-mongo/src/modules/auth/dto/reset-password.dto.ts templates/api-mongo/src/modules/auth/dto/password-policy.spec.ts; Get-Content -Raw -LiteralPath 'templates/api-mongo/src/common/filters/validation-exception.factory.ts'; Get-Content -Raw -LiteralPath 'templates/api-mongo/src/modules/auth/dto/password-policy.ts'`
+>
+> </details>
+>
+> Durante a revisão final, identifiquei um ajuste de organização: a política não deve morar em `dto` e a fábrica de validação não deve morar em `filters`. Vou colocá-las em `auth/validation` e `common/validation`, respectivamente, para manter as responsabilidades corretas.
+>
+> <details><summary>Edited 14 files, ran 6 commands</summary>
+>
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates'; New-Item -ItemType Directory -Force -Path "$root\api-mongo\src\common\validation", "$root\api-mongo\src\modules\auth\validation", "$root\api-postgres\src\common\validation", "$root\api-postgres\src\modules\auth\validation" | Out-Null`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/common/filters/validation-exception.factory.ts` (+0 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/main.ts` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/dto/password-policy.spec.ts` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/dto/password-policy.ts` (+0 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/dto/register.dto.ts` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/dto/reset-password.dto.ts` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/common/filters/validation-exception.factory.ts` (+0 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/main.ts` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/password-policy.spec.ts` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/password-policy.ts` (+0 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/register.dto.ts` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/dto/reset-password.dto.ts` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/README.md` (+1 -1)
+> - Ran `npm test -- password-policy.spec.ts --runInBand`
+> - Ran `npm test -- password-policy.spec.ts --runInBand`
+> - Ran `npm run build`
+> - Ran `npm run build`
+> - Ran `rg -n "dto/password-policy|filters/validation-exception|PASSWORD_TOO_WEAK|src/modules/auth/validation/password-policy" . -g '!node_modules/**' -g '!dist/**'; git status --short; git diff --check`
+>
+> </details>
+</details>
+
+Ajustado nos dois templates, MongoDB e PostgreSQL.
+
+Agora, para `"password": "123123"`, a resposta será semelhante a:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": [
+      {
+        "field": "password",
+        "code": "PASSWORD_TOO_WEAK",
+        "message": "Password must contain at least 12 characters, one lowercase letter, one uppercase letter, one special character."
+      }
+    ]
+  },
+  "meta": {
+    "requestId": "...",
+    "timestamp": "...",
+    "path": "/api/v1/auth/register"
+  }
+}
+```
+
+O que foi feito:
+
+- Política centralizada em `auth/validation/password-policy.ts`.
+- Mesma regra aplicada no cadastro e redefinição.
+- Mensagem dinâmica informa somente os requisitos ausentes.
+- Erros agora possuem `field`, `code` e `message`.
+- Filtro global preserva os detalhes estruturados.
+- Swagger atualizado com exemplo completo.
+- Coleções Postman atualizadas.
+- Documentação geral e específica atualizada.
+- Organização separada entre `common/validation` e `auth/validation`.
+
+Validações executadas:
+
+- MongoDB: 28 testes aprovados.
+- PostgreSQL: 28 testes aprovados.
+- Compilação aprovada nos dois templates.
+- Lint sem erros; permanecem apenas warnings antigos dos mocks.
+- Coleções Postman continuam com JSON válido.
+
+Para testar no Docker local:
+
+```powershell
+docker compose up -d --build api
+```
+
+Depois envie novamente a senha `123123`. Uma senha válida seria, por exemplo:
+
+```json
+{
+  "email": "gabrielmarco2sprisco@gmail.com",
+  "password": "SenhaSegura123!"
+}
+```
+
+> oq dalta ainda e oq esta no backlog
+
+<details><summary>2 previous messages</summary>
+
+> Vou conferir o backlog registrado e cruzar com o estado atual do repositório, separando pendências obrigatórias para finalizar o template de melhorias opcionais.
+>
+> <details><summary>Ran 5 commands</summary>
+>
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content -Raw -LiteralPath "$root\docs\backlog.md"; rg -n "TODO|FIXME|pendente|backlog|\[ \]" "$root\README.md" "$root\docs" "$root\templates\api-mongo\docs" "$root\templates\api-postgres\docs" -g '*.md'; git -C $root status --short`
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-ChildItem -LiteralPath "$root\.github\workflows" | Select-Object Name; rg -n "mailpit|test:integration|docker compose|api-mongo|api-postgres" "$root\.github\workflows" "$root\templates\api-mongo\scripts" "$root\templates\api-postgres\scripts"`
+> - Ran `Get-Content -Raw -LiteralPath 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo\scripts\integration-check.mjs'; Get-Content -Raw -LiteralPath 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\.github\workflows\ci.yml'`
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; rg -n "METRICS_ENABLED|api/v1/metrics|prometheus" "$root\templates\api-mongo\docker-compose*.yml" "$root\templates\api-postgres\docker-compose*.yml" "$root\templates\api-mongo\observability" "$root\templates\api-postgres\observability" "$root\templates\api-mongo\.env.example" "$root\templates\api-postgres\.env.example"`
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates'; Get-ChildItem "$root\api-mongo" -Filter 'docker-compose*.yml' | ForEach-Object { Write-Output "--- $($_.Name)"; Select-String -Path $_.FullName -Pattern 'METRICS_ENABLED|prometheus|environment:' -Context 1,2 }; Get-ChildItem "$root\api-postgres" -Filter 'docker-compose*.yml' | ForEach-Object { Write-Output "--- $($_.Name)"; Select-String -Path $_.FullName -Pattern 'METRICS_ENABLED|prometheus|environment:' -Context 1,2 }`
+>
+> </details>
+</details>
+
+A arquitetura principal está pronta. O que falta agora é validação final, automação e preparação específica de produção.
+
+## Pendências imediatas
+
+1. Revogar a senha de aplicativo do Gmail que foi exposta e gerar outra.
+2. Testar no Docker a nova validação de senha:
+   - senha fraca retorna detalhes;
+   - senha forte cadastra normalmente;
+   - repetir em Mongo e PostgreSQL.
+3. Fazer commit/push das alterações atuais e confirmar a CI verde.
+4. Corrigir o warning:
+
+```text
+Unsupported route path: "/api/*"
+```
+
+5. Validar uma cópia limpa e independente do PostgreSQL. A validação standalone do Mongo já foi concluída anteriormente.
+6. Executar um smoke test real dos Compose de produção dos dois templates.
+
+## Backlog de e-mail
+
+O [backlog atual](~/Documents/Dev/nestjs-api-templates/docs/backlog.md) está parcialmente desatualizado:
+
+- SMTP Gmail pela porta `587`: validado.
+- Log `accepted by SMTP`: validado.
+- Entrega real na caixa de entrada: validada.
+- Porta `465`: ainda não testada, mas não é obrigatória se usarmos `587`.
+- Fluxo completo Mongo: ainda precisa ser testado do começo ao fim.
+- Fluxo completo PostgreSQL: ainda precisa ser testado.
+- Automatizar e-mail na CI com Mailpit: pendente.
+
+O teste automatizado deverá:
+
+```text
+cadastrar usuário
+→ consultar API do Mailpit
+→ extrair token do e-mail
+→ confirmar e-mail
+→ fazer login
+→ solicitar recuperação
+→ extrair token de reset
+→ alterar senha
+→ confirmar que sessões antigas foram revogadas
+→ verificar auditoria
+```
+
+## Produção — depende do projeto real
+
+Estes itens ficam preparados no template, mas só podem ser concluídos quando existir domínio e infraestrutura reais:
+
+- Escolher provedor transacional de e-mail.
+- Configurar SPF, DKIM e DMARC.
+- Guardar credenciais em um gerenciador de secrets.
+- Definir `FRONTEND_URL` pública.
+- Definir retenção de logs, métricas e traces.
+- Criar alertas para indisponibilidade, erros `5xx` e latência elevada.
+
+## Frontend — adiado conforme solicitado
+
+- Página `/verify-email`.
+- Página `/reset-password`.
+
+Minha ordem recomendada agora é:
+
+1. Atualizar o backlog com o teste Gmail concluído.
+2. Corrigir o warning `/api/*`.
+3. Automatizar o fluxo completo de e-mail com Mailpit.
+4. Rodar esse fluxo nos dois templates e na CI.
+5. Validar cópia limpa e Compose de produção.
+6. Fazer commit e push final.
+
+> antes de faer me fale oq vai fazer e o falta
+
+<details><summary>2 previous messages</summary>
+
+> Vou apenas localizar a origem exata do `"/api/*"` agora, sem alterar nada. Depois te passo o ajuste previsto e a lista atualizada do que realmente falta. :codex-annotation{index="2"}
+>
+> <details><summary>Ran 5 commands</summary>
+>
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; rg -n "api/\\\*|/api/\\\*|api/\*|forRoutes|exclude\(" "$root\templates\api-mongo\src" "$root\templates\api-postgres\src"; git -C $root status --short`
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; rg -n -F '/*' "$root\templates\api-mongo" "$root\templates\api-postgres" -g '!node_modules/**' -g '!dist/**' -g '!src/generated/**'; rg -n "setGlobalPrefix|useGlobalFilters|useGlobalInterceptors|MiddlewareConsumer|forRoutes" "$root\templates\api-mongo\src" "$root\templates\api-postgres\src"`
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; rg -n --glob '!node_modules/**' --glob '!dist/**' --glob '!src/generated/**' "api/|/api|forRoutes|exclude" "$root\templates\api-mongo\src" "$root\templates\api-postgres\src" "$root\templates\api-mongo\*.ts" "$root\templates\api-postgres\*.ts"`
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; rg -n -F "Unsupported route path" "$root\node_modules\@nestjs" "$root\node_modules\nestjs-pino"; rg -n -F "api/*" "$root\node_modules\nestjs-pino" "$root\node_modules\@nestjs"; npm ls @nestjs/core @nestjs/common nestjs-pino pino-http express path-to-regexp --depth=1`
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; rg -n -C 8 "LoggerModule|PinoModule|pinoHttp|forRoot" "$root\templates\api-mongo\src" "$root\templates\api-postgres\src" -g '!generated/**'; Get-Content -Raw -LiteralPath "$root\node_modules\nestjs-pino\LoggerModule.js"`
+>
+> </details>
+</details>
+
+Perfeito. Vou considerar como concluídos: senha do Gmail trocada, validação testada nos dois bancos, commit/push realizado e CI verde. :codex-annotation{index="1"}
+
+A origem do warning foi localizada. Ele vem do `nestjs-pino`, que registra seu middleware usando a rota antiga `*`. Com o prefixo global `api`, o NestJS transforma isso em `/api/*`, formato antigo incompatível com o roteamento atual do NestJS 11/Express 5. :codex-annotation{index="2"}
+
+## O que vou fazer
+
+Nos dois `app.module.ts`:
+
+1. Importar `RequestMethod`.
+2. Configurar explicitamente o `LoggerModule` com uma wildcard nomeada:
+
+```ts
+LoggerModule.forRoot({
+  forRoutes: [
+    {
+      path: '*path',
+      method: RequestMethod.ALL,
+    },
+  ],
+  pinoHttp: {
+    // configuração atual permanece
+  },
+});
+```
+
+3. Não remover nem substituir o `nestjs-pino`.
+4. Confirmar que:
+   - o warning desapareceu;
+   - os logs HTTP continuam funcionando;
+   - `requestId`, tempo de resposta e status continuam presentes.
+5. Compilar, testar e executar lint nos dois templates.
+6. Subir as APIs e conferir os logs de inicialização.
+7. Atualizar o backlog e marcar o warning como resolvido.
+
+## O que ainda ficará faltando
+
+Depois desse ajuste, as pendências reais serão:
+
+1. Automatizar o fluxo de e-mail na integração e CI usando o Mailpit:
+   - cadastro;
+   - captura do e-mail;
+   - extração do token;
+   - confirmação;
+   - login;
+   - recuperação e redefinição de senha;
+   - confirmação da revogação das sessões.
+
+2. Executar esse fluxo completo nos dois templates.
+
+3. Validar uma cópia limpa e standalone do PostgreSQL.
+
+4. Fazer o teste prático dos Compose de produção dos dois templates.
+
+5. Itens que dependem de um projeto real:
+   - provedor transacional;
+   - domínio de envio;
+   - SPF, DKIM e DMARC;
+   - secrets de produção;
+   - alertas e retenção da observabilidade.
+
+6. Frontend adiado:
+   - `/verify-email`;
+   - `/reset-password`.
+
+O próximo ajuste ficará restrito ao warning do `nestjs-pino`, testes e documentação; nenhum endpoint ou contrato do Postman será alterado.
+
+<details><summary>9 previous messages</summary>
+
+> Vou aplicar exatamente esse ajuste nos dois templates, sem alterar endpoints. Depois verifico compilação, testes, lint e inicialização para confirmar que o warning sumiu e o logging HTTP continua ativo. :codex-annotation{index="1"}
+>
+> <details><summary>Edited 3 files, ran 7 commands</summary>
+>
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content -LiteralPath "$root\templates\api-mongo\src\app.module.ts" -TotalCount 120; Get-Content -LiteralPath "$root\templates\api-postgres\src\app.module.ts" -TotalCount 120; docker compose -f "$root\templates\api-mongo\docker-compose.yml" ps; docker compose -f "$root\templates\api-postgres\docker-compose.yml" ps`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/backlog.md` (+2 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/app.module.ts` (+2 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/app.module.ts` (+2 -1)
+> - Ran `npm test -- --runInBand`
+> - Ran `npm test -- --runInBand`
+> - Ran `npm run build`
+> - Ran `npm run build`
+> - Ran `npm run lint`
+> - Ran `npm run lint`
+>
+> </details>
+>
+> Compilação e os 56 testes passaram; o lint continua sem erros, somente com warnings antigos de tipagem nos mocks. Agora vou validar o ponto decisivo: inicialização real e uma requisição HTTP com log estruturado, sem o warning de rota.
+>
+> <details><summary>Ran 8 commands</summary>
+>
+> - Ran `docker compose ps`
+> - Ran `docker compose ps`
+> - Ran `docker compose up -d --build api`
+> - Ran `$ready=$false; for($attempt=0; $attempt -lt 30; $attempt++){ try { $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/health' -UseBasicParsing -TimeoutSec 2; if($response.StatusCode -eq 200){ $ready=$true; Write-Output "health=$($response.StatusCode) requestId=$($response.Headers['x-request-id'])"; break } } catch {}; Start-Sleep -Seconds 1 }; if(-not $ready){ throw 'PostgreSQL API did not become ready' }; docker compose logs --since 2m api`
+> - Ran `Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/health' -UseBasicParsing -Headers @{'x-request-id'='logger-regression-check'} | Select-Object StatusCode; Start-Sleep -Seconds 1; docker compose logs --since 30s api | Select-String -Pattern 'logger-regression-check|request completed|Unsupported route path'`
+> - Ran `Get-Content -Raw -LiteralPath 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\node_modules\@nestjs\core\router\legacy-route-converter.js'; Get-Content -Raw -LiteralPath 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\node_modules\@nestjs\core\middleware\middleware-module.js' | Select-String -Pattern 'forRoutes|globalPrefix' -Context 2,4`
+> - Ran `Get-Content -Raw -LiteralPath 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\node_modules\@nestjs\core\middleware\route-info-path-extractor.js'; Get-Content -Raw -LiteralPath 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\node_modules\@nestjs\platform-express\adapters\express-adapter.js' | Select-String -Pattern 'createMiddlewareFactory' -Context 2,20`
+> - Ran `node -e "const {match}=require('path-to-regexp'); console.log(match('/api/*path')('/api/v1/health')); console.log(match('/api/{*path}')('/api/v1/health'));"`
+>
+> </details>
+>
+> A primeira forma removeu o warning, mas o teste real revelou que o middleware não estava registrando os logs HTTP. Isso acontece porque o Nest precisa reconhecer a rota como wildcard desde o início; vou corrigir para `/*path`, que mantém a wildcard nomeada e o middleware ativo.
+>
+> <details><summary>Edited 2 files, ran 7 commands</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/app.module.ts` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/app.module.ts` (+1 -1)
+> - Ran `docker compose up -d --build api`
+> - Ran `$ready=$false; for($attempt=0; $attempt -lt 30; $attempt++){ try { $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/health' -UseBasicParsing -TimeoutSec 2 -Headers @{'x-request-id'='logger-regression-check'}; if($response.StatusCode -eq 200){ $ready=$true; break } } catch {}; Start-Sleep -Seconds 1 }; if(-not $ready){ throw 'PostgreSQL API did not become ready' }; Start-Sleep -Seconds 1; $logs=docker compose logs --since 2m api; $warning=$logs | Select-String -Pattern 'Unsupported route path'; $requestLog=$logs | Select-String -Pattern 'logger-regression-check'; Write-Output "health=$($response.StatusCode)"; Write-Output "warningCount=$(@($warning).Count)"; Write-Output "requestLogCount=$(@($requestLog).Count)"; $requestLog`
+> - Ran `docker compose stop`
+> - Ran `docker compose up -d --build`
+> - Ran `$ready=$false; for($attempt=0; $attempt -lt 30; $attempt++){ try { $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/health' -UseBasicParsing -TimeoutSec 2 -Headers @{'x-request-id'='mongo-logger-regression-check'}; if($response.StatusCode -eq 200){ $ready=$true; break } } catch {}; Start-Sleep -Seconds 1 }; if(-not $ready){ throw 'MongoDB API did not become ready' }; Start-Sleep -Seconds 1; $logs=docker compose logs --since 2m api; $warning=$logs | Select-String -Pattern 'Unsupported route path'; $requestLog=$logs | Select-String -Pattern 'mongo-logger-regression-check'; Write-Output "health=$($response.StatusCode)"; Write-Output "warningCount=$(@($warning).Count)"; Write-Output "requestLogCount=$(@($requestLog).Count)"; $requestLog`
+> - Ran `docker compose ps; docker compose logs --since 3m api`
+> - Ran `docker compose restart api; Start-Sleep -Seconds 5; $response=Invoke-WebRequest -Uri 'http://localhost:3000/api/v1/health' -UseBasicParsing -TimeoutSec 10 -Headers @{'x-request-id'='mongo-logger-regression-check-final'}; Start-Sleep -Seconds 1; $logs=docker compose logs --since 45s api; Write-Output "health=$($response.StatusCode)"; Write-Output "warningCount=$(@($logs | Select-String -Pattern 'Unsupported route path').Count)"; Write-Output "requestLogCount=$(@($logs | Select-String -Pattern 'mongo-logger-regression-check-final').Count)"; $logs | Select-String -Pattern 'mongo-logger-regression-check-final'`
+>
+> </details>
+>
+> Quality (api-mongo): templates/api-mongo/src/modules/auth/auth.service.ts#L77Unsafe argument of type `any` assigned to a parameter of type `string`Quality (api-mongo): templates/api-mongo/src/modules/auth/auth.service.spec.ts#L51Unsafe argument of type `any` assigned to a parameter of type `ConfigService<Record<string | symbol, unknown>, false>`Quality (api-mongo): templates/api-mongo/src/modules/auth/auth.service.spec.ts#L50Unsafe argument of type `any` assigned to a parameter of type `JwtService`Quality (api-mongo): templates/api-mongo/src/modules/auth/auth.service.spec.ts#L49Unsafe argument of type `any` assigned to a parameter of type `Model<RefreshToken, {}, {}, {}, Document<unknown, {}, RefreshToken, {}, DefaultSchemaOptions> & RefreshToken & { ...; } & { ...; } & { ...; }, any, RefreshToken>`Quality (api-mongo): templates/api-mongo/src/modules/auth/auth.service.spec.ts#L48Unsafe argument of type `any` assigned to a parameter of type `EmailService`Quality (api-mongo): templates/api-mongo/src/modules/auth/auth.service.spec.ts#L47Unsafe argument of type `any` assigned to a parameter of type `AuthRateLimitService`Quality (api-mongo): templates/api-mongo/src/modules/auth/auth.service.spec.ts#L46Unsafe argument of type `any` assigned to a parameter of type `AuditService`Quality (api-mongo): templates/api-mongo/src/modules/auth/auth.service.spec.ts#L45Unsafe argument of type `any` assigned to a parameter of type `UsersService`Quality (api-mongo): templates/api-mongo/src/modules/auth/auth-rate-limit.service.spec.ts#L37Unsafe argument of type `any` assigned to a parameter of type `RateLimitService`Quality (api-mongo): templates/api-mongo/src/modules/audit/audit.service.spec.ts#L12Unsafe argument of type `any` assigned to a parameter of type `Model<AuditLog, {}, {}, {}, Document<unknown, {}, AuditLog, {}, DefaultSchemaOptions> & AuditLog & { _id: ObjectId; } & { ...; } & { ...; }, any, AuditLog>`Quality (api-postgres): templates/api-postgres/src/modules/rbac/rbac.service.spec.ts#L25Unsafe argument of type `any` assigned to a parameter of type `PrismaService`Quality (api-postgres): templates/api-postgres/src/modules/auth/auth.service.spec.ts#L51Unsafe argument of type `any` assigned to a parameter of type `ConfigService<Record<string | symbol, unknown>, false>`Quality (api-postgres): templates/api-postgres/src/modules/auth/auth.service.spec.ts#L50Unsafe argument of type `any` assigned to a parameter of type `JwtService`Quality (api-postgres): templates/api-postgres/src/modules/auth/auth.service.spec.ts#L49Unsafe argument of type `any` assigned to a parameter of type `EmailService`Quality (api-postgres): templates/api-postgres/src/modules/auth/auth.service.spec.ts#L48Unsafe argument of type `any` assigned to a parameter of type `AuthRateLimitService`Quality (api-postgres): templates/api-postgres/src/modules/auth/auth.service.spec.ts#L47Unsafe argument of type `any` assigned to a parameter of type `AuditService`Quality (api-postgres): templates/api-postgres/src/modules/auth/auth.service.spec.ts#L46Unsafe argument of type `any` assigned to a parameter of type `UsersService`Quality (api-postgres): templates/api-postgres/src/modules/auth/auth.service.spec.ts#L45Unsafe argument of type `any` assigned to a parameter of type `PrismaService`Quality (api-postgres): templates/api-postgres/src/modules/auth/auth-rate-limit.service.spec.ts#L37Unsafe argument of type `any` assigned to a parameter of type `RateLimitService`Quality (api-postgres): templates/api-postgres/src/modules/audit/audit.service.spec.ts#L15Unsafe argument of type `any` assigned to a parameter of type `PrismaService`
+>
+> no github action passou tudo, porem deu esse warning
+>
+> Esses avisos do GitHub Actions são diferentes do warning de rota que corrigimos: a CI passou porque são warnings do ESLint, não erros. Eles indicam mocks tipados como `any` e alguns valores do Mongoose sem tipo seguro; não vou mascará-los desativando a regra. Primeiro vou restaurar os containers ao estado anterior ao teste e então te explico exatamente o que deve ser corrigido.
+>
+> <details><summary>Ran 3 commands</summary>
+>
+> - Ran `docker compose stop api redis mailpit`
+> - Ran `docker compose start`
+> - Ran `$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; $files=@("$root\templates\api-mongo\src\modules\auth\auth.service.ts","$root\templates\api-mongo\src\modules\auth\auth.service.spec.ts","$root\templates\api-postgres\src\modules\auth\auth.service.spec.ts"); foreach($file in $files){ Write-Output "--- $file"; $lines=Get-Content -LiteralPath $file; for($i=1;$i -le $lines.Count;$i++){ if(($file -like '*auth.service.ts' -and $i -ge 70 -and $i -le 82) -or ($file -like '*.spec.ts' -and $i -ge 35 -and $i -le 55)){ '{0,4}: {1}' -f $i,$lines[$i-1] } } }`
+>
+> </details>
+</details>
+
+A CI passou porque esses são warnings do ESLint, não erros. Eles já existiam antes do ajuste da rota e aparecem novamente em cada execução.
+
+Existem dois grupos:
+
+- Testes usando `as any` para injetar mocks em services.
+- MongoDB retornando propriedades como `any`, por exemplo:
+
+```ts
+argon2.verify(user.passwordHash, input.password)
+```
+
+Nesse caso, `user.passwordHash` não está chegando com tipo explícito.
+
+Para um template reutilizável, recomendo corrigir todos e depois tornar a CI rigorosa:
+
+```json
+{
+  "lint": "eslint \"src/**/*.ts\" --max-warnings=0"
+}
+```
+
+Assim:
+
+```text
+0 erros + 0 warnings → CI aprovada
+qualquer warning novo → CI falha
+```
+
+O ajuste deverá:
+
+1. Criar tipos explícitos para os retornos internos do `UsersService`.
+2. Tipar corretamente os documentos retornados pelo Mongoose.
+3. Substituir `as any` dos testes por mocks tipados.
+4. Tipar mocks de `PrismaService`, `Model`, `JwtService`, `ConfigService` e demais services.
+5. Executar lint, 56 testes e build.
+6. Ativar `--max-warnings=0` somente depois de zerar tudo.
+
+Sobre o warning anterior de rota: ele foi removido. No PostgreSQL confirmei:
+
+```text
+health=200
+warningCount=0
+requestLogCount=1
+```
+
+O log HTTP continuou contendo `requestId`, status `200` e `responseTime`. Os containers também foram restaurados: PostgreSQL voltou a ficar ativo e os serviços Mongo usados temporariamente foram parados sem excluir volumes.
+
+Vou separar os tipos conforme a responsabilidade de cada módulo. :codex-annotation{index="1"}
+
+Para os dados que o `AuthService` recebe do módulo Users:
+
+```text
+src/modules/users/domain/user-for-authentication.ts
+```
+
+Exemplo:
+
+```ts
+export interface UserForAuthentication {
+  id: string;
+  email: string;
+  passwordHash: string;
+  isActive: boolean;
+  emailVerifiedAt: Date | null;
+  authorizationVersion: number;
+  permissions: string[];
+}
+```
+
+Ele fica em `users/domain` porque representa um usuário retornado pelo `UsersService`. O Auth apenas consome esse contrato; não conhece Prisma, Mongoose ou schema.
+
+Para documentos específicos do Mongo:
+
+```text
+src/modules/users/persistence/schemas/user.schema.ts
+```
+
+Esse arquivo continuará possuindo tipos como:
+
+```ts
+export type UserDocument = HydratedDocument<User>;
+```
+
+A separação ficará:
+
+```text
+UsersService
+    ↓ retorna
+UserForAuthentication
+    ↓ consumido por
+AuthService
+```
+
+O `AuthService` não receberá mais um documento Mongoose ou resultado Prisma sem tipagem.
+
+Para os testes, não criarei tipos de mocks dentro de `domain`, porque mock não pertence ao domínio. Usarei:
+
+```text
+test/support/typed-mock.ts
+```
+
+Com um helper semelhante a:
+
+```ts
+export type MockedService<T> = {
+  [K in keyof T]?: T[K] extends (...args: infer A) => infer R
+    ? jest.Mock<R, A>
+    : T[K];
+};
+```
+
+Os mocks específicos continuarão próximos dos testes:
+
+```ts
+const users: MockedService<UsersService> = {
+  findByEmailForAuth: jest.fn(),
+  create: jest.fn(),
+};
+```
+
+Para Prisma e Mongoose:
+
+- `PrismaService` continuará em `infrastructure/database`;
+- `Model<User>` e `Model<RefreshToken>` continuarão na persistência Mongo;
+- os testes usarão mocks tipados desses contratos;
+- nenhum `as any` será necessário.
+
+Estrutura final:
+
+```text
+src/
+  modules/
+    users/
+      domain/
+        user-for-authentication.ts
+      persistence/
+        schemas/
+          user.schema.ts
+      users.service.ts
+
+    auth/
+      auth.service.ts
+      domain/
+        authenticated-user.interface.ts
+
+test/
+  support/
+    typed-mock.ts
+```
+
+Minha recomendação principal é não criar uma pasta global genérica `types/`. Ela costuma virar um depósito sem responsabilidade clara. Tipos de usuário ficam em Users; tipos de autenticação ficam em Auth; tipos exclusivos de infraestrutura ficam próximos da implementação correspondente.
+
+> vai la ent
+
+<details><summary>12 previous messages</summary>
+
+> Vou eliminar os warnings sem espalhar casts: contrato de autenticação em `users/domain`, tipos de persistência junto aos schemas e um helper de mocks exclusivamente em `test/support`. Depois ativo `--max-warnings=0` e valido os dois templates.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran ``$root='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; $files=@(
+> "$root\templates\api-mongo\src\modules\audit\audit.service.spec.ts",
+> "$root\templates\api-mongo\src\modules\auth\auth-rate-limit.service.spec.ts",
+> "$root\templates\api-mongo\src\modules\auth\auth.service.spec.ts",
+> "$root\templates\api-mongo\src\modules\auth\auth.service.ts",
+> "$root\templates\api-mongo\src\modules\rbac\rbac.service.spec.ts",
+> "$root\templates\api-mongo\src\modules\users\users.service.spec.ts",
+> "$root\templates\api-mongo\src\modules\users\users.service.ts",
+> "$root\templates\api-mongo\src\modules\users\persistence\schemas\user.schema.ts",
+> "$root\templates\api-postgres\src\modules\audit\audit.service.spec.ts",
+> "$root\templates\api-postgres\src\modules\auth\auth-rate-limit.service.spec.ts",
+> "$root\templates\api-postgres\src\modules\auth\auth.service.spec.ts",
+> "$root\templates\api-postgres\src\modules\rbac\rbac.service.spec.ts",
+> "$root\templates\api-postgres\src\modules\users\users.service.spec.ts",
+> "$root\templates\api-postgres\src\modules\users\users.service.ts"
+> ); foreach($file in $files){ Write-Output "`n===== $file ====="; Get-Content -Raw -LiteralPath $file }``
+>
+> </details>
+>
+> Context compaction
+>
+> Source: automatic
+> Status: completed
+>
+> Vou corrigir os avisos agora nos dois templates. Os contratos de domínio ficarão dentro do módulo dono da informação, e os utilitários de mocks tipados ficarão em `test/support`, sem criar uma pasta global genérica. Depois ativo o lint estrito e valido testes, build e lint.
+>
+> <details><summary>Ran 2 commands</summary>
+>
+> - Ran `$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; rg -n "as any|findByEmailForAuth|validAccountToken|class UsersService|class AuthService" templates/api-mongo/src templates/api-postgres/src; Get-Content -LiteralPath "$repo\templates\api-mongo\src\modules\auth\auth.service.ts"; Get-Content -LiteralPath "$repo\templates\api-mongo\src\modules\users\users.service.ts"; Get-Content -LiteralPath "$repo\templates\api-mongo\src\modules\users\persistence\schemas\user.schema.ts"`
+> - Ran `$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content -LiteralPath "$repo\templates\api-mongo\src\modules\users\schemas\user.schema.ts"; Get-Content -LiteralPath "$repo\templates\api-postgres\src\modules\users\users.service.ts"; Get-Content -LiteralPath "$repo\templates\api-postgres\src\modules\auth\auth.service.ts"; Get-Content -LiteralPath "$repo\templates\api-mongo\package.json"; Get-Content -LiteralPath "$repo\templates\api-postgres\package.json"`
+>
+> </details>
+>
+> Mapeamento concluído: há dois problemas diferentes. No Mongo, falta um contrato explícito para o usuário com `roles` populadas; nos testes, os objetos simulados estão sendo forçados com `as any`. Vou corrigir cada um no local responsável, sem esconder o problema com casts genéricos.
+>
+> <details><summary>Created 4 files, edited 16 files, ran 7 commands</summary>
+>
+> - Ran `$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content "$repo\templates\api-mongo\src\modules\auth\schemas\refresh-token.schema.ts"; Get-Content "$repo\templates\api-mongo\src\modules\rbac\schemas\role.schema.ts"; Get-Content "$repo\templates\api-postgres\prisma\schema.prisma"; rg -n "export (namespace )?Prisma|UserGetPayload" "$repo\templates\api-postgres\src\generated" -g "*.ts" | Select-Object -First 10; Get-ChildItem "$repo\templates\api-mongo\src\modules" -Recurse -Filter "*.spec.ts" | Select-Object -ExpandProperty FullName; Get-ChildItem "$repo\templates\api-postgres\src\modules" -Recurse -Filter "*.spec.ts" | Select-Object -ExpandProperty FullName`
+> - Ran ``$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content "$repo\templates\api-postgres\src\generated\prisma\client.ts" -TotalCount 60; foreach($f in Get-ChildItem "$repo\templates\api-mongo\src\modules" -Recurse -Filter '*.spec.ts'){"`n### $($f.FullName)"; Get-Content $f.FullName}; foreach($f in Get-ChildItem "$repo\templates\api-postgres\src\modules" -Recurse -Filter '*.spec.ts'){"`n### $($f.FullName)"; Get-Content $f.FullName}``
+> - Ran `$paths=@('C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo\src\modules\users\domain','C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-postgres\src\modules\users\domain','C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo\test\support','C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-postgres\test\support'); New-Item -ItemType Directory -Force -Path $paths | Out-Null; $paths`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.service.ts` (+18 -8)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/users/domain/user-for-authentication.ts` (+17 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/users/users.service.ts` (+7 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/test/support/mock-dependency.ts` (+5 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.service.ts` (+5 -6)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/users/domain/user-for-authentication.ts` (+21 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/users/users.service.ts` (+2 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/test/support/mock-dependency.ts` (+5 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/audit/audit.service.spec.ts` (+4 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth-rate-limit.service.spec.ts` (+6 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.service.spec.ts` (+12 -8)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/rbac/rbac.service.spec.ts` (+6 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/users/users.service.spec.ts` (+5 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/audit/audit.service.spec.ts` (+4 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth-rate-limit.service.spec.ts` (+6 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.service.spec.ts` (+10 -8)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/rbac/rbac.service.spec.ts` (+6 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/users/users.service.spec.ts` (+4 -1)
+> - Ran `npm run lint -- --max-warnings=0`
+> - Ran `npm run build`
+> - Ran `npm run lint -- --max-warnings=0`
+> - Ran `npm run build`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/package.json` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.service.ts` (+2 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/package.json` (+1 -1)
+>
+> </details>
+>
+> Os avisos de produção já foram eliminados no PostgreSQL e resta apenas validar o Mongo após um pequeno ajuste no tipo do identificador. Também configurei o comando `npm run lint` para falhar no futuro se surgir qualquer novo warning; assim a CI não ficará verde escondendo dívida técnica.
+>
+> <details><summary>Edited 11 files, ran 19 commands</summary>
+>
+> - Ran `npm run lint`
+> - Ran `npm test -- --runInBand`
+> - Ran `npm run lint`
+> - Ran `npm test -- --runInBand`
+> - Ran `rg -n "max-warnings|npm run lint|warning|Backlog|Qualidade|CI" README.md docs templates/api-mongo/README.md templates/api-postgres/README.md .github/workflows -g "*.md" -g "*.yml"; git status --short`
+> - Ran `npm run build`
+> - Ran `npm run build`
+> - Ran `Get-Content docs\backlog.md; Get-Content docs\getting-started.md -TotalCount 110; rg -n "domain/|test/support|estrutura|pastas" docs templates/api-mongo/docs templates/api-postgres/docs -g "*.md" | Select-Object -First 40`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/architecture.md` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/backlog.md` (+1 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/getting-started.md` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/package.json` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/package.json` (+1 -1)
+> - Ran `npm run lint`
+> - Ran `npm run lint`
+> - Ran `Get-Content templates\api-mongo\tsconfig.json; Get-Content templates\api-mongo\tsconfig.build.json; Get-Content templates\api-mongo\eslint.config.mjs; Get-Content templates\api-mongo\test\app.e2e-spec.ts; Get-Content templates\api-mongo\test\jest-e2e.json`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/package.json` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/tsconfig.json` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/package.json` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/tsconfig.json` (+1 -1)
+> - Ran `npm run lint`
+> - Ran `npm run lint`
+> - Ran `rg -n "\bas any\b|Promise<any>|: any\b" templates/api-mongo/src templates/api-postgres/src templates/api-mongo/test/support templates/api-postgres/test/support; git diff --check; git diff --stat; git status --short`
+> - Ran `Get-Content templates\api-mongo\src\modules\rbac\rbac.service.ts -TotalCount 90; Get-Content templates\api-postgres\src\modules\rbac\rbac.service.ts -TotalCount 95; Get-Content templates\api-mongo\src\modules\auth\auth.module.ts -TotalCount 50`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.module.ts` (+7 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/rbac/rbac.service.ts` (+11 -6)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.module.ts` (+7 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/rbac/rbac.service.ts` (+7 -2)
+> - Ran `npm run build`
+> - Ran `npm run build`
+> - Ran `npm run lint`
+> - Ran `npm run lint`
+>
+> </details>
+>
+> A validação estrita passou nos dois templates: zero warnings e build concluído. Além dos avisos mostrados pelo GitHub, removi também os casts manuais restantes do JWT e do tratamento de conflito de roles, para a correção não ficar parcial. Agora faço a conferência final do diff e da documentação.
+>
+> <details><summary>Ran 3 commands</summary>
+>
+> - Ran `rg -n "\bas any\b|Promise<any>|: any\b" templates/api-mongo/src templates/api-postgres/src -g "!generated/**" -g "!**/generated/**"; git diff --check; git status --short; git diff -- docs/architecture.md docs/backlog.md docs/getting-started.md templates/api-mongo/package.json templates/api-postgres/package.json`
+> - Ran `npm test -- --runInBand`
+> - Ran `npm test -- --runInBand`
+>
+> </details>
+>
+> <details><summary>Plan</summary>
+>
+> - [ ] Mapear retornos sem tipo e mocks com any nos dois templates
+> - [ ] Criar contratos de domínio e helper de mocks tipados
+> - [ ] Migrar services e testes, removendo todos os any inseguros
+> - [ ] Ativar lint com zero warnings e validar testes/build/CI local
+> - [ ] Atualizar documentação e backlog
+>
+> </details>
+</details>
+
+Pronto. Corrigi os warnings nos templates MongoDB e PostgreSQL.
+
+Principais ajustes:
+
+- Contratos do usuário autenticável em `modules/users/domain`.
+- Mocks tipados compartilhados em `test/support`.
+- Remoção dos `as any` dos testes, JWT, autenticação e RBAC.
+- Tipagem correta das roles populadas pelo Mongoose.
+- Tratamento seguro de erros com `unknown`.
+- `npm run lint` agora utiliza `--max-warnings=0`.
+- A CI passa a falhar caso apareça qualquer warning.
+- Documentação e backlog atualizados.
+- Mantida a correção do warning `Unsupported route path: "/api/*"`.
+
+Validação final:
+
+- MongoDB: 28 testes passando.
+- PostgreSQL: 28 testes passando.
+- Total: 56 testes passando.
+- Lint MongoDB: zero warnings.
+- Lint PostgreSQL: zero warnings.
+- Build MongoDB: concluído.
+- Build PostgreSQL + Prisma Generate: concluído.
+
+Agora você pode fazer commit e push. A próxima execução do GitHub Actions não deve mais apresentar aqueles avisos.
+
+> qual sugestao de commit pra mim
+
+Sugestão:
+
+```bash
+git add .
+git commit -m "fix: remove avisos de tipagem e tornar lint estrito"
+git push
+```
+
+Uma opção mais detalhada:
+
+```bash
+git commit -m "fix: remove unsafe any e falha CI em warnings de lint"
+```
+
+Eu usaria a primeira, pois resume bem o conjunto das alterações.
+
+> proximos passos
+
+<details><summary>2 previous messages</summary>
+
+> Vou conferir o backlog atual para te passar a ordem correta, separando o que é necessário para finalizar o template do que pode continuar opcional.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `Get-Content -LiteralPath 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\docs\backlog.md'; git status --short`
+>
+> </details>
+</details>
+
+A melhor ordem agora é:
+
+1. Fazer commit/push das correções atuais e confirmar a CI verde.
+2. Criar teste de integração completo nos dois templates:
+   - cadastro;
+   - localizar e-mail pela API do Mailpit;
+   - extrair token;
+   - confirmar e-mail;
+   - login;
+   - refresh por cookie;
+   - recuperação e redefinição de senha;
+   - verificar revogação das sessões anteriores;
+   - conferir auditoria.
+3. Executar esse fluxo automaticamente no GitHub Actions.
+4. Testar cada template isoladamente, copiando somente `api-mongo` ou `api-postgres` para uma pasta nova e seguindo a documentação do zero.
+5. Revisar Swagger, Postman e documentação conforme os testes reais.
+6. Depois, tratar preparação específica de produção:
+   - provedor de e-mail;
+   - secrets;
+   - domínio, SPF, DKIM e DMARC;
+   - alertas do Grafana/Prometheus.
+
+O frontend de confirmação e redefinição permanece adiado, conforme combinado.
+
+Minha recomendação para o próximo desenvolvimento é o item 2: automatizar o fluxo completo de autenticação usando o Mailpit. Essa é hoje a principal lacuna para afirmar que os dois templates estão realmente prontos e reutilizáveis.
+
+<details><summary>19 previous messages</summary>
+
+> Vou executar esse pacote completo agora: ampliar os testes de integração com Mailpit nos dois templates, conectá-los à CI, validar cada pasta isoladamente e ajustar Swagger, Postman e documentação conforme o fluxo real. :codex-annotation{index="1"}
+>
+> Começo levantando os contratos atuais para não duplicar endpoints nem alterar o comportamento já aprovado.
+>
+> <details><summary>Ran 4 commands</summary>
+>
+> - Ran `$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; rg -n "test:integration|Mailpit|mailpit|verify-email|forgot-password|reset-password|refresh|logout" "$repo\.github" "$repo\templates\api-mongo" "$repo\templates\api-postgres" -g "*.mjs" -g "*.yml" -g "*.yaml" -g "*.ts" -g "*.json" -g "*.md" -g "*.env*"; Get-Content "$repo\.github\workflows\ci.yml"; Get-Content "$repo\templates\api-mongo\scripts\integration-check.mjs"; Get-Content "$repo\templates\api-postgres\scripts\integration-check.mjs"`
+> - Ran `$repo='C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates'; Get-Content "$repo\templates\api-mongo\src\modules\auth\auth.controller.ts"; Get-Content "$repo\templates\api-mongo\src\infrastructure\email\email.service.ts"; Get-Content "$repo\templates\api-mongo\src\modules\audit\audit.controller.ts"; Get-Content "$repo\templates\api-mongo\postman\api-mongo.postman_collection.json"; Get-Content "$repo\templates\api-mongo\src\main.ts"`
+> - Ran `docker compose ps; docker compose exec -T api node -e "fetch('http://mailpit:8025/api/v1/messages').then(async r=>console.log(r.status,await r.text())).catch(console.error)"`
+> - Ran `docker compose ps; docker compose exec -T api node -e "fetch('http://mailpit:8025/api/v1/messages').then(async r=>console.log(r.status,await r.text())).catch(console.error)"`
+>
+> </details>
+>
+> O teste atual cobre apenas o administrador já semeado. Vou transformá-lo em um cenário de usuário real e independente: ele cria uma conta, lê os dois e-mails diretamente da API do Mailpit, confirma o endereço, testa rotação/revogação do cookie, redefine a senha e confirma os eventos na auditoria. Isso também elimina a etapa manual de copiar tokens na CI.
+>
+> <details><summary>Deleted <code>C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo\scripts\integration-check.mjs</code> +0 -87</summary>
+>
+> ```diff
+> diff --git a/C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo\scripts\integration-check.mjs b/C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo\scripts\integration-check.mjs
+> deleted file mode 100644
+> --- a/C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo\scripts\integration-check.mjs
+> +++ /dev/null
+> @@ -1,87 +0,0 @@
+> -const baseUrl = process.env.API_BASE_URL ?? 'http://localhost:3000/api/v1';
+> -
+> -const request = (path, options = {}) =>
+> -  fetch(`${baseUrl}${path}`, {
+> -    ...options,
+> -    signal: AbortSignal.timeout(5_000),
+> -    headers: {
+> -      'content-type': 'application/json',
+> -      ...(options.headers ?? {}),
+> -    },
+> -  });
+> -
+> -const assertStatus = (response, expected, label) => {
+> -  if (response.status !== expected) {
+> -    throw new Error(`${label}: expected ${expected}, received ${response.status}`);
+> -  }
+> -};
+> -
+> -const waitForHealth = async () => {
+> -  let lastStatus = 'unreachable';
+> -  let lastBody = '';
+> -  for (let attempt = 0; attempt < 30; attempt += 1) {
+> -    try {
+> -      const response = await request('/health');
+> -      if (response.status === 200) return;
+> -      lastStatus = response.status;
+> -      lastBody = await response.text();
+> -    } catch (error) {
+> -      lastStatus = error instanceof Error ? error.message : 'unreachable';
+> -    }
+> -    await new Promise((resolve) => setTimeout(resolve, 1_000));
+> -  }
+> -  throw new Error(`health did not become ready: ${lastStatus} ${lastBody}`);
+> -};
+> -
+> -await waitForHealth();
+> -
+> -const login = await request('/auth/login', {
+> -  method: 'POST',
+> -  body: JSON.stringify({
+> -    email: process.env.SEED_ADMIN_EMAIL,
+> -    password: process.env.SEED_ADMIN_PASSWORD,
+> -  }),
+> -});
+> -assertStatus(login, 200, 'login');
+> -const loginBody = await login.json();
+> -const cookie = login.headers.get('set-cookie')?.split(';')[0];
+> -if (!cookie || !loginBody.data?.accessToken) throw new Error('login did not return credentials');
+> -
+> -const refresh = await request('/auth/refresh', { method: 'POST', headers: { cookie } });
+> -assertStatus(refresh, 200, 'refresh');
+> -const refreshBody = await refresh.json();
+> -const refreshedCookie = refresh.headers.get('set-cookie')?.split(';')[0] ?? cookie;
+> -const authorization = { authorization: `Bearer ${refreshBody.data.accessToken}` };
+> -
+> -assertStatus(await request('/rbac/permissions', { headers: authorization }), 200, 'rbac');
+> -assertStatus(await request('/audit-logs?status=SUCCESS&limit=5', { headers: authorization }), 200, 'audit');
+> -assertStatus(
+> -  await request('/auth/logout', {
+> -    method: 'POST',
+> -    headers: { ...authorization, cookie: refreshedCookie },
+> -  }),
+> -  204,
+> -  'logout',
+> -);
+> -
+> -const email = `rate-limit-${Date.now()}@example.invalid`;
+> -for (let attempt = 0; attempt < 5; attempt += 1) {
+> -  assertStatus(
+> -    await request('/auth/login', {
+> -      method: 'POST',
+> -      body: JSON.stringify({ email, password: 'invalid-password' }),
+> -    }),
+> -    401,
+> -    `invalid login ${attempt + 1}`,
+> -  );
+> -}
+> -assertStatus(
+> -  await request('/auth/login', {
+> -    method: 'POST',
+> -    body: JSON.stringify({ email, password: 'invalid-password' }),
+> -  }),
+> -  429,
+> -  'progressive lock',
+> -);
+> -
+> -console.log('Integration checks passed');
+> ```
+>
+> </details>
+> <details><summary>Deleted <code>C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-postgres\scripts\integration-check.mjs</code> +0 -87</summary>
+>
+> ```diff
+> diff --git a/C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-postgres\scripts\integration-check.mjs b/C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-postgres\scripts\integration-check.mjs
+> deleted file mode 100644
+> --- a/C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-postgres\scripts\integration-check.mjs
+> +++ /dev/null
+> @@ -1,87 +0,0 @@
+> -const baseUrl = process.env.API_BASE_URL ?? 'http://localhost:3000/api/v1';
+> -
+> -const request = (path, options = {}) =>
+> -  fetch(`${baseUrl}${path}`, {
+> -    ...options,
+> -    signal: AbortSignal.timeout(5_000),
+> -    headers: {
+> -      'content-type': 'application/json',
+> -      ...(options.headers ?? {}),
+> -    },
+> -  });
+> -
+> -const assertStatus = (response, expected, label) => {
+> -  if (response.status !== expected) {
+> -    throw new Error(`${label}: expected ${expected}, received ${response.status}`);
+> -  }
+> -};
+> -
+> -const waitForHealth = async () => {
+> -  let lastStatus = 'unreachable';
+> -  let lastBody = '';
+> -  for (let attempt = 0; attempt < 30; attempt += 1) {
+> -    try {
+> -      const response = await request('/health');
+> -      if (response.status === 200) return;
+> -      lastStatus = response.status;
+> -      lastBody = await response.text();
+> -    } catch (error) {
+> -      lastStatus = error instanceof Error ? error.message : 'unreachable';
+> -    }
+> -    await new Promise((resolve) => setTimeout(resolve, 1_000));
+> -  }
+> -  throw new Error(`health did not become ready: ${lastStatus} ${lastBody}`);
+> -};
+> -
+> -await waitForHealth();
+> -
+> -const login = await request('/auth/login', {
+> -  method: 'POST',
+> -  body: JSON.stringify({
+> -    email: process.env.SEED_ADMIN_EMAIL,
+> -    password: process.env.SEED_ADMIN_PASSWORD,
+> -  }),
+> -});
+> -assertStatus(login, 200, 'login');
+> -const loginBody = await login.json();
+> -const cookie = login.headers.get('set-cookie')?.split(';')[0];
+> -if (!cookie || !loginBody.data?.accessToken) throw new Error('login did not return credentials');
+> -
+> -const refresh = await request('/auth/refresh', { method: 'POST', headers: { cookie } });
+> -assertStatus(refresh, 200, 'refresh');
+> -const refreshBody = await refresh.json();
+> -const refreshedCookie = refresh.headers.get('set-cookie')?.split(';')[0] ?? cookie;
+> -const authorization = { authorization: `Bearer ${refreshBody.data.accessToken}` };
+> -
+> -assertStatus(await request('/rbac/permissions', { headers: authorization }), 200, 'rbac');
+> -assertStatus(await request('/audit-logs?status=SUCCESS&limit=5', { headers: authorization }), 200, 'audit');
+> -assertStatus(
+> -  await request('/auth/logout', {
+> -    method: 'POST',
+> -    headers: { ...authorization, cookie: refreshedCookie },
+> -  }),
+> -  204,
+> -  'logout',
+> -);
+> -
+> -const email = `rate-limit-${Date.now()}@example.invalid`;
+> -for (let attempt = 0; attempt < 5; attempt += 1) {
+> -  assertStatus(
+> -    await request('/auth/login', {
+> -      method: 'POST',
+> -      body: JSON.stringify({ email, password: 'invalid-password' }),
+> -    }),
+> -    401,
+> -    `invalid login ${attempt + 1}`,
+> -  );
+> -}
+> -assertStatus(
+> -  await request('/auth/login', {
+> -    method: 'POST',
+> -    body: JSON.stringify({ email, password: 'invalid-password' }),
+> -  }),
+> -  429,
+> -  'progressive lock',
+> -);
+> -
+> -console.log('Integration checks passed');
+> ```
+>
+> </details>
+> Auto-review
+>
+> Status: denied
+> Risk: high
+> Rationale: O patch remove os dois scripts de integração inteiramente e não inclui a implementação substituta; isso pode quebrar a CI e excede a autorização para adicionar testes, portanto não deve ser executado.
+>
+> <details><summary>Created 2 files, edited 2 files, explored a file, ran 2 commands</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/scripts/full-account-check.mjs` (+245 -0)
+>
+> <details><summary>Explored a file</summary>
+>
+> - Read `./templates/api-mongo/scripts/full-account-check.mjs`
+>
+> </details>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/scripts/full-account-check.mjs` (+246 -0)
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/package.json` (+2 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/package.json` (+2 -1)
+>
+> - Ran `node --check scripts/full-account-check.mjs`
+>
+> - Ran `node --check scripts/full-account-check.mjs`
+>
+> </details>
+>
+> O novo cenário já está criado nos dois templates e passou na validação de sintaxe. Agora vou executá-lo de verdade, primeiro no MongoDB e depois no PostgreSQL, usando o Mailpit interno. Vou preservar os volumes existentes; apenas os containers serão reiniciados quando necessário.
+>
+> <details><summary>Ran 17 commands</summary>
+>
+> - Ran `docker compose down`
+> - Ran `$env:MAIL_HOST='mailpit'; $env:MAIL_PORT='1025'; $env:MAIL_SECURE='false'; $env:MAIL_USER=''; $env:MAIL_PASSWORD=''; docker compose up --build -d`
+> - Ran `docker compose ps; docker compose logs --tail=50 api`
+> - Ran `$env:MAIL_HOST='mailpit'; $env:MAIL_PORT='1025'; $env:MAIL_SECURE='false'; $env:MAIL_USER=''; $env:MAIL_PASSWORD=''; docker compose up --build -d`
+> - Ran `docker compose ps -a`
+> - Ran `$env:MAIL_HOST='mailpit'; $env:MAIL_PORT='1025'; $env:MAIL_SECURE='false'; $env:MAIL_USER=''; $env:MAIL_PASSWORD=''; docker compose up --build -d`
+> - Ran `docker ps --format "table {{.Names}}\t{{.Ports}}"`
+> - Ran `docker compose down`
+> - Ran `$env:MAIL_HOST='mailpit'; $env:MAIL_PORT='1025'; $env:MAIL_SECURE='false'; $env:MAIL_USER=''; $env:MAIL_PASSWORD=''; docker compose up -d`
+> - Ran `docker compose exec -T api npm run seed; docker compose exec -T api npm run test:integration`
+> - Ran `docker compose exec -T api npm run test:integration`
+> - Ran `docker compose exec -T api npm run test:integration`
+> - Ran `docker compose logs --tail=100 api mailpit`
+> - Ran `docker compose ps; docker inspect api-mongo-api-1 --format '{{json .NetworkSettings.Networks}}'; docker inspect api-mongo-redis-1 --format '{{json .NetworkSettings.Networks}}'`
+> - Ran `docker compose down`
+> - Ran `$env:MAIL_HOST='mailpit'; $env:MAIL_PORT='1025'; $env:MAIL_SECURE='false'; $env:MAIL_USER=''; $env:MAIL_PASSWORD=''; docker compose up -d`
+> - Ran `docker compose exec -T api npm run seed; docker compose exec -T api npm run test:integration`
+>
+> </details>
+>
+> O fluxo completo passou no MongoDB, incluindo leitura automática dos e-mails no Mailpit, uso único dos tokens, rotação do refresh token, revogação após troca de senha, logout, RBAC, auditoria e bloqueio gradual. Agora vou repetir exatamente o mesmo cenário no PostgreSQL.
+>
+> <details><summary>Ran 6 commands</summary>
+>
+> - Ran `docker compose down`
+> - Ran `$env:MAIL_HOST='mailpit'; $env:MAIL_PORT='1025'; $env:MAIL_SECURE='false'; $env:MAIL_USER=''; $env:MAIL_PASSWORD=''; docker compose up --build -d`
+> - Ran `docker compose exec -T api npx prisma migrate deploy; docker compose exec -T api npm run seed; docker compose exec -T api npm run test:integration`
+> - Ran `docker compose exec -T api printenv MAIL_HOST; docker compose exec -T api printenv MAIL_PORT; docker compose logs --tail=80 api mailpit`
+> - Ran `Get-Content docker-compose.yml | Select-Object -First 35; Select-String -Path .env -Pattern '^MAIL_'`
+> - Ran `Get-Content templates\api-mongo\docker-compose.yml | Select-Object -First 30; Get-Content templates\api-postgres\docker-compose.yml | Select-Object -First 30`
+>
+> </details>
+>
+> O PostgreSQL revelou uma falha real de portabilidade: o Compose sobrescrevia apenas `MAIL_HOST`; `MAIL_PORT`, TLS e credenciais continuavam vindo do `.env`. Por isso ele tentou conectar ao Mailpit na porta errada. Vou corrigir essa composição nos dois templates para que as configurações SMTP sejam aplicadas como um conjunto coerente.
+>
+> <details><summary>Edited 2 files, ran 3 commands</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docker-compose.yml` (+5 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docker-compose.yml` (+5 -0)
+> - Ran `$env:MAIL_HOST='mailpit'; $env:MAIL_PORT='1025'; $env:MAIL_SECURE='false'; $env:MAIL_USER=''; $env:MAIL_PASSWORD=''; $env:MAIL_FROM='NestJS API <no-reply@example.test>'; docker compose up -d --force-recreate api; docker compose exec -T api printenv MAIL_PORT`
+> - Ran `docker compose exec -T api npm run test:integration`
+> - Ran `Get-ChildItem templates\api-mongo -Force | Select-Object Name; Get-ChildItem templates\api-postgres -Force | Select-Object Name; Get-Content templates\api-mongo\.github\workflows\ci.yml; Get-Content templates\api-postgres\.github\workflows\ci.yml`
+>
+> </details>
+>
+> Os dois bancos passaram o cenário funcional. Para validar a promessa de “copiar somente uma pasta”, vou agora criar cópias temporárias sem `node_modules`, `dist`, cobertura ou `.env`, instalar pelas lockfiles próprias e compilar cada uma fora do monorepo.
+>
+> <details><summary>Ran 3 commands</summary>
+>
+> - Ran `$validationRoot = Join-Path ([System.IO.Path]::GetTempPath()) 'nestjs-template-validation-20260826'; New-Item -ItemType Directory -Force -Path "$validationRoot\api-mongo", "$validationRoot\api-postgres" | Out-Null; robocopy 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-mongo' "$validationRoot\api-mongo" /E /XD node_modules dist coverage /XF .env | Out-Null; if ($LASTEXITCODE -gt 7) { throw "Mongo copy failed with exit code $LASTEXITCODE" }; robocopy 'C:\Users\gabriel.cunha\Documents\Dev\nestjs-api-templates\templates\api-postgres' "$validationRoot\api-postgres" /E /XD node_modules dist coverage /XF .env | Out-Null; if ($LASTEXITCODE -gt 7) { throw "Postgres copy failed with exit code $LASTEXITCODE" }; Write-Output $validationRoot; Get-ChildItem "$validationRoot\api-mongo" -Name package.json,package-lock.json,Dockerfile,docker-compose.yml; Get-ChildItem "$validationRoot\api-postgres" -Name package.json,package-lock.json,Dockerfile,docker-compose.yml`
+> - Ran `npm ci; npm run build; npm run lint; npm test -- --runInBand`
+> - Ran `npm ci; npm run build; npm run lint; npm test -- --runInBand`
+>
+> </details>
+>
+> A validação isolada também passou: cada pasta instalou dependências pela própria lockfile, compilou, passou no lint estrito e executou os 28 testes sem depender da raiz. Agora estou fechando a experiência de uso: o Postman passará a capturar os tokens do Mailpit automaticamente, e Swagger/documentação vão descrever exatamente o cenário testado.
+>
+> <details><summary>Created a file, edited 13 files, ran 4 commands</summary>
+>
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/postman/api-mongo.postman_collection.json` (+71 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/postman/api-postgres.postman_collection.json` (+71 -2)
+> - Ran `$paths=@('templates\api-mongo\postman\api-mongo.postman_collection.json','templates\api-postgres\postman\api-postgres.postman_collection.json'); foreach($path in $paths){Get-Content -Raw $path | ConvertFrom-Json | Out-Null; Write-Output "$path valid"}`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.controller.ts` (+34 -4)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.controller.ts` (+34 -4)
+> - Ran `rg -n -C 2 "Solicitação processada|token é de uso único|todos os refresh|Set-Cookie" templates/api-mongo/src/modules/auth/auth.controller.ts`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/src/modules/auth/auth.controller.ts` (+4 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/src/modules/auth/auth.controller.ts` (+4 -1)
+> - Ran `Get-Content docs\README.md; Get-Content templates\api-mongo\docs\README.md | Select-Object -Skip 75 -First 30; Get-Content templates\api-postgres\docs\README.md | Select-Object -Skip 76 -First 30; Get-Content templates\api-mongo\README.md; Get-Content templates\api-postgres\README.md`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/README.md` (+1 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/backlog.md` (+3 -3)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/getting-started.md` (+2 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/docs/integration-testing.md` (+51 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/README.md` (+3 -1)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/README.md` (+2 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/README.md` (+4 -2)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/README.md` (+2 -2)
+> - Ran `Get-Content templates\api-mongo\docs\api-reference.md -TotalCount 100; Get-Content templates\api-postgres\docs\api-reference.md -TotalCount 100`
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-mongo/docs/api-reference.md` (+13 -0)
+> - Wrote `~/Documents/Dev/nestjs-api-templates/templates/api-postgres/docs/api-reference.md` (+13 -0)
+>
+> </details>
+>
+> Swagger, Postman e documentação foram atualizados. A coleção agora possui passos explícitos para capturar os tokens do Mailpit, e a referência registra os status esperados e as regras de uso único/rotação. Vou encerrar com a bateria completa de qualidade e validação dos arquivos Docker/Postman.
+>
+> <details><summary>Ran 6 commands</summary>
+>
+> - Ran `npm run lint; npm test -- --runInBand; npm run build; docker compose config --quiet`
+> - Ran `npm run lint; npm test -- --runInBand; npm run build; docker compose config --quiet`
+> - Ran `$validationRoot='C:\Users\gabriel.cunha\AppData\Local\Temp\nestjs-template-validation-20260826'; $resolved=(Resolve-Path -LiteralPath $validationRoot).Path; $tempRoot=[System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()); if (-not $resolved.StartsWith($tempRoot,[System.StringComparison]::OrdinalIgnoreCase)) { throw "Unsafe cleanup target: $resolved" }; Remove-Item -LiteralPath $resolved -Recurse -Force; Write-Output "Removed temporary validation copy: $resolved"`
+> - Ran `Test-Path -LiteralPath 'C:\Users\gabriel.cunha\AppData\Local\Temp\nestjs-template-validation-20260826'; $paths=@('templates\api-mongo\postman\api-mongo.postman_collection.json','templates\api-postgres\postman\api-postgres.postman_collection.json'); foreach($path in $paths){Get-Content -Raw $path | ConvertFrom-Json | Out-Null; Write-Output "$path valid"}; git diff --check; git status --short`
+> - Ran `$validationRoot='C:\Users\gabriel.cunha\AppData\Local\Temp\nestjs-template-validation-20260826'; if (Test-Path -LiteralPath $validationRoot) { $resolved=(Resolve-Path -LiteralPath $validationRoot).Path; $tempRoot=[System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()); if (-not $resolved.StartsWith($tempRoot,[System.StringComparison]::OrdinalIgnoreCase)) { throw "Unsafe cleanup target: $resolved" }; Remove-Item -LiteralPath $resolved -Recurse -Force }; Test-Path -LiteralPath $validationRoot`
+> - Ran `"C:\\Users\\gabriel.cunha\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe" -Command '$validationRoot='"'C:\\Users\\gabriel.cunha\\AppData\\Local\\Temp\\nestjs-template-validation-20260826'; if (Test-Path -LiteralPath "'$validationRoot) { $resolved=(Resolve-Path -LiteralPath $validationRoot).Path; $tempRoot=[System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()); if (-not $resolved.StartsWith($tempRoot,[System.StringComparison]::OrdinalIgnoreCase)) { throw "Unsafe cleanup target: $resolved" }; [System.IO.Directory]::Delete("'"\\\\?\\"'$resolved", $true) }; Test-Path -LiteralPath $validationRoot'`
+>
+> </details>
+>
+> System error
+>
+> You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 6:42 PM.
+>
+> <details><summary>Plan</summary>
+>
+> Mapeamento e implementação do fluxo completo concluídos. Os dois bancos passaram em Docker e as cópias isoladas passaram instalação, build, lint e testes.
+>
+> - [x] Mapear scripts de integração, Docker, CI, endpoints Auth, Mailpit, Postman e Swagger atuais
+> - [x] Implementar fluxo completo de integração com Mailpit nos dois templates
+> - [x] Integrar o novo fluxo ao GitHub Actions e validar os templates isoladamente
+> - [ ] Atualizar Swagger, Postman e documentação com o comportamento validado
+> - [ ] Executar lint, testes, builds e integrações finais
+>
+> </details>
+</details>

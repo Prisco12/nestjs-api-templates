@@ -50,6 +50,17 @@ export class AuthController {
   @ApiCreatedResponse({
     description:
       'Usuário criado. A resposta segue o envelope { success, data, meta }.',
+    schema: {
+      example: {
+        success: true,
+        data: {
+          id: '6a873281bd0d036db4e1c6d8',
+          email: 'user@example.com',
+          emailVerificationRequired: true,
+        },
+        meta: { requestId: 'ec708c60-9e0e-409e-937a-52a76680f2c1' },
+      },
+    },
   })
   @ApiConflictResponse({
     description: 'Já existe usuário com o e-mail informado.',
@@ -92,7 +103,9 @@ export class AuthController {
   @Throttle({ default: { limit: 10, ttl: 900_000 } })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Confirmar e-mail' })
-  @ApiNoContentResponse({ description: 'E-mail confirmado.' })
+  @ApiNoContentResponse({
+    description: 'E-mail confirmado. O token é de uso único.',
+  })
   @ApiBadRequestResponse({ description: 'Token inválido ou expirado.' })
   @Post('verify-email')
   async verifyEmail(@Body() dto: VerifyEmailDto, @Req() request: Request) {
@@ -103,7 +116,10 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 900_000 } })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Reenviar confirmação de e-mail' })
-  @ApiNoContentResponse({ description: 'Solicitação processada.' })
+  @ApiNoContentResponse({
+    description:
+      'Solicitação processada sem revelar se o e-mail está cadastrado.',
+  })
   @Post('resend-verification')
   async resendVerification(
     @Body() dto: ResendVerificationDto,
@@ -116,7 +132,10 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 900_000 } })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Solicitar redefinição de senha' })
-  @ApiNoContentResponse({ description: 'Solicitação processada.' })
+  @ApiNoContentResponse({
+    description:
+      'Solicitação processada sem revelar se o e-mail está cadastrado.',
+  })
   @Post('forgot-password')
   async forgotPassword(
     @Body() dto: ForgotPasswordDto,
@@ -130,7 +149,8 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Redefinir senha' })
   @ApiNoContentResponse({
-    description: 'Senha redefinida e sessões revogadas.',
+    description:
+      'Senha redefinida, token consumido e todos os refresh tokens anteriores revogados.',
   })
   @ApiBadRequestResponse({
     description:
@@ -155,6 +175,13 @@ export class AuthController {
   @ApiOkResponse({
     description:
       'Login efetuado. data contém accessToken e user; Set-Cookie contém refresh_token.',
+    headers: {
+      'Set-Cookie': {
+        description:
+          'refresh_token HttpOnly; SameSite=Lax; Path=/api/v1/auth; Secure em produção.',
+        schema: { type: 'string' },
+      },
+    },
   })
   @ApiUnauthorizedResponse({
     description: 'Credenciais inválidas ou bloqueio temporário por tentativas.',
@@ -184,7 +211,13 @@ export class AuthController {
   })
   @ApiOkResponse({
     description:
-      'Sessão renovada; um novo refresh_token é enviado em Set-Cookie.',
+      'Sessão renovada; o token recebido é revogado e um novo refresh_token é enviado em Set-Cookie.',
+    headers: {
+      'Set-Cookie': {
+        description: 'Novo refresh_token após rotação da sessão.',
+        schema: { type: 'string' },
+      },
+    },
   })
   @ApiUnauthorizedResponse({
     description: 'Cookie ausente, inválido, expirado ou revogado.',

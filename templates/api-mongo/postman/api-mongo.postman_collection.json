@@ -7,14 +7,15 @@
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:3000/api/v1" },
+    { "key": "mailpitUrl", "value": "http://localhost:8025" },
     { "key": "accessToken", "value": "" },
     { "key": "userId", "value": "" },
     { "key": "userEmail", "value": "new.user@example.com" },
     { "key": "userPassword", "value": "ChangeMe123!" },
     { "key": "adminEmail", "value": "admin@example.com" },
     { "key": "adminPassword", "value": "ChangeMe123!" },
-    { "key": "verificationToken", "value": "paste-token-from-mailpit" },
-    { "key": "passwordResetToken", "value": "paste-token-from-mailpit" }
+    { "key": "verificationToken", "value": "" },
+    { "key": "passwordResetToken", "value": "" }
   ],
   "item": [
     {
@@ -55,6 +56,40 @@
           }
         },
         {
+          "name": "Capture verification token from Mailpit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const messages = pm.response.json().messages || [];",
+                  "const email = pm.collectionVariables.get('userEmail').toLowerCase();",
+                  "const message = messages.find((item) => {",
+                  "  const value = JSON.stringify(item).toLowerCase();",
+                  "  return value.includes(email) && value.includes('confirme seu e-mail');",
+                  "});",
+                  "pm.expect(message, 'verification email in Mailpit').to.exist;",
+                  "const id = message.ID || message.Id || message.id;",
+                  "pm.sendRequest(`${pm.collectionVariables.get('mailpitUrl')}/api/v1/message/${encodeURIComponent(id)}`, (error, response) => {",
+                  "  pm.expect(error).to.equal(null);",
+                  "  const detail = response.json();",
+                  "  const content = [detail.Text, detail.HTML, detail.text, detail.html].filter(Boolean).join('\\n').replaceAll('&amp;', '&');",
+                  "  const match = content.match(/[?&]token=([^\\s&\\\"'<>]+)/);",
+                  "  pm.expect(match, 'verification token').not.to.equal(null);",
+                  "  pm.collectionVariables.set('verificationToken', decodeURIComponent(match[1]));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "description": "Localiza no Mailpit o e-mail de confirmação do userEmail e salva verificationToken automaticamente.",
+            "method": "GET",
+            "url": "{{mailpitUrl}}/api/v1/messages"
+          }
+        },
+        {
           "name": "Verify email",
           "request": {
             "method": "POST",
@@ -79,6 +114,40 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{userEmail}}\"\n}" },
             "url": "{{baseUrl}}/auth/forgot-password"
+          }
+        },
+        {
+          "name": "Capture password reset token from Mailpit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const messages = pm.response.json().messages || [];",
+                  "const email = pm.collectionVariables.get('userEmail').toLowerCase();",
+                  "const message = messages.find((item) => {",
+                  "  const value = JSON.stringify(item).toLowerCase();",
+                  "  return value.includes(email) && value.includes('redefina sua senha');",
+                  "});",
+                  "pm.expect(message, 'password reset email in Mailpit').to.exist;",
+                  "const id = message.ID || message.Id || message.id;",
+                  "pm.sendRequest(`${pm.collectionVariables.get('mailpitUrl')}/api/v1/message/${encodeURIComponent(id)}`, (error, response) => {",
+                  "  pm.expect(error).to.equal(null);",
+                  "  const detail = response.json();",
+                  "  const content = [detail.Text, detail.HTML, detail.text, detail.html].filter(Boolean).join('\\n').replaceAll('&amp;', '&');",
+                  "  const match = content.match(/[?&]token=([^\\s&\\\"'<>]+)/);",
+                  "  pm.expect(match, 'password reset token').not.to.equal(null);",
+                  "  pm.collectionVariables.set('passwordResetToken', decodeURIComponent(match[1]));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "description": "Localiza no Mailpit o e-mail de redefinição do userEmail e salva passwordResetToken automaticamente.",
+            "method": "GET",
+            "url": "{{mailpitUrl}}/api/v1/messages"
           }
         },
         {

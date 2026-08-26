@@ -15,6 +15,11 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/nest_api?schema=public
       REDIS_URL: redis://redis:6379
       MAIL_HOST: ${MAIL_HOST:-mailpit}
+      MAIL_PORT: ${MAIL_PORT:-1025}
+      MAIL_SECURE: ${MAIL_SECURE:-false}
+      MAIL_USER: ${MAIL_USER:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-NestJS API <no-reply@example.test>}
 
   postgres:
     image: postgres:17

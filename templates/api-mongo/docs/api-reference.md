@@ -37,6 +37,17 @@ Importe a coleção em `postman/api-mongo.postman_collection.json` para exemplos
 
 `POST /auth/refresh` não recebe body; o refresh token é lido do cookie HttpOnly.
 
+No fluxo de conta:
+
+- `register` responde `201` e envia a confirmação; login antes da confirmação responde `403`;
+- `verify-email` responde `204`; reutilizar o mesmo token responde `400`;
+- `forgot-password` sempre responde `204`, inclusive para e-mail inexistente;
+- `reset-password` responde `204`, consome o token e revoga todas as sessões anteriores;
+- cada `refresh` bem-sucedido rotaciona o cookie; reutilizar o cookie anterior responde `401`;
+- `logout` responde `204`, remove o cookie no cliente e revoga a sessão no servidor.
+
+No Postman, as requisições `Capture ... token from Mailpit` consultam `{{mailpitUrl}}` e preenchem as variáveis de token automaticamente.
+
 `PUT /rbac/roles/manager/permissions`:
 
 ```json
@@ -80,3 +91,5 @@ O frontend deve usar `field` para destacar o input, `code` para tradução/regra
 `alteração de role/permissão → authorizationVersion incrementada → JWT anterior retorna 401 → refresh/login emite JWT novo`.
 
 `ação RBAC → AuditLog com executor, recurso e resultado`.
+
+`cadastro → e-mail no Mailpit → confirmação → login → refresh rotacionado → recuperação de senha → sessões anteriores revogadas`.

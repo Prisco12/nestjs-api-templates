@@ -91,6 +91,8 @@ Para validar o fluxo integrado com os containers:
 docker compose exec api npm run test:integration
 ```
 
+Esse comando cria uma conta descartável, lê os e-mails pela API interna do Mailpit e valida confirmação, login, refresh, recuperação de senha, revogação de sessões, auditoria e rate limit. Não é necessário copiar tokens manualmente. Para executar somente a verificação curta do administrador semeado, use `npm run test:integration:smoke`.
+
 ## 7. Ative observabilidade quando precisar
 
 Primeiro encerre o modo normal, sem remover volumes:

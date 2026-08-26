@@ -1,6 +1,6 @@
 # API Mongo Template
 
-Aplicação NestJS independente com MongoDB e Mongoose. A implementação será adicionada incrementalmente.
+Aplicação NestJS independente com MongoDB e Mongoose, autenticação JWT, refresh token em cookie HttpOnly, RBAC, auditoria, rate limit, e-mail, observabilidade, Docker, Swagger, Postman e CI.
 
 A coleção Postman está em `postman/api-mongo.postman_collection.json`.
 
@@ -13,3 +13,5 @@ A coleção Postman está em `postman/api-mongo.postman_collection.json`.
 5. Crie o administrador inicial: `docker compose exec api npm run seed:admin`.
 
 O comando `npm run seed` executa os dois passos como bootstrap completo. Para adicionar uma nova permissão ao catálogo, execute apenas `npm run seed:rbac`.
+
+Valide o fluxo completo com `docker compose exec -T api npm run test:integration`. O teste usa o Mailpit interno e não exige copiar tokens manualmente.

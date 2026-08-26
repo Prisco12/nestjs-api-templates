@@ -10,7 +10,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:integration": "node scripts/integration-check.mjs",
+    "test:integration": "node scripts/full-account-check.mjs",
+    "test:integration:smoke": "node scripts/integration-check.mjs",
     "seed": "npm run seed:rbac && npm run seed:admin",
     "seed:rbac": "tsx scripts/seed-rbac.ts",
     "seed:admin": "tsx scripts/seed-admin.ts"
